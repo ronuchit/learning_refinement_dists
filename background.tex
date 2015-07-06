@@ -3,17 +3,17 @@ We summarize the work of Srivastava et al. A fully observed task planning
 problem is a tuple $(\Obj, \F, \I, \G, \A)$:
 
 $\Obj$ is a set of symbolic references to \emph{objects} in the environment,
-such as cylinders, cylinder locations, and grasping poses.
+such as cylinders, cylinder locations, and grasping poses. (These are treated as strings.)
 
 $\F$ is a set of fluents (which define relationships among objects and are either
-true or false in any state).
+true or false in the state).
 
 $\I$ is the set of fluents that hold true in the initial state
 (all others are assumed false).
 
 $\G$ is the set of fluents defining the goal state.
 
-$\A$ is a set of parametrized \emph{actions} with \emph{preconditions} (a set
+$\A$ is a set of parametrized \emph{actions}, defined by \emph{preconditions} (a set
 of fluents characterizing what must hold true in the current state for the action
 to be validly peformed) and \emph{effects} (a set of fluents that hold true after
 the action is performed).
@@ -32,12 +32,12 @@ a particular object $obj_{1}$ in the robot's right gripper.
 
 \begin{tightlist}
 \item[$\Obj$:] Objects in the environment $obj_{0}, ..., obj_{n}$, object initial poses,
-robot initial pose, and robot left gripper and right gripper grasping pose
+robot initial pose, and left gripper and right gripper grasping poses
 for each object. $\Obj$ is a set of symbolic references, represented at the high
-level only as strings with no further interpretation.
+level only as strings with no geometric interpretation.
 
-\item[$\F$:] \emph{Obstructs}$(traj, obj_{0}, obj_{1})$, \emph{InGripper}$(obj, manip)$,\\\emph{Empty}$(manip)$,
-\emph{IsGraspPose}$(pose, obj, manip)$,\\\emph{At}$(obj, pose)$, \emph{RobotAt}$(pose)$,\\
+\item[$\F$:] \emph{Obstructs}$(traj, obj_{0}, obj_{1})$, \emph{InGripper}$(obj, gripper)$,\\\emph{Empty}$(gripper)$,
+\emph{IsGraspPose}$(pose, obj, gripper)$,\\\emph{At}$(obj, pose)$, \emph{RobotAt}$(pose)$,\\
 \emph{IsValidTraj}$(traj, pose_{0}, pose_{1})$. Here, the \emph{IsValidTraj} predicate checks that $traj$
 joins $pose_{0}$ with $pose_{1}$, and that it is feasible to execute and
 collision-free.
@@ -53,7 +53,7 @@ collision-free.
 \item[1)] \emph{MoveTo}
   \begin{tightlist}
   \item[params:]$pose_{0}, pose_{1}, traj$
-  \item[preconds:]\emph{RobotAt}$(pose_{0}) \wedge$\\ \emph{IsValidTraj}$(traj, pose_{0}, pose_{1}) \wedge$
+  \item[preconds:]\emph{RobotAt}$(pose_{0}) \wedge$\\ \emph{IsValidTraj}$(traj, pose_{0}, pose_{1})$
   \item[effects:]\emph{RobotAt}$(pose_{1}) \wedge \lnot$\emph{RobotAt}$(pose_{0})$
   \end{tightlist}
 \item[2)] \emph{Grasp}
@@ -69,40 +69,39 @@ collision-free.
 
 For the \emph{Grasp} action, the fact that the path to $obj$ must be collision-free is
 implicitly checked within the \emph{IsValidTraj} precondition. An important aspect of
-the formulation is the assumption that grasping an object causes it to no longer
+this formulation is the assumption that grasping an object causes it to no longer
 obstruct any other object in the environment. If no other object obstructs $obj_{1}$,
-a possible high level plan with a feasible refinement for achieving the above goal is:
+a possible high level plan with a feasible refinement for achieving $\G$ is
 \begin{tightlist}
 \item[1.] \emph{MoveTo}$(robot\_init\_pose, rgripper\_bp\_obj_{1})$
 \item[2.] \emph{Grasp}$(obj_{1}, obj_{1}\_init\_pose, rgripper\_bp\_obj_{1},\\rgripper\_gp\_obj_{1}, rgripper)$
 \end{tightlist}
 
-The trajectory parameters are not included here because they are based on the
-particular sampling of the grasping pose by the interface layer. The $bp$ parameters
-refer to robot base poses in preparation for grasping an object. If $obj_{1}$ is
+The $bp$ parameters refer to robot base poses in preparation for grasping an object.
+The trajectory parameters are not included here because they are based on the interface layer's
+sampling of the base pose and grasping pose. If $obj_{1}$ is
 obstructed by, say, $obj_{3}$ in the environment, a possible high level plan would involve
 grasping first $obj_{3}$ then $obj_{1}$.
 
 We emphasize that any continuous variables of the plan, such as grasping poses for
-objects, are abstracted into symbols representing their nature. This allows a discrete
+objects, are abstracted into symbols representing their nature. This allows a
 classical planner to produce solution plans without any need to interpret these
-symbols. An interface layer is then responsible for assigning continuous values to
+symbols. The interface layer is then responsible for assigning continuous values to
 the high level plan variables and discovering facts about the environment, sending
 them back to the high level to be added into the fluent state. \emph{Refinement} is the
 process of assigning such continuous values to the abstract plan variables, thus grounding the plan. 
 For example, consider the previous pick domain specification where $obj_{3}$ does obstruct $obj_{1}$.
-Initially, the task planner would return a high level plan to immediately grasp $obj_{1}$, because
+Initially, the task planner returns a high level plan to immediately grasp $obj_{1}$, because
 it is not yet aware of the obstruction. The interface layer then samples grasp poses
-for $obj_{1}$, continuously failing due to the obstruction and eventually propagating
-this error back to the task planner. The new high level plan correctly grasps $obj_{3}$ then $obj_{1}$,
-and refining this plan would succeed.
+for $obj_{1}$, but motion planning for each sample fails due to the obstruction. Eventually,
+this error is propagated back to the task planner. The new high level plan correctly
+grasps $obj_{3}$ before $obj_{1}$, and refining this plan succeeds.
 
-Srivastava et al. introduce a refinement algorithm called TryRefine, an exhaustive, backtracking routine for
+Srivastava et al. introduce a refinement algorithm called TryRefine, an exhaustive backtracking routine for
 finding a motion planning feasible set of instantiations of the high level plan
 variables. The algorithm progresses by sampling from the refinement
 distribution associated with each high level plan variable incrementally; it backtracks
-to resample the previous variable each time the sample space for a particular variable
-is exhausted. This backtracking strategy, thus, depends on the refinement distribution
-being composed of a discrete and finite set of values, for otherwise the exhaustion
-of the sample space would not make sense. Furthermore, it does not take into consideration
+to resample the previous one each time the sample space for a particular variable
+is exhausted. The completeness of this backtracking strategy, thus, depends on the refinement distribution
+being composed of a discrete and finite set of values. Furthermore, it does not take into consideration
 the particular causes of infeasibility at each iteration.

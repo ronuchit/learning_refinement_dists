@@ -1,0 +1,82 @@
+\section{Learning Refinement Distributions}
+\subsection{Formulation and Training Process}
+In this section, we present our primary contribution: a method
+for training good sampling distributions using reinforcement learning.
+Formally, our training system is defined by the following:
+\begin{tightlist}
+\item[$\Prob$:] A distribution over planning problems, encompassing both
+the task planning problem and the environment.
+\item[$\theta_{a}, a \in \A$:] The learned feature weight vector associated with the high
+level action $a$, which defines the sampling distribution for the
+parameters of $a$. In our formulation, there is one
+weight vector per action \emph{type} (e.g. ``left gripper grasp,'' ``right
+gripper grasp,'' or ``base motion''), so that the learned distributions are
+not tied to any particular high level plan.
+\item[$\R$:] The reward function.
+\item[$f(a, s_{0}, ..., s_{n}), a \in \A$:] A function mapping the sampled
+parameter values $s_{0}, ..., s_{n}$ of action $a$ to a feature vector representation.
+\item[$N$:] The number of planning problems on which to train.
+\item[$L$:] The number of samples for one planning problem.
+\item[$\epsilon$:] The number of samples comprising an episode. We perform
+a weight vector update after each episode.
+\end{tightlist}
+
+Our system attempts to learn the feature weights $\theta$ for each action type; these weights
+encode a policy that maps the state (comprised of the task planning problem, environment,
+and plan) to a set of actions governing plan refinement.
+
+The training is a natural extension of randomized
+refinement and progresses as follows. $N$ times, sample from $\Prob$ to obtain
+a complete planning problem $\Pi$. For each $\Pi$, run the randomized refinement
+algorithm to attempt to find a valid plan refinement, allowing the \texttt{resample}
+routine to be called $L$ times. As the refinement process runs, any collected
+reward is appended to a global reward list. If a valid, motion planning
+feasible refinement is found, we collect appropriate rewards, then resample one of
+the high level variables at random (potentially making the refinement infeasible)
+and continue. Every $\epsilon$ calls to
+\texttt{resample}, we perform a gradient update on the weight vectors using the
+collected rewards and samples since the previous update. This process
+evinces the strength of randomized refinement for our system: only the variable
+instantiations responsible for failures are resampled, so the learning is naturally
+focused toward improving sampling distributions which are not yet well-shaped.
+
+\subsection{Distribution and Weight Updates}
+We now describe the particular distribution we use to sample
+and how to perform batch gradient updates for the weight vector of
+this distribution. Zucker et al. use features of a discretization of the workspace to train
+a configuration space sampler for motion planning, and we adapt their
+method to the case of a continuous distribution. Accordingly, we define the sampling distribution for
+action $a$ as $$q(\theta_{a}, s) \propto exp(\theta_{a}^{T} f(a, s))$$
+(The probability distribution must be appropriately normalized so
+that it integrates to 1.) A useful facet of this distribution is
+that when $\theta_{a}$ is the zero vector, $q$ is uniform over the
+sample space, providing a good initialization for the weight
+vectors. We sample from $q$ using the Metropolis algorithm,
+an MCMC technique for sampling from a probability distribution using
+a symmetric proposal distribution. (At each iteration, the sampled value
+is based only on the previous one, so the samples form a Markov Chain.)
+
+Zucker et al. define the expected reward of an episode $e$:
+$$\eta(\theta_{a}) = E_{q}[\R(e)]$$ and provide an approximation for its gradient:
+$$\nabla \eta(\theta_{a}) \approx \frac{\R(e)}{\epsilon} \sum_{i=0}^{\epsilon}(f(a, s_{i}) - E_{q}[f])$$
+where $\R(e)$ is the sum over all rewards obtained throughout the episode, and
+$E_{q}[f]$ is the expected feature vector under $q$. Because our distribution
+is continuous, we cannot easily calculate $E_{q}[f]$, and so we approximate it by averaging
+together the feature vector for several samples from $q$. The weight vector update is then:
+$$\theta_{a} \leftarrow \theta_{a} + \alpha \nabla \eta(\theta_{a})$$
+for appropriate step size $\alpha$.
+
+\subsection{Reward and Feature Functions}
+Our reward function $\R$ provides small constant rewards based on the ongoing
+plan refinement. Because we check for IK feasibility of samples during the initialization
+step and when resampling, we provide a small negative reward every
+time we sample an IK-infeasible pose, and a small positive reward whenever an IK check succeeds.
+Similarly, we add negative reward upon motion planning failure or action precondition violation,
+and positive reward upon a successful call to the motion planner. Finally, we assign
+a large reward for finding a complete, valid refinement of the high level plan.
+This choice of reward function implies that our training optimizes the sampling distributions for
+motion planning feasibility, rather than explicitly for refining plans. However, the two are
+closely correlated -- plan refinement takes fewer iterations when variable
+instantiations are likely to be motion planning feasible. Our feature function $f$ considers only geometric
+aspects of the sample, such as distance between the sample and object being grasped, and distance from
+the sample to nearby obstructions.
