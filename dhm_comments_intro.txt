@@ -1,0 +1,76 @@
+Abstract
+========
+
+Seems like you have the right information here, just need to work on
+clarity and language. Main thing I would do is talk about TAMP more
+generally.
+
+"A key challenge ... each step" -- run on
+"Much recent" --> "Recent"
+"In this paper..." --> introduce TAMP more generally, essentially all of these methods rely on some form of hand-coded discretization
+"To remedy this" --> "In this paper"
+When you list contributions just say "Our contributions are: 1)<contribution 1>; 2) ...."
+
+Introduction
+============
+General
+------
+
+I think you should aim for shorter paragraphs -- most of these can be
+broken up into two seperate paragraphs. It will make it much easier to
+read.
+
+Overall, I think this is pretty good but we're really missing an
+information about the learning. The learning is the really interesting
+stuff and we want to get people excited to read the paper. Reading
+this it sounds like a small extension on HP... Really its a novel
+application of RL to task and motion planning. I think we should
+present it as an application of Zucker et al. and Zhang and
+Dietterich.
+
+
+P1
+-------
+
+"are tasked" --> passive voice 
+
+This starts a little bit narrowly. You typically want to start with a
+long term goal of research. Long-horizon tasks are a challenge, but so
+what?  I also think that you may want to think about your audience ---
+I'm not sure that everyone agrees that you need high-level
+actions. Its also probably true that it parallels our thinking /because/
+we think that way. This should probably become two paragraphs.
+
+P2
+-----
+
+This seems like a good direction to go, but I think you assume too
+much background knowledge from your audience. Ex. "instantiating an
+end effector pose" is basically jargon that we use internally. I think
+you can argue that hand-coded solutions are bad without getting into
+the details.
+
+P3
+-----
+
+Need to talk a little bit more about the learning --- try to come up
+with a 3 sentence summary of our learning method. "It's TD w/linear fn approximation ...."
+
+I think its important to be more precise when you talk about the
+issues with backtracking. "Srivastava et al. use an exhaustive search
+over a discrete set of parameter values to refine plans..."
+
+P4
+-----
+
+This seems pretty good to me. I think this should be the first mention
+of Sidd's work --- we could imagine doing this learning with several
+planning systems. If we want to make the argument the HP is
+particularly well suited for this, then we should talk about it.
+
+
+
+
+
+
+
