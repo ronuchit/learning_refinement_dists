@@ -22,8 +22,8 @@ a weight vector update after each episode.
 \end{tightlist}
 
 Our system attempts to learn the feature weights $\theta$ for each action type; these weights
-encode a policy that maps the state (comprised of the task planning problem, environment,
-and plan) to a set of actions governing plan refinement.
+encode a policy that maps the state (comprised of the planning problem $\Pi \in \Prob$
+and the symbolic plan) to a set of actions governing plan refinement.
 
 The training is a natural extension of randomized
 refinement and progresses as follows. $N$ times, sample from $\Prob$ to obtain

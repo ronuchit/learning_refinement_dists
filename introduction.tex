@@ -46,7 +46,7 @@ distributions for symbolic plan refinement, using rollouts. Our approach allows
 the learned distributions to be continuous, robust to changes in the environment, and
 trainable for any experimental setting, eliminating the need for tuning distribution parameters. The
 introduction of a continuous sampling space for refinement, however, causes the backtracking
-search algorithm from Srivastava et al. to lose completeness (TODO: say something about backtracking?). Therefore, we also
+search algorithm from Srivastava et al. to lose completeness (TODO: explain backtracking here?). Therefore, we also
 present a second contribution of our work: randomized refinement, a novel refinement strategy
 which maintains at all times a set of instantiations for all plan variables, then randomly
 resamples one whose current instantiation is causing a motion planning failure or action precondition
