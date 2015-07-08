@@ -1,6 +1,6 @@
 \section{Randomized Refinement}
 In order to move toward refining high level plans using continuous sampling distributions,
-we present a novel algorithm called randomized refinement, which resamples
+we present one contribution of our work: a novel algorithm called randomized refinement, which resamples
 plan variables based on which values are leading to motion planning
 failures or violations of action preconditions. We thus leverage information
 about action precondition fluents explicitly, which backtracking refinement
@@ -26,7 +26,7 @@ a motion planning failure from a precondition violation, for the current
 refinement. We appropriately call the \texttt{resample} routine on the high level parameters
 associated with the failure; this routine picks one of the parameters at random and
 resamples it from its refinement distribution. Again for efficiency, we keep resampling until we
-have an IK-feasible value. Once we reach the iteration limit (Line 18),
+have an IK-feasible value. If we reach the iteration limit (Line 18),
 we convert the most recent failure information into a symbolic representation, then raise it
 to the classical planner, which will update its fluent state and provide a new
 high level plan.
@@ -80,10 +80,10 @@ on failure information. This technique provides several benefits over a backtrac
 system. First, it remains unchanged in performance when moving from discretized to continuous
 sampling distributions, while backtracking loses completeness and requires introduction
 of heuristics dictating when to stop sampling for a particular variable and backtrack
-to a previous one. Additionally, it allows the refinements for a particular action in
+to a previous one. Additionally, it allows the parameter instantiations for a particular action in
 the plan to be influenced by those for a \emph{future} action. (For example, in a
 pick-and-place task, it can make sense for the object's grasp pose to be sampled
 conditionally on the current instantiation of the putdown pose, even though the putdown
 appears after the grasp in the plan sequence.) Randomized refinement does, however,
 require explicit storage of predicates in the interface layer, so that action preconditions
-can be checked within the environment to determine which parameters are resampled next.
+can be checked within the environment to determine which parameters get resampled next.

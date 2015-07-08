@@ -39,17 +39,17 @@ resulting refinement distributions are discretized, lacking robustness.
 Our main contribution is a reinforcement learning approach to find good proposal
 distributions for symbolic plan refinement, using rollouts. We take inspiration
 from the work of Zhang and Dietterich, who explored applying reinforcement learning
-to planning problems in a job scheduling setting. Using methods adapted from
+to planning problems in a job shop scheduling setting. Using methods adapted from
 Zucker et al., we train a policy that
 determines how to sample values for plan symbols, using $TD(\lambda)$ with linear function
 approximation. Our approach allows
 the learned distributions to be continuous, robust to changes in the environment, and
-trainable for any experimental setting, eliminating the need for tuning distribution parameters.
+trainable for any experimental setting, eliminating the need for hand-tuning distribution parameters.
 
 A second contribution of our work is randomized refinement, a novel refinement strategy
-which maintains at all times a set of values for all plan variables, then randomly
+which maintains at all times a set of values for all symbolic plan variables, then randomly
 resamples one whose current instantiation is causing a failure.
-Our randomized refinement strategy allows for a clear formulation of the reinforcement
+This refinement algorithm allows for a clear formulation of the reinforcement
 learning system and naturally guides variable resampling intelligently, so that better
 sampling distributions can be learned more easily for complex environments.
 
