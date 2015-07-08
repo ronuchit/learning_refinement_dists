@@ -1,8 +1,9 @@
 \section{Related Work}
-Our approach builds directly from recent work in fully observed combined
-task and motion planning. (More related works about this?)
-We employ reinforcement learning techniques first applied by Zucker et al.
-to sampling-based motion planners. Their approach uses workspace features to
-discover good distributions for configuration space sampling. In our system,
-we adapt their method of training a weight vector $\theta$ for these workspace features.
-TODO: this section needs major improvement
+Prior work has been devoted to using machine learning techniques for
+training heuristics to guide search algorithms. This general formulation
+has been applied to many domains, such as large-scale optimization,
+solving constraint satisfication problems, and controlling state-space beam
+search in classical task planners. To our knowledge, our work is the
+first to combine reinforcement learning with a task and motion planning
+system, in order to find good proposal distributions for grounding a symbolic
+plan.

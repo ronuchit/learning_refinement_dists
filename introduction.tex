@@ -40,7 +40,8 @@ Our main contribution is a reinforcement learning approach to find good proposal
 distributions for symbolic plan refinement, using rollouts. We take inspiration
 from the work of Zhang and Dietterich, who explored applying reinforcement learning
 to planning problems in a job shop scheduling setting. Using methods adapted from
-Zucker et al., we train a policy that
+Zucker et al., who train a configuration space sampler for motion planning
+using features of the discretized workspace, we train a policy that
 determines how to sample values for plan symbols, using $TD(\lambda)$ with linear function
 approximation. Our approach allows
 the learned distributions to be continuous, robust to changes in the environment, and
