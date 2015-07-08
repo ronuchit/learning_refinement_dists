@@ -1,20 +1,20 @@
 \begin{abstract}
-A key challenge in robotics is the execution of long-horizon tasks, which
+A key challenge in robotics is the execution of long-horizon tasks. These
 require the robot to reason through a long sequence of high level steps in order to reach
 a goal, as well as determine appropriate joint trajectories for executing each step.
-Much recent work has been devoted to hierarchical planning, which seeks
-to plan for such goals by combining task and motion planning. In this paper, we improve
-upon an existing approach that refines symbolic (high level) plans using an interface layer,
-which searches for a motion planning feasible assignment of continuous pose values to the plan's symbolic parameters. A core limitation
-of the current framework is the manner in which these pose values are sampled for the search:
-using hand-coded distributions that leverage specificity about the geometry of the environment
-and its objects. To remedy this, we apply
+Recent work has been devoted to hierarchical planning, which seeks
+to plan for such goals by combining task and motion planning. These systems
+attempt to refine symbolic plans using an interface layer,
+which searches for a feasible assignment of continuous pose values to the plan's symbolic parameters. A core limitation
+of task and motion planning systems is the manner in which values are sampled for the search:
+using hand-coded discretizations that leverage specificity about the geometry of the environment
+and its objects. In this paper, we apply
 techniques in reinforcement learning to train a system that produces good proposal
-distributions for sampling pose values. Our primary contribution is a machine learning
+distributions for sampling pose values. Our contributions are: 1) a machine learning
 approach to find sampling distributions for the refinement of symbolic plans in
-a hierarchical planning system. Our secondary contribution is a
+a hierarchical planning system; 2) a
 novel strategy for refining these symbolic plans based on randomization, which we found integrates well
-with our learning algorithm. Our experiments demonstrate improvements in motion planning
+with our learning algorithm. Our experiments demonstrate comparable to improved performance in motion planning
 time and number of motion planner calls in a variety of test environments, when compared
-to the existing infrastructure that uses hand-coded sampling distributions.
+to the existing infrastructure that uses hand-tuned discrete sampling distributions.
 \end{abstract}
