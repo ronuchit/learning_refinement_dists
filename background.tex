@@ -13,7 +13,7 @@ either the time or resource allocation of a single job; $R$ is a measure of sche
 goodness based on its length relative to the difficulty of the scheduling problem.
 \subsection{Task and Motion Planning}
 We summarize the work of Srivastava et al.~\cite{srivastava2014combined}. A fully observed task planning
-problem is a tuple $(\Obj, \F, \I, \G, \A)$:
+problem is a tuple $(\Obj, \F, \I, \G, \C)$:
 
 $\Obj$ is a set of symbolic references to \emph{objects} in the environment,
 such as cylinders, cylinder locations, and grasping poses. (These are treated as strings.)
@@ -26,13 +26,13 @@ $\I$ is the set of fluents that hold true in the initial state
 
 $\G$ is the set of fluents defining the goal state.
 
-$\A$ is a set of parametrized \emph{actions}, defined by \emph{preconditions} (a set
+$\C$ is a set of parametrized \emph{high level actions}, defined by \emph{preconditions} (a set
 of fluents characterizing what must hold true in the current state for the action
 to be validly peformed) and \emph{effects} (a set of fluents that hold true after
 the action is performed).
 
 A solution to the task planning problem is then a sequence of actions
-$a_{0}, a_{1}, ..., a_{n} \in \A$ which, when applied to the state of fluents
+$a_{0}, a_{1}, ..., a_{n} \in \C$ which, when applied to the state of fluents
 successively starting with $\I$, results in a state in which all fluents of
 $\G$ hold true. We refer to this sequence of actions as a \emph{symbolic}, or
 \emph{high level}, plan: the task planner maintains no knowledge about the geometric meaning
@@ -61,7 +61,7 @@ behind any of the symbols.
 
 % \item[$\G$:] \emph{InGripper}$(obj_{1}, right\_gripper)$.
 
-% \item[$\A$:]
+% \item[$\C$:]
 % \begin{tightlist}
 % \item[1)] \emph{MoveTo}
 %   \begin{tightlist}
