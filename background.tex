@@ -6,13 +6,13 @@ $S$; action space $A$; transition function $P(s' | s, a)$ for $s, s' \in S, a \i
 reward function $R(s, a, s')$; and discount factor $\gamma \in [0, 1]$. The goal
 is to train a policy that selects which action $a \in A$ to execute given a current
 state $s \in S$, in order to maximize the sum of expected rewards. Zhang
-and Dietterich present a technique for formulating the job shop scheduling
+and Dietterich~\cite{JobShopSched} present a technique for formulating the job shop scheduling
 problem using the reinforcement learning framework. They define the following:
 $S$ is all temporal configurations and resource allocations of the jobs; $A$ is changing
 either the time or resource allocation of a single job; $R$ is a measure of schedule
 goodness based on its length relative to the difficulty of the scheduling problem.
 \subsection{Task and Motion Planning}
-We summarize the work of Srivastava et al. A fully observed task planning
+We summarize the work of Srivastava et al.~\cite{srivastava2014combined}. A fully observed task planning
 problem is a tuple $(\Obj, \F, \I, \G, \A)$:
 
 $\Obj$ is a set of symbolic references to \emph{objects} in the environment,
@@ -118,7 +118,7 @@ this error information about the obstruction is converted into a symbolic repres
 and propagated back to the task planner. The new high level plan correctly grasps the obstruction
 before grasping $o_{t}$, and refining this plan succeeds.
 
-Srivastava et al. introduce a refinement algorithm called TryRefine, an exhaustive backtracking routine for
+Srivastava et al.~\cite{srivastava2014combined} introduce a refinement algorithm called TryRefine, an exhaustive backtracking routine for
 finding a motion planning feasible set of instantiations of the high level plan
 variables. The algorithm progresses by sampling from the refinement
 distribution associated with each high level plan variable incrementally; it backtracks

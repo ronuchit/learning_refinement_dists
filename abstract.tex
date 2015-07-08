@@ -7,7 +7,7 @@ to plan for such goals by combining task and motion planning. These planning sys
 attempt to refine symbolic plans by
 searching for a feasible assignment of continuous values to the symbolic parameters. A core limitation
 of task and motion planning systems is the manner in which values are sampled for the search:
-using hand-coded discretizations that leverage specificity about the geometry of the environment
+using hand-coded distributions that leverage specificity about the geometry of the environment
 and its objects. In this paper, we apply
 techniques in reinforcement learning to train a system that produces good proposal
 distributions for sampling plan parameter values. Our contributions are: 1) a machine learning
@@ -16,5 +16,5 @@ a hierarchical planning system; 2) a
 novel strategy for refining these symbolic plans based on randomization, which we found integrates well
 with our learning algorithm. Our experiments demonstrate comparable to improved performance in motion planning
 time and number of motion planner calls in a variety of test environments, when compared
-to the existing infrastructure that uses hand-tuned discrete sampling distributions.
+to an existing baseline system that uses hand-tuned discrete sampling distributions.
 \end{abstract}

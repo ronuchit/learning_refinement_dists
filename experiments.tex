@@ -19,8 +19,8 @@ the limits of the search space. These limits are a cube of side length 30 cm
 around an object being grasped or location of putdown, and a square of side
 length 1 meter around an object to which the robot is moving.
 
-Our experiments are in Python using the OpenRave simulator with a PR2 robot.
-The motion planner we use is trajopt, and the task planner is Fast-Forward.
+Our experiments are in Python using the OpenRave simulator~\cite{Diankov_2008_6117} with a PR2 robot.
+The motion planner we use is trajopt~\cite{schulman2013finding}, and the task planner is Fast-Forward~\cite{FF}.
 The experiments were carried out in series on an Intel Core i7-4770K machine
 with 16GB RAM. We test five different scenarios, all of which share the goal
 of grasping an object off a table and putting it down at a specific location:

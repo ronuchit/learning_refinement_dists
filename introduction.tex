@@ -6,7 +6,8 @@ using only motion planning due to the sheer number of steps involved, making app
 for a hierarchical system of reasoning.
 
 Recent methods for hierarchical planning focus on the intersection of high level task planning
-and low level motion planning. In this framework, the (classical) task planner produces
+and low level motion planning~\cite{srivastava2014combined, kaelbling2011hierarchical,
+lagriffoul2014orientation}. In this framework, the (classical) task planner produces
 a symbolic plan containing a sequence of actions to reach a goal
 state, and an interface layer refines this plan by sampling concrete values for
 the abstract symbols, thus grounding the plan. A central challenge in building such
@@ -34,13 +35,13 @@ These distributions often rely on
 geometric information about the object of interest, surrounding objects, and overall
 environment. This restriction has several negative implications: the parameters of the
 hand-coded distributions must be fine-tuned when running the system in a new setting, and the
-resulting refinement distributions are discretized, lacking robustness.
+resulting refinement distributions lack robustness.
 
 Our main contribution is a reinforcement learning approach to find good proposal
 distributions for symbolic plan refinement, using rollouts. We take inspiration
-from the work of Zhang and Dietterich, who explored applying reinforcement learning
+from the work of Zhang and Dietterich~\cite{JobShopSched}, who explored applying reinforcement learning
 to planning problems in a job shop scheduling setting. Using methods adapted from
-Zucker et al., who train a configuration space sampler for motion planning
+Zucker et al.~\cite{workspacebias}, who train a configuration space sampler for motion planning
 using features of the discretized workspace, we train a policy that
 determines how to sample values for plan symbols, using $TD(\lambda)$ with linear function
 approximation. Our approach allows
@@ -54,7 +55,7 @@ This refinement algorithm allows for a clear formulation of the reinforcement
 learning system and naturally guides variable resampling intelligently, so that better
 sampling distributions can be learned more easily for complex environments.
 
-Our implementation builds directly off the system presented by Srivastava et al.
+Our implementation builds directly off the system presented by Srivastava et al.~\cite{srivastava2014combined}.
 They propose a complete backtracking search algorithm for refining
 the symbolic plan skeleton into a set of collision-free trajectories using motion planning.
 If a motion planning feasible refinement is not found within the resource limit,

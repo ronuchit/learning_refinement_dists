@@ -43,7 +43,7 @@ focused toward improving sampling distributions which are not yet well-shaped.
 \subsection{Distribution and Weight Updates}
 We now describe the particular distribution we use to sample
 and how to perform batch gradient updates for the weight vector of
-this distribution. Zucker et al. use features of a discretization of the workspace to train
+this distribution. Zucker et al.~\cite{workspacebias} use features of a discretization of the workspace to train
 a configuration space sampler for motion planning, and we adapt their
 method to the case of a continuous distribution. Accordingly, we define the sampling distribution for
 action $a$ as $$q(\theta_{a}, s) \propto exp(\theta_{a}^{T} f(a, s))$$
@@ -56,7 +56,7 @@ an MCMC technique for sampling from a probability distribution using
 a symmetric proposal distribution. (At each iteration, the sampled value
 is based only on the previous one, so the samples form a Markov Chain.)
 
-Zucker et al. define the expected reward of an episode $e$:
+Zucker et al.~\cite{workspacebias} define the expected reward of an episode $e$:
 $$\eta(\theta_{a}) = E_{q}[\R(e)]$$ and provide an approximation for its gradient:
 $$\nabla \eta(\theta_{a}) \approx \frac{\R(e)}{\epsilon} \sum_{i=0}^{\epsilon}(f(a, s_{i}) - E_{q}[f])$$
 where $\R(e)$ is the sum over all rewards obtained throughout the episode, and
