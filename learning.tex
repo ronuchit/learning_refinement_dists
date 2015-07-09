@@ -5,6 +5,7 @@ We first describe how to formulate our task and motion planning system
 in the reinforcement learning framework. Then, we describe the training
 process. Finally, we cover the details of the sampling distributions
 and how to perform gradient updates for them.
+
 \subsection{Formulation}
 We define the state $s \in S$ to be the symbolic plan, its current refinement
 (instantiation of values for all plan parameters), and the environment. Then, we define an action $a \in A$ as
@@ -27,6 +28,7 @@ This choice of $R$ implies that our training optimizes the sampling distribution
 motion planning feasibility, rather than explicitly for refining plans. However, the two are
 closely correlated -- randomized refinement succeeds in fewer iterations when the sampling
 distributions produce more motion planning feasible values.
+
 \subsection{Training Process}
 Our training system is defined by the following:
 \begin{tightlist}
@@ -40,8 +42,7 @@ not tied to any single high level plan. These weight vectors encode the policy
 we are training for step 2 of actions $a \in A$, as described above.
 \item[$R$:] The reward function, as described above.
 \item[$f(s, p, x), s \in S$:] A function mapping the current state $s$, symbolic
-parameter $p$, and sampled value $x$ for $p$ to a feature vector. Currently, our features include
-only geometric aspects of the sample and environment, such as distance between the sample and object being grasped.
+parameter $p$, and sampled value $x$ for $p$ to a feature vector.
 \item[$N$:] The number of planning problems on which to train.
 \item[$L$:] The number of samples for one planning problem.
 \item[$\epsilon$:] The number of samples comprising an episode. We perform

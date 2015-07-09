@@ -1,6 +1,17 @@
 \section{Conclusion and Future Work}
-TEMP
+We presented a novel application of reinforcement learning to task
+and motion planning. Our method trained a policy for refining symbolic plans
+by learning good sampling distributions for plan parameters. The choice
+of which parameter to resample at each iteration was governed by a novel
+refinement strategy we presented called randomized refinement. We evaluated
+performance by comparing against a baseline of hand-coded distributions
+for several challenging pick-and-place tasks. Our system demonstrated overall comparable
+to improved performance in terms of motion planning time and number of motion planner calls.
 
-A good direction for future work will be to train a system that decides
+One important direction for future work is improving the feature vector to incorporate
+information about the symbolic plan and previous samples of a parameter.
+Another is training a system that decides
 whether to return to the high level on its own, instead of relying on
-reaching the iteration limit in the randomized refinement algorithm.
+reaching the iteration limit in the randomized refinement algorithm. This would
+make the training optimize more directly for producing a valid refinement
+given an arbitrary task planning problem.
