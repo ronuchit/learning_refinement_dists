@@ -1,4 +1,6 @@
 \section{Background}
+We provide relevant technical background and introduce notation
+used throughout the paper.
 \subsection{Reinforcement Learning for Planning}
 A reinforcement learning problem is typically formulated as
 a Markov decision process (MDP), defined by a state space
@@ -11,6 +13,9 @@ problem using the reinforcement learning framework. They define the following:
 $S$ is all temporal configurations and resource allocations of the jobs; $A$ is changing
 either the time or resource allocation of a single job; $R$ is a measure of schedule
 goodness based on its length relative to the difficulty of the scheduling problem.
+They then use the temporal difference learning algorithm $TD(\lambda)$~\cite{suttonbarto}
+to learn a heuristic state evaluation function, used in a one-step lookahead search
+to produce good schedules.
 \subsection{Task and Motion Planning}
 We summarize the work of Srivastava et al.~\cite{srivastava2014combined}. A fully observed task planning
 problem is a tuple $(\Obj, \F, \I, \G, \C)$:
@@ -18,7 +23,7 @@ problem is a tuple $(\Obj, \F, \I, \G, \C)$:
 $\Obj$ is a set of symbolic references to \emph{objects} in the environment,
 such as cylinders, cylinder locations, and grasping poses. (These are treated as strings.)
 
-$\F$ is a set of fluents (which define relationships among objects and are either
+$\F$ is a set of fluents (which define relationships among objects and hold either
 true or false in the state).
 
 $\I$ is the set of fluents that hold true in the initial state
@@ -31,7 +36,7 @@ of fluents characterizing what must hold true in the current state for the actio
 to be validly peformed) and \emph{effects} (a set of fluents that hold true after
 the action is performed).
 
-A solution to the task planning problem is then a sequence of actions
+A solution to the task planning problem is then a valid sequence of actions
 $a_{0}, a_{1}, ..., a_{n} \in \C$ which, when applied to the state of fluents
 successively starting with $\I$, results in a state in which all fluents of
 $\G$ hold true. We refer to this sequence of actions as a \emph{symbolic}, or
@@ -100,8 +105,8 @@ We emphasize that any continuous variables of this plan, such as grasping poses 
 objects, are abstracted into symbols representing their nature. This allows a
 classical planner to produce solution plans without any need to interpret these
 symbols. An \emph{interface layer} is then responsible for assigning continuous values to
-the high level plan variables and discovering facts about the environment, sending
-them back to the task planner to be added into the fluent state. \emph{Refinement} is the
+the high level plan variables, discovering facts about the environment, and sending
+these facts back to the task planner to be added into the fluent state. \emph{Refinement} is the
 process of assigning such continuous values to the abstract plan variables, grounding the plan. 
 % For example, consider the previous pick domain specification where $obj_{3}$ does obstruct $obj_{1}$.
 % Initially, the task planner returns a high level plan to immediately grasp $obj_{1}$, because
@@ -110,7 +115,7 @@ process of assigning such continuous values to the abstract plan variables, grou
 % this error is propagated back to the task planner. The new high level plan correctly
 % grasps $obj_{3}$ before $obj_{1}$, and refining this plan succeeds.
 
-For example, consider a pick domain with a target object $o_{t}$ to be grasped and a single obstruction.
+For example, consider a pick domain with two objects: a target $o_{t}$ to be grasped and an obstruction.
 Initially, the task planner returns a high level plan to immediately grasp $o_{t}$, because
 it is not yet aware of the obstruction. The interface layer then samples grasp poses
 for $o_{t}$, but motion planning for each sample fails due to the obstruction. Eventually,
@@ -118,7 +123,7 @@ this error information about the obstruction is converted into a symbolic repres
 and propagated back to the task planner. The new high level plan correctly grasps the obstruction
 before grasping $o_{t}$, and refining this plan succeeds.
 
-Srivastava et al.~\cite{srivastava2014combined} introduce a refinement algorithm called TryRefine, an exhaustive backtracking routine for
+Srivastava et al.~\cite{srivastava2014combined} introduce a refinement algorithm called \textsc{TryRefine}, an exhaustive backtracking routine for
 finding a motion planning feasible set of instantiations of the high level plan
 variables. The algorithm progresses by sampling from the refinement
 distribution associated with each high level plan variable incrementally; it backtracks
