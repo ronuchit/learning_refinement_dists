@@ -1,4 +1,51 @@
 \section{Experiments}
+\begin{figure}
+  \centering
+  \begin{subfigure}[b]{0.48\linewidth}
+    \includegraphics[width=\textwidth]{images/learngs.png}
+    \caption{Initial distribution}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.48\linewidth}
+    \includegraphics[width=\textwidth]{images/learng5.png}
+    \caption{After 5 iterations.}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.48\linewidth}
+    \includegraphics[width=\textwidth]{images/learng15.png}
+    \caption{After 15 iterations.}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.48\linewidth}
+    \includegraphics[width=\textwidth]{images/learng20.png}
+    \caption{Final distribution.}
+  \end{subfigure}
+  \caption{Learned left arm grasping distributions used to
+pick up the black can, after different training iterations.
+An iteration refers to a single run of randomized refinement,
+which terminates after $L$ calls to the resample function. The
+initial distribution is uniform because we initialize weights to 0.
+The final distribution is after 20 iterations.}
+  \label{fig:training}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \begin{subfigure}[b]{0.3\linewidth}
+    \includegraphics[width=\textwidth]{images/finalgraspnoobstr.png}
+    \caption{}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.3\linewidth}
+    \includegraphics[width=\textwidth]{images/finalgraspobstr.png}
+    \caption{}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.3\linewidth}
+    \includegraphics[width=\textwidth]{images/finalgraspobstr2.png}
+    \caption{}
+  \end{subfigure}
+  \caption{The final distribution from \figref{fig:training}
+is shown in different configurations. The system learns to
+avoid obstructions while providing a reasonable set of grasping poses.}
+  \label{fig:obstr}
+\end{figure}
+
 \subsection{Evaluation}
 We evaluate our reinforcement learning system in several pick-and-place
 tasks, varying the number of obstructions, obstruction locations, and whether
@@ -30,12 +77,61 @@ The motion planner we use is trajopt~\cite{schulman2013finding}, and the task pl
 The experiments were carried out in series on an Intel Core i7-4770K machine
 with 16GB RAM.
 
-We test five different scenarios, all of which share a goal:
-grasp a particular object from a table and put it down at a specific location.
-one grasp obstruction, two grasp obstructions, three grasp obstructions,
-one grasp obstruction with base motion allowed (this means the system must learn
-a distribution for base poses), and putdown location obstructed in the cardinal
-directions. Table 1 summarizes our results, and Figure 2 shows the learned distribution
-for different iterations in the training process.
+We test five different scenarios, all of which share a common goal of
+grasping a target object from a table and putting it down at a specific location on the table:
+\begin{tightlist}
+\item[\textbf{Scenario 1}:] Target object is surrounded by 1 obstruction.
+\item[\textbf{Scenario 2}:] Target object is surrounded by 2 obstructions.
+\item[\textbf{Scenario 3}:] Target object is surrounded by 3 obstructions.
+\item[\textbf{Scenario 4}:] Target object is surrounded by 1 obstruction,
+and putdown location is obstructed in cardinal directions.
+\item[\textbf{Scenario 5}:] Target object is surrounded by 1 obstruction,
+but the robot begins out of reach of the table and must learn base motion.
+\end{tightlist}
+
+For the first 4 scenarios, we use $N = 20$, $L = 16$, and $\epsilon = 4$.
+For the final one involving base motion, we use $N = 60$, $L = 100$, and $\epsilon = 20$,
+allowing randomized refinement to run for more iterations because the high level plan
+is longer. The locations of the obstructions surrounding the target object were
+sampled uniformly from a thick ring around the object with inner radius 0.13 meters
+and outer radius 0.25 meters. Table \ref{table:results} summarizes our quantitative results.
+\figref{fig:training} illustrates the training of a grasp distribution, and \figref{fig:obstr}
+shows how the learned distribution interacts with obstructions.
 
 \subsection{Discussion}
+TODO
+
+\begin{table}
+  \centering
+  \vspace{8pt}
+  \tabcolsep=0.11cm{
+  \begin{tabular}{cccc}
+    \toprule
+      Problem Type & \% Solved & Avg Time (s) & Avg \# Planner Runs\\
+    \midrule
+      Uni. corridor, 1 obj & 100 & 232 & 1.88\\
+    \midrule
+      Uni. corridor, 2 obj & 100 & 445 & 2.45\\
+    \midrule
+      Uni. corridor, 3 obj & 88 & 926 & 2.78\\
+    \midrule
+      Uni. corridor, 4 obj & 58 & 1168 & 2\\
+    \midrule
+      Table, 5 obj & 95 & 89 & 2.2\\
+    \midrule
+      Table, 10 obj & 95 & 162 & 2.21\\
+    \midrule
+      Table, 15 obj & 83 & 135 & 2.26\\
+    \midrule
+      Table, 20 obj & 70 & 229 & 2.03\\
+    \midrule
+      Table, 25 obj & 68 & 166 & 1.84\\
+    \midrule
+      Table, 30 obj & 48 & 122 & 1.96\\
+    \midrule
+      3-Drawer search & 93 & 325 & 2.11\\
+    \bottomrule
+  \end{tabular}}
+  \caption{TODO CAPTION}
+  \label{table:results}
+\end{table}
