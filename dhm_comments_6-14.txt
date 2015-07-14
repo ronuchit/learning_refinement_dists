@@ -1,0 +1,173 @@
+General Comments
+----------------
+
+You tend to write in long paragraphs -- this can be very daunting for
+a reader and cause them to stop paying attention. Most of the
+paragraphs in this can be split into 2 (sometimes 3) seperate
+paragraphs.
+
+Abstract
+--------
+
+"A key challenge ... each step" --> these sentences are good, but I'd flip their order. Explain briefly what TAMP is, then talk about why it is hard.
+
+"has been devoted" --> passive voice, awkward phrase
+"These planning systems..." --> this is an attribute of Sid's system. Instead I'd say something along the lines of "such systems often rely on hand-coded methods to propose candidate values for continuous variables"
+
+It could also make sense to introduce the idea of plan refinement more generally. 'Plan refinement is a process where..."
+
+"apply techniques in" --> "apply techniques from"
+
+"In this papper ... parameter values" --> awkward phrasing, after rewriting the parts above this you'll want to say that we use RL to avoid hand-coding these distributions
+
+3 contributions:
+   - present a local search algorithm for plan refinement 
+   - show how to formulate the above in a reinforcement algorithm
+   - present experiments to show that the above formulation reaches the performance level of hand-coded heuristics in a pick-place domain (if we only have experiments from 1 domain we shouldn't say variety)
+
+Introduction
+------------
+
+This is better! But it still needs a good amount of work. Some details
+below but generally I think the following outline is a good way to structure this:
+
+1) P on robots and why we care about long horizon tasks
+2) description of TAMP generally
+3) description of HP
+4) Brief summary of Zhang and Dietterich
+5) in this work we apply this approach in the context of TAMP
+6) list of contributions
+
+"a major long term goal" --> "our goal is..."
+
+say task and motion planning somewhere in here
+
+I still think you want to be a little more broad -- our approach
+applies more broadly than just within Sid's system. I think these two
+paragraphs should be expanded a fair amount.
+
+"our work improves directly" --> This is where you introduce HP. Say
+that we use this framework because it makes it easy to seperate the
+learning from task planning.
+
+"these distributions often rely on" --> seems out of place here
+
+Don't understand this next sentence --> our approach will also rely on geometric information...
+
+Give a high-level description of the system before getting into the details of our contributions.(1P)
+
+
+Still want a contribution list. Similar to in abstract. Some phrases to include
+"formulate plan refinement as a reinforcement learning problem"
+"optimize to minimize the number of MP calls"
+"refinement algorithm that lends itself to learning easily"
+
+
+Related work
+------------
+
+This is way short. Each of these references needs 2-3 sentences.
+
+Background
+----------
+
+General Comments: 
+
+Break inline lists seperated by semicolons into actual lists.
+
+RL for planning is too short. It also good to be a little more formal
+here --- a big point of this section is to introduce any notation that
+you'll use later in the paper. 
+
+I'd include a section just on RL. Where you define an MDP (use the
+definition envrionment) and reinforcement learning as a problem.
+
+The next section (reinforcement learning for planning) needs a lot
+more detail. Move the Zucker et al. weight updates (sec V-C) to this
+section and describe their approach in some detail. What problem did
+they solve? How did they solve it? What were their findings?
+
+Zhang and Dietterich should have its own paragraph. You also need to
+include something about their results and the subsequent work that has
+built on their formulation. "their approach has been built on
+extensively in the literature..."
+Discuss how their formulation relates to randomized refinement.
+
+"We summarize the work..." --> "We formulate a task and motion planning problem as follows..."
+
+remove the paranthetical definitions -- if its important (i.e., the
+fluents parenthetical) include it in the sentence, otherwise remove it.
+
+"solution to the task planning" --> "solution to a task planning"
+"is then" --> "is"
+
+"we emphasize that" --> talk about how task planners can't deal with
+symbolic continous values. "We adopt the approach of Srivastava et
+al. to deal with this issue"
+
+Don't talk about Sidd's refinement algorithm (if you feel you need to
+it can be done in one sentence -- exhaustive backtracking over a set
+of parameter values)
+
+Randomized Refinement
+---------------------
+
+I don't think this first paragraph is right.... It wouldn't be that
+hard to modify the backtracking search to use continuous values (just
+place a limit on the maximum number of samples).
+
+I think the way to present this is as a simple refinement algorithm
+based on randomized local search. The motivation is that this is
+similar to the Zhang and Dietterich algorithm and so it is
+straightforward to formulate it as an RL problem. 
+
+"The procedure..." -- this is good, but its quite a monolithic
+paragraph.
+
+"We emphasize..." -- Don't frame this as a comparison with
+backtracking, just talk about what properties it has that are useful.
+
+1) very explicit notion of algorithm state 
+    - it lends itself to an easy formulation as an MDP
+    - useful for debugging
+2) makes it easier to respond to long term dependencies in continuous values for plans
+
+"Randomized refinement does, however" --- seems unnecessary here, 1) I
+think have an representation of the plan is a feature, not a bug 2) its
+not really that much of a downside 
+
+Learning Refinment Distributions
+--------------------------------
+
+A 
+-- 
+first sentence "We formulate plan refinement as an MDP as
+follows:..."  Then you can follow this up with a list -- you'll want
+to be very explicit here. Some phrases to help you out:
+
+"a state is a tuple (p_cur, p_best, c_best) that consists of the..."
+"an action is a pair (p, v) where p is a new paramter and v is a value to assign to it"
+  -- I think the actions are not distributions, instead the distributions we learn are a (randomized) policy for this MDP. in some sense this is just semantics, but I think it makes the problem cleaner.
+
+I think your overall structure is good. I'd move the description of R to a list. 
+
+B
+--
+P is actual a part of the problem formulation and belong in A
+
+sentence 1: "Here, we show how to apply the method of Zuker et al. to
+learn a policy for plan refinement"
+
+Start by describing $\theta_p$ and f (not in a list). Mention that
+what this defines is a policy class for our problem. I'd also move
+this descussion into section A -- its more about the problem
+formulation than the training procedure.
+
+C
+--
+Move to background.
+ 
+
+
+
+ 
