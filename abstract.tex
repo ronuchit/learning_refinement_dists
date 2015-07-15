@@ -1,20 +1,19 @@
 \begin{abstract}
-A key challenge in robotics is the execution of long-horizon tasks. These
-require the robot to reason through a long sequence of high level steps in order to reach
+Long-horizon tasks in robotics
+require an agent to reason through a long sequence of high level steps in order to reach
 a goal, as well as determine appropriate joint trajectories for executing each step.
-Recent work has been devoted to hierarchical planning, which seeks
+Planning for and executing these tasks is a key challenge in the field.
+Recent work has contributed to hierarchical planning, which seeks
 to plan for such goals by combining task and motion planning. These planning systems
-attempt to refine symbolic plans by
-searching for a feasible assignment of continuous values to the symbolic parameters. A core limitation
-of task and motion planning systems is the manner in which values are sampled for the search:
+rely on methods to propose candidate values for instantiating continuous variables in a symbolic plan,
+a process known as \emph{plan refinement}.
+A core limitation of task and motion planning systems is the manner in which these values are sampled:
 using hand-coded distributions that leverage specificity about the geometry of the environment
 and its objects. In this paper, we apply
-techniques in reinforcement learning to train a system that produces good proposal
-distributions for sampling plan parameter values. Our contributions are: 1) a machine learning
-approach to find sampling distributions for the refinement of symbolic plans in
-a hierarchical planning system; and 2) a
-novel strategy for refining these symbolic plans based on randomization, which we found integrates well
-with our learning algorithm. Our experiments demonstrate comparable to improved performance in motion planning
-time and number of motion planner calls in a variety of test environments, when compared
-to an existing baseline system that uses hand-tuned discrete sampling distributions.
+techniques in reinforcement learning to avoid hand-coding these distributions, instead learning
+ones that tend to propose good values.
+Our contributions are: 1) a novel randomized local search algorithm for plan refinement; 2) a
+formulation of plan refinement in the reinforcement learning framework; and 3) experiments showing that
+our system, using learned sampling distributions, achieves comparable to improved performance
+versus hand-coded distributions in a variety of test environments.
 \end{abstract}

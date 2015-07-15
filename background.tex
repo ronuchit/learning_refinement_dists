@@ -2,43 +2,80 @@
 We provide relevant technical background and introduce notation
 used throughout the paper.
 
-\subsection{Reinforcement Learning for Planning}
+\subsection{Reinforcement Learning}
 A reinforcement learning problem is typically formulated as
-a Markov decision process (MDP), defined by a state space
-$S$; action space $A$; transition function $P(s' | s, a)$ for $s, s' \in S, a \in A$;
-reward function $R(s, a, s')$; and discount factor $\gamma \in [0, 1]$. The goal
-is to train a policy that selects which action $a \in A$ to execute given a current
-state $s \in S$, in order to maximize the sum of expected rewards. Zhang
-and Dietterich~\cite{JobShopSched} present a technique for formulating the job shop scheduling
-problem using the reinforcement learning framework. They define the following:
-$S$ is all temporal configurations and resource allocations of the jobs; $A$ is changing
-either the time or resource allocation of a single job; $R$ is a measure of schedule
-goodness based on its length relative to the difficulty of the scheduling problem.
+a Markov decision process (MDP). An MDP is defined by the following:
+
+\begin{tightlist}
+\item A state space $S$.
+\item An action space $A$.
+\item A transition function $P(s' | s, a)$ for $s, s' \in S, a \in A$.
+\item A reward function $R(s, a, s')$ for $s, s' \in S, a \in A$.
+\item A discount factor $\gamma \in [0, 1]$.
+\end{tightlist}
+The goal of a reinforcement learning problem is to train a policy $\pi(s): S \rightarrow A$
+that selects which action $a \in A$ to execute given a current state $s \in S$, in
+order to maximize the sum of expected discounted future rewards.
+
+\subsection{Reinforcement Learning for Planning}
+Zhang and Dietterich~\cite{JobShopSched} present a technique for formulating the job shop scheduling
+problem using the reinforcement learning framework. The goal of job shop scheduling is to find
+a minimum-duration schedule of a set of jobs with temporal and resource constraints. They define the following:
+\begin{tightlist}
+\item $S$ is all temporal configurations and resource allocations of the jobs.
+\item $A$ is changing either the time or resource allocation of a single job.
+\item $R$ is a measure of schedule goodness based on its length relative to the difficulty of the scheduling problem.
+\end{tightlist}
 They then use the temporal difference learning algorithm $TD(\lambda)$~\cite{suttonbarto}
 to learn a heuristic state evaluation function, used in a one-step lookahead search
-to produce good schedules.
+to produce good schedules. Their approach outperforms the previous state of the art for this task;
+it also scales better to larger scheduling problems after having been trained only on smaller ones.
+This application of reinforcement learning to planning has been built on extensively
+in the literature, applied to domains such as retailer inventory
+management~\cite{van1997neuro}, single-agent manufacturing systems~\cite{Wang200573}, and multi-robot
+task allocation~\cite{dahl2009multi}.
+
+Zucker et al.~\cite{workspacebias} use reinforcement learning to find good sampling distributions
+for motion planning. Their approach uses features of a discretization of the workspace to train
+a non-uniform configuration space sampler. They use stochastic policy gradient updates to learn a good weight
+vector $\theta$ for these features. Toward this end, they define the distribution
+\begin{equation}
+q(\theta, x) \propto exp(\theta^{T} f(x))
+\end{equation}
+They also define the expected reward under $q$ of an episode $\xi$ with length $\epsilon$:
+\begin{equation}
+\eta(\theta) = E_{q}[R(\xi)]
+\end{equation}
+and provide an approximation for its gradient:
+\begin{equation}
+\nabla \eta(\theta) \approx \frac{R(\xi)}{\epsilon} \sum_{i=1}^{\epsilon}(f(x_{i}) - E_{q}[f])
+\end{equation}
+where $E_{q}[f]$ is the feature vector expectation under $q$. The weight vector update is then:
+\begin{equation}
+\theta \leftarrow \theta + \alpha \nabla \eta(\theta)
+\end{equation}
+for appropriate step size $\alpha$.
 
 \subsection{Task and Motion Planning}
-We summarize the work of Srivastava et al.~\cite{srivastava2014combined}. A fully observed task planning
+We formulate a task and motion planning problem as follows. A fully observed task planning
 problem is a tuple $(\Obj, \F, \I, \G, \C)$:
 
 $\Obj$ is a set of symbolic references to \emph{objects} in the environment,
-such as cylinders, cylinder locations, and grasping poses. (These are treated as strings.)
+such as cylinders, cylinder locations, and grasping poses. These are treated as strings.
 
-$\F$ is a set of fluents (which define relationships among objects and hold either
-true or false in the state).
+$\F$ is a set of fluents, which define relationships among objects and hold either
+true or false in the state.
 
-$\I$ is the set of fluents that hold true in the initial state
-(all others are assumed false).
+$\I$ is the set of fluents that hold true in the initial state. All others are assumed false.
 
 $\G$ is the set of fluents defining the goal state.
 
-$\C$ is a set of parametrized \emph{high level actions}, defined by \emph{preconditions} (a set
+$\C$ is a set of parametrized \emph{high level actions}, defined by \emph{preconditions}, a set
 of fluents characterizing what must hold true in the current state for the action
-to be validly peformed) and \emph{effects} (a set of fluents that hold true after
-the action is performed).
+to be validly peformed, and \emph{effects}, a set of fluents that hold true after
+the action is performed.
 
-A solution to the task planning problem is then a valid sequence of actions
+A solution to a task planning problem is a valid sequence of actions
 $a_{0}, a_{1}, ..., a_{n} \in \C$ which, when applied to the state of fluents
 successively starting with $\I$, results in a state in which all fluents of
 $\G$ hold true. We refer to this sequence of actions as a \emph{symbolic}, or
@@ -103,13 +140,16 @@ behind any of the symbols.
 % obstructed by, say, $obj_{3}$ in the environment, a possible high level plan would involve
 % grasping first $obj_{3}$ then $obj_{1}$.
 
-We emphasize that any continuous variables of this plan, such as grasping poses for
-objects, are abstracted into symbols representing their nature. This allows a
-classical planner to produce solution plans without any need to interpret these
-symbols. An \emph{interface layer} is then responsible for assigning continuous values to
-the high level plan variables, discovering facts about the environment, and sending
-these facts back to the task planner to be added into the fluent state. \emph{Refinement} is the
-process of assigning such continuous values to the abstract plan variables, grounding the plan. 
+Any continuous variables of a high level plan, such as grasping poses for
+objects, are abstracted into symbols representing their nature. Task
+planners are, thus, unable to maintain a geometric interpretation for these symbols, so we use
+hierarchical task and motion planning to provide this interpretation. We adopt the approach of
+Srivastava et al.~\cite{srivastava2014combined}. They describe an \emph{interface layer} responsible
+for assigning continuous values to the high level plan variables, discovering geometric facts about
+the environment, and sending these facts back to the task planner to be added into the fluent state.
+This process of assigning such continuous values to the abstract plan variables is known as \emph{plan refinement}.
+The authors introduce an algorithm for plan refinement called \textsc{TryRefine}, an exhaustive
+backtracking routine over feasible high level plan parameter values.
 % For example, consider the previous pick domain specification where $obj_{3}$ does obstruct $obj_{1}$.
 % Initially, the task planner returns a high level plan to immediately grasp $obj_{1}$, because
 % it is not yet aware of the obstruction. The interface layer then samples grasp poses
@@ -117,19 +157,10 @@ process of assigning such continuous values to the abstract plan variables, grou
 % this error is propagated back to the task planner. The new high level plan correctly
 % grasps $obj_{3}$ before $obj_{1}$, and refining this plan succeeds.
 
-For example, consider a pick domain with two objects: a target $o_{t}$ to be grasped and an obstruction.
-Initially, the task planner returns a high level plan to immediately grasp $o_{t}$, because
-it is not yet aware of the obstruction. The interface layer then samples grasp poses
-for $o_{t}$, but motion planning for each sample fails due to the obstruction. Eventually,
-this error information about the obstruction is converted into a symbolic representation
-and propagated back to the task planner. The new high level plan correctly grasps the obstruction
-before grasping $o_{t}$, and refining this plan succeeds.
-
-Srivastava et al.~\cite{srivastava2014combined} introduce a refinement algorithm called \textsc{TryRefine}, an exhaustive backtracking routine for
-finding a motion planning feasible set of instantiations of the high level plan
-variables. The algorithm progresses by sampling from the refinement
-distribution associated with each high level plan variable incrementally; it backtracks
-to resample the previous one each time the sample space for a particular variable
-is exhausted. The completeness of this backtracking strategy, thus, depends on the refinement distribution
-being composed of a discrete and finite set of values. Furthermore, it does not take into consideration
-the particular causes of infeasibility at each iteration.
+% For example, consider a pick domain with two objects: a target $o_{t}$ to be grasped and an obstruction.
+% Initially, the task planner returns a high level plan to immediately grasp $o_{t}$, because
+% it is not yet aware of the obstruction. The interface layer then samples grasp poses
+% for $o_{t}$, but motion planning for each sample fails due to the obstruction. Eventually,
+% this error information about the obstruction is converted into a symbolic representation
+% and propagated back to the task planner. The new high level plan correctly grasps the obstruction
+% before grasping $o_{t}$, and refining this plan succeeds.
