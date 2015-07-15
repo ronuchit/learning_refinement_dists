@@ -21,7 +21,7 @@
 pick up the black can, after different training iterations.
 An iteration refers to a single run of randomized refinement,
 which terminates after $L$ calls to the resample function. The
-initial distribution is uniform because we initialize weights to 0.
+initial distribution is uniform because we initialize weights to $\vec{\mathbf{0}}$.
 The final distribution is after 20 iterations.}
   \label{fig:training}
 \end{figure}
@@ -41,8 +41,8 @@ The final distribution is after 20 iterations.}
     \caption{}
   \end{subfigure}
   \caption{The final distribution from \figref{fig:training}
-is shown in different configurations. The system learns to
-avoid obstructions while providing a reasonable set of grasping poses.}
+is shown with different obstruction layouts. The system learns to
+avoid obstructions while providing a good set of grasping poses.}
   \label{fig:obstr}
 \end{figure}
 
