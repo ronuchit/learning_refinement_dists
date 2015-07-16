@@ -1,0 +1,305 @@
+General
+-------
+
+In a lot of places you write "reinforcement learning" or "task and
+motion planning" specifically -- this can be somewhat repetitive. Use
+RL or TAMP instead.
+
+Abstract
+--------
+
+"Long-horizon tasks ... key challenge in the field." --> "A challenge
+in mobile manipulation planning is the length of the horizon that must
+be considered; it is not uncommon for tasks to requires thousands of
+individual motions. Planning complexity is exponential in the length
+of the plan, so this renders direct motion planning intractable for
+many problems of interest."
+
+"Recent work ... plan refinement" --> "Recent work has focused on
+\emph{task and motion planning} (TAMP) as a way to answer this
+challenge. These methods integrate logical search and continuous,
+geometric reasoning to sequence several short-horizon motion plans to
+solve a long-horizon task."
+
+"A core limitation ... " --> "That majority of these approaches rely
+on hand-coded discretizations of continuous parameters for motion
+planning (e.g., a target grasp pose). These discretizations are often
+domain specific and require substantial design effort."
+
+"apply techniques in reinforcement learning..." --> "present a method
+that uses reinforcement learning (RL) to learn a distribution that propose
+values for the continuous parameters of a high-level plan which are
+likely to lead to motion planning success. More specifically, we
+formulate \emph{plan refinement}, the process of determining
+continuous parameter settings for a fixed task sequence, as a Markov
+decision process (MDP) and give an algorithm to learn a policy for that
+problem."
+
+"contributions are" --> "contributions are as follows:"
+
+"a novel randomized" --> "we present a randomized" (don't think the
+algorithm is that novel...)
+
+"plan refinement" --> "plan refinement, that is well suited to an MDP
+formulation."
+
+"a formlation...framework" --> "we give an RL algorithm that learns
+policies in the above MDP"
+
+"experiments showing that ... test environments" --> "we performed
+experiments to evaluate the performance of this system in a simulation
+pick-place domain. We find that our approach achieves performance that
+is comparable with that of hand-coded discretizations."
+
+
+Introduction
+------------
+
+"Such robots would face complex tasks..." --> "To be effective, such a
+robot will need to perform complex tasks (e.g., setting a table, doing
+laundry) over long horizons."
+
+"using only motion planning ... of reasoning" --> "for
+state-of-the-art motion planners."
+
+"In this framework, the (classical) task planner produces a symbolic
+plan containing a sequence of actions to reach a goal state, and
+heuristic sampling techniques propose concrete values for the
+continuous variables in the plan, thus grounding it. This process of
+assigning candidate values to the plan variables is known as plan
+refinement. These candidate values are then checked locally for
+feasibility by calling a motion planner.
+
+This hierarchy enforces abstraction between the role of the task
+planner and that of the motion planner: the task planner maintains no
+knowledge of the environment geometry, and the motion planner has no
+understanding of the overall goal. A central challenge in building
+such a system is designing good heuristics for the sampling in plan
+refinement."
+
+To me this still reads as a description of hybrid planner, rather than
+an overview of TAMP approaches. (for example, refinement in HPN adds
+logical and continuous parameters, semantic attachments [1] and FFROB
+[2] have no refinement at all and just do forward search directly). 
+
+I would move this to largely replace the paragraph describing HP and
+lead with the following paragraph:
+
+"One way to approach this challenge relies on combined \emph{task and
+motion planning} (TAMP). In this approach, an agent is given a
+abstract, logical characterization of actions (e.g., Move, Grasp,
+Putdown) as well as a geometric encoding of the
+environment. Efficiently integrating these two types of reasoning
+(logical and geometric) is challenging and research research has
+proposed several methods (citations)."
+
+Then I would follow with two paragraphs
+
+ ~3 sentences describing discretization in these methods
+
+ ~3 sentences describing the issues with this/why it would be good to
+ avoid discretization (essentially paragraph 6)
+
+ 1 sentence abstractly describing our solution (similar to something from the abstract)
+ 
+"Our work improves directly upon" --> "Our solution builds on"
+
+follow that sentence with a merge of "In this framework ... plan
+refinement" and "They propose ... planning module" Include a sentence
+along the lines of "While our method is specific to this architecture,
+variations of our approach could apply to other TAMP algorithms."
+
+"In this work... parameters" -- This paragraph is the right idea, but
+there are some stylistic issues. Change it to have the fllowing
+structure:
+
+- introduce RL 
+- describe Zhang and Dietterich
+- "In our work, we apply this approach to plan refinement in TAMP."
+- we use Zucker et al to implement this
+- this means we don't need hand-coded solutions
+
+I would replace the contribution list with a (almost) identical copy
+of the list from the abstract -- the explanations here are somewhat
+redundant (and if they aren't they should be included aboce). At this
+point in the introbution the reader should already have a good idea of
+what we're doing, the main purpose of this is to outline the paper and
+make our contributiosn explicit for reviewers who are lazy.
+
+"comparable to improved performance" -- "our approach is competitive
+with hand-coded discretizations with respect to..." move this out of
+the list as well.
+
+Related Work
+------------
+
+You have enough here on learning for planning; I think what missing is
+related work for task and motion planning.
+
+Background
+-----------
+
+A
+-----
+
+Wrap the MDP definition in a definition environment. You can use the
+mdp formulation in http://eecs.berkeley.edu/~dhm/papers/bsp_bbvi.pdf
+(start of section 3) as an example. Use \mathcal to distinguish sets
+($S$ --> \mathcal{S})
+
+You also need some more details here. Some math to describe the
+objective and a definition of a value function should be there as well.
+
+You don't really define RL as a problem here. Reading this, what's the
+difference between RL and just solving an MDP? What makes RL hard?
+What kinds of approaches do people use? 
+
+B
+------
+"Zhang and Dietterich ... " -- "Our problem formulation is motivated by Zhang and Dietterich's application of RL to job shop scheduling."
+
+"The goal of job shop scheduling is to" -- "Job shop scheduling is
+a combinatorial optimization problem where the goal is to"
+
+new sentence -- "An empirically successful approach to this problem relies on a randomized local search that proposes changes to an existing suboptimal schedule."
+
+"They define the following" --> "They formulate controlling such an
+algorithm as an MDP as follows:"
+
+The more you can make this list look like the MDP formulation we use
+(sec V-A) the better
+
+\mathcal{S}, \mathcal{A} are sets, not individual states/actions....
+
+"is changing" --> passive voice, rephrase
+
+Its important to mention that they allow infeasible schedules in the
+algorithm. 
+
+"They then use...function" --> "They use TD(\lambda) with (linear?)
+function approximation to learn a value function for the MDP. 
+
+"used in a one-step lookahead..." -- don't need this (this is just computing pi* from V*)
+
+
+
+"find good sampling distributions for motion planning" -- vague,
+introduce Zucker et al. by connecting it to our algorithm
+
+mention RRT (e.g., use RL to bias the distribution of a rapidly
+exploring random tree)
+
+"They use stochastic gradiant descent" -- I'd describe the algorithm
+the way that Zucker does in the paper (IIRC the phrase was "variant of
+REINFORCE"?)
+
+Maybe it makes sense to alter the notation so that its clear $\theta$
+is the parameter (e.g., $q_\theta(X)$, $q(x; \theta)$)
+
+eq 1 --> f is undefined, needs a period at the end
+
+"They also" --> "They"
+
+eq. 2 --> no mention of epsilon, no dependence of expectation on \theta
+eq. 3 --> needs period
+
+"where" --> "Where"
+
+RE: your question on moving the Zucker stuff to background
+
+    yea, you have a point here -- its definitely nicer to see the math
+    for our particular system. Maybe just describe their approach at a
+    high level here (no math) and refernce the section where we
+    include the details.
+
+Include something about the results from Zucker et al?
+
+C
+-----
+
+"These are treated as strings" --> delete
+
+", plan: the task planner maintains no knowledge..." --> ", plan." use
+an uninformed task planner is proporty of a solution to TAMP, not
+TAMP itself!
+
+RE: I'm not sure if now, the Task and Motion Planning subsection of
+Background is TOO short (I took out the details about backtracking).
+
+  yes, this is a too short, but not because it doesn't talk about
+  backtracking. This section should give some more details on HP I'd
+  restructure as follows
+   
+  - introduce notation for TAMP and define a solution (no real change)
+  - many approaches use a hierarchical approach to TAMP
+  - introduce HP (as modular approach that uses black-boxes)
+  - introduce pose references (as a property of HP not TAMP)
+  - define plan refinement, discuss challenges with discretization
+  - talk about the interface layer (e.g., returning to the high level)
+  - something along the lines of "interested readers are referred to
+  (references) for details"
+  
+"Any continuous variables ... their nature." -- this won't make sense
+to anyone who doesn't already know HP
+
+"This process of assigning such" -- awk + passive voice, rephrase
+
+Randomized Refinement
+---------------------
+
+First paragraph -- I'd reorganize as follows
+
+ - before we can apply RL we need an MDP formulation of plan refinement
+ - we design our approach to imitate Zhang and Dietterich
+ - algorithm description + pseudocode references
+
+Maybe make the sampling distributions an argument?
+
+"the high level plan object" --> "a high level plan"
+
+"Line" --> "line" (both locations)
+
+Everywhere "(Line ##)" --> "(l.##)"
+
+"by sampling" --> passive voice rephrase
+
+"For efficiency...." -- we do actually initialize the trajectories
+too... they're just initialized as a straightline within the motion
+planner. Also, you haven't defined IK. How about "We initialize by
+first find bindings for symbolic pose references that satisfy
+inverse-kinematics constraints (IK-feasibility). Trajectories are
+initialized as straight lines."
+
+"We then call" --> "We call"
+
+"as part of this step"
+
+"Thus, based on ... " -- is this disctintion really correct/important?
+what's the difference between a motion planning failure and a
+violation of a 'CollisionFree' precondition? 
+
+"We appropriately call" --> "We call"
+
+"one of the parameters" -- not clear what this refers to
+
+"Again for efficiency" -- too informal, also seems redundant -- maybe
+1 sentence earlier along the lines of "To avoid unnecessary motion
+planning calls, we repeatedly sample robot poses until we find one
+that satisfies inverse kinematics."
+
+"We emphasize..." --> "This refinement strategy hos two key
+propoerties. The first is a very explicit algorithm state. We show in
+the next section that this allows for a straightforward MDP
+formulation. We also found that this was beneficial from an
+engineering perspective as it allows for easy reproduction of errors
+in debugging. Second, it allows parameter..."
+
+Learning Refinement distributions
+---------------------------------
+
+
+
+
+
+[1] Christian Dornhege, Patrick Eyerich, Thomas Keller, Sebastian Tru ̈g, Michael Brenner, and Bernhard Nebel. Semantic attachments for domain-independent planning systems. ICAPS 2009
+[2] Don't have a directly citation handy -- google search for <garret FFROB kaelbline> should find it; Chris has the reference if you can't find it
