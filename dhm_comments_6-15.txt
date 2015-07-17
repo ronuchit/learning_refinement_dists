@@ -297,8 +297,233 @@ in debugging. Second, it allows parameter..."
 Learning Refinement distributions
 ---------------------------------
 
+"method for training good sampling distributions using reinforcement
+learning" --> "a reinforcment learning approach that learns a policy
+for plan refinement" (also passive voice!)
+
+"We first describe... " --> "Before describing our algorithm, we show how to formulate the problem as an MDP"
+
+"Then, we describe...refinment" -- delete
+
+A
+----
+
+"We note that ... parameter" -- this belongs in a comment after the
+list.  
+
+"We note that randomized refinement...its decision" -- I don't think
+this is clear. It seems like this says 'randomized refinement defines
+how to select p, so we don't learn p.' What we want to say is that
+we're focusing on learning how to resample the continuous values
+(future work will learn a policy to select p) so we adopt a hand-coded
+policy (randomized refinement) for this.
+
+"Under these deinfitions, the transition function is deterministic" --
+this doesn't help define the system. You don't need to be as explicit
+about this as you are about the actions, states and rewards (i.e., its
+ok to say "this is defined implicitly by the motion planning
+algorithms" or smth similar)
+
+"Our reward function....feasible values" -- same issue as the actions,
+you should just be defining the reward function in the list (1
+sentence, 2 tops). The explanation is good, but should be moved to a
+seperate paragraph.
+
+"R(a, s')" -- do you mean R(s, a, s')? (Thats how you defined it
+earlier)
+
+"We do not provide any bonus reward...valid" -- why not? if this is
+necessary in some way, then we need to say why. if not, this just
+seems like non-intuitive choice.
+
+"produce more motion planning feasible values" -- rephrase
+
+This may not be possible in time constraints, but one thing that's
+missing from the formulation is domain specificity. In our
+experiments, we are always using the pick-place domain, so the domain
+is the same. But (I think) that we'd want to have a seperate MDP for
+pick-place vs laundry vs planning with quadcopters; this means we need
+the pddl domain file (but not the problem file) to be a part of the
+formulation.
+
+B
+----
+
+"We train a weight vector ... high level plan" -- this is a little
+confusing. initially it sounds like you have a weight per parameter
+(expecially b/c you write $\theta_p$) but then you say its traing for
+each paramter type. I also realized that you also don't have types in
+your problem definition for TAMP.... Maybe it makes sense to split the
+TAMP definition into components a domain (a set of types, a set of
+fluents, and a set of operators) and a planning problem (a set of
+objects, an initial state, and a goal state). Its important to get
+this right, because otherwise this is one of the main details of the
+algorithm.
+
+It might make sense to present this by pointing out what is different
+from Zucker et al. I think its just that we have different
+distributions for different types, so how about the following structure
+
+  - this section show how to adapt Zucker et al. to this setting
+  - Zucker et al learns function that maps f(x) to a likelihood
+  - this doesn't make any sense in our setting, so we learn 1 set of weights per type
 
 
+
+RE: "You mentioned that a lot of things in my "Training Process"
+subsection actually belong in the previous subsection, but I intended
+for the split to be as follows: A) "Formulation as Reinforcement
+Learning: how is this plan refinement stuff actually a MDP/RL
+problem?" B) "Training Process: how were things trained, how did you
+define your weights, etc?" I think the current draft of the paper
+handles this split effectively."
+
+   That's a sensible split, but I don't think that's reflected in this
+   draft. For example, the initial state distribution $\mathcal{P}$ is
+   a property of the MDP, not the training algorithm. The same goes
+   for $L$ (which defines the transition distribution) and
+   $R$. Describing the features here makes sense, but IMO the others
+   are out of place.
+
+The description of the training algorithm is hard to follow. Maybe
+split it into two parts:
+
+1) executing a policy (we use MCMC to sample + keep a history of (f_t, r_t) tuples)
+2) updating your policy (given a history of features and rewards what do we do
+
+It also might be a good idea to put in some pseudocode for this.
+
+"as the system tasks on-policy actions for variable resampling" --
+awkward, rephrase 
+
+"If a valid, motion planning feasible refinement is found we forcibly
+resample one of the high level variables at random (potentially making
+the refinement infeasible again) and continue" -- This is a little
+confusing to me, but I don't think its an attribut of the training
+algorithm -- it seems to me that this is defining the transition
+distribution of the MDP we're solving. But we don't do this at test
+time (and wouldn't want to) so this seems like an error to me.
+
+As a side note, the term "motion planning feasible" should be defined
+somewhere (its a phrase you and I use a lot, but I don't think its
+fair to expect that readers will be familiar with it).
+
+"We sample x from q using the Metropolis algorithm ... " -- I don't
+think we want to explain MCMC, we can just reference it (citation
+needed) and let people who aren't familiar look it up.
+
+"This process evinces the strength" -- awk, rephrase
+
+"The distribution q ... linear function approximation" -- its hard for
+me to tell what this paragraph is conveying. If you're defining what
+we're learning I think that should go at the start of the section.
+
+Experiments
+------------
+
+A
+---
+
+"Because our learned distributions..." -- I think there are cleaner
+ways to justify this evaluation metric. I think the level of detail
+here will be confusing for some people.
+
+  - in this work, we focus on the problem of refining a single hlp
+  - however, during actual planning, we usually start with an HLP that
+    has no refinement
+  - in future work, we plan to incorporate this into learning, but for
+    now we measure performance only on refining the HLP that is
+    actually correct.
+
+"For grasp and putdown actions... approaching" -- earlier you said
+that parameter values are grouped by type, but now you're saying that
+they're grouped by action. It would be good to be explicit here: "Our
+domain has 3 types of continuous paramters: .... The range of allowable
+values are...."
+
+"Currently our feature function...." -- this needs much more detail,
+there should be enough here for someone to reproduce this. "We have 20
+features. 10 binary features that encode ...."
+
+When we talk about the experiments, it might make sense to interleave
+some of the analysis and description. We have 3 experiments
+
+1) no base motion pick obstructed (1-3 obj)
+
+2) no base motion putdown obstructed -- mention up front that this is
+a contrived example to illustrate the issues with coarse discretization
+
+3) base motion + pick/putdown
+
+I think it makes sense to introduce each of these on their own and
+then follow up with some analysis for that case. Some observations
+that might be useful to discuss
+  
+   - L does very well with 1 and 3 obstructions but worse with 2. Is
+     there an interesting explanation?
+
+   - # MP call and Avg MP time don't always seem to have a linear
+       relationship, any reason for that?
+
+   - B fails exactly 33.33 percent -- why's this?
+
+   - L does worse that B when we include base motion (scenario 5) --
+     why is that?  is this a meaningful difference?
+
+B
+---
+
+I think it makes sense to integrate the analysis and discussion into
+the above section rather than separating it out like this.
+
+"illuminating its lack of robustness" -- seems a little over the top
+
+Conclusion
+----------------
+
+"is improving" -- passive voice
+
+"Another is traing a system that decides ... " -- passive voice, I
+also think its a little hard to understand. It might be easier to
+describe this as a change to the policy class.
+
+"optimize more directly for producing a valid refinement" -- not sure
+I buy this. Its not really a refinement policy any more, but
+meta-level control for hierarchical search.
+
+Figures
+----------
+
+As a general comment, the coordinate frame (red/green/blue corner) is
+hard to see and interpret here. It might be worth it to use a
+different icon (points would probably convey the same info) -- this
+would let you color code the distributions (like in Fig. 1 where you
+have grasp, putdown, and BP in the same fig). If you want direction,
+you might be able to plot arrows.
+
+Choice of figures looks good otherwise.
+
+Fig. 1
+
+  "in our experimental setup" --> "in a simulated pick-place domain"
+  include a 1 sentence summary of our system (for the teaser picture
+  its good to make it stand along in case someone starts there). 
+
+  "We sample from ... hand-coded ones" --> "These distributions are
+  optimized to reduce the number of motion planning calls needed to
+  compuate a plan."
+
+Fig. 2
+
+  Caption needs 1 sentence of analysis (what is the reader supposed to
+  deduce from this)
+
+Fig. 3
+  
+  If its not too much trouble, regenerating this one (so that the
+  cylinders don't overlap) might be a good idea. 
+
+  "The final distribution from Figure 2" --> "Our learned grasp pose distribution"
 
 
 [1] Christian Dornhege, Patrick Eyerich, Thomas Keller, Sebastian Tru ̈g, Michael Brenner, and Bernhard Nebel. Semantic attachments for domain-independent planning systems. ICAPS 2009
