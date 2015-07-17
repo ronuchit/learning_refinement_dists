@@ -3,65 +3,58 @@ We provide relevant technical background and introduce notation
 used throughout the paper.
 
 \subsection{Reinforcement Learning}
-A reinforcement learning problem is typically formulated as
+A reinforcement learning (RL) problem is typically formulated as
 a Markov decision process (MDP). An MDP is defined by the following:
 
 \begin{tightlist}
-\item A state space $S$.
-\item An action space $A$.
-\item A transition function $P(s' | s, a)$ for $s, s' \in S, a \in A$.
-\item A reward function $R(s, a, s')$ for $s, s' \in S, a \in A$.
+\item A state space $\St$.
+\item An action space $\A$.
+\item A transition function $P(s' | s, a)$ for $s, s' \in \St, a \in \A$.
+\item A reward function $R(s, a, s')$ for $s, s' \in \St, a \in \A$.
 \item A discount factor $\gamma \in [0, 1]$.
 \end{tightlist}
-The goal of a reinforcement learning problem is to train a policy $\pi(s): S \rightarrow A$
-that selects which action $a \in A$ to execute given a current state $s \in S$, in
-order to maximize the sum of expected discounted future rewards.
+A solution to an MDP is a policy $\pi: \St \rightarrow \A$ that maps states to
+actions. The value $V_{\pi}(s)$ of a state under $\pi$ is the sum of expected
+discounted future rewards from starting in state $s$ and selecting actions according
+to $\pi$:
+$$V_{\pi}(s) = \mathbb{E}[\sum_{t=0}^{\infty}\gamma^{t}R(s_{t}) | \pi, s_{0} = s]$$
+The optimal policy $\pi^{*}$ maximizes this value for all states. The goal of an RL
+problem is for an agent to learn the optimal policy (or an approximation) through interaction
+with its environment.
 
 \subsection{Reinforcement Learning for Planning}
-Zhang and Dietterich~\cite{JobShopSched} present a technique for formulating the job shop scheduling
-problem using the reinforcement learning framework. The goal of job shop scheduling is to find
-a minimum-duration schedule of a set of jobs with temporal and resource constraints. They define the following:
+Our problem formulation is motivated by Zhang and Dietterich's application of RL to job
+shop scheduling~\cite{JobShopSched}. Job shop scheduling is a combinatorial optimization problem where the goal is to find
+a minimum-duration schedule of a set of jobs with temporal and resource constraints. An empirically
+successful approach to this problem relies on a randomized local search that proposes changes to an
+existing suboptimal schedule. The authors formulate controlling such an algorithm as an MDP as follows:
 \begin{tightlist}
-\item $S$ is all temporal configurations and resource allocations of the jobs.
-\item $A$ is changing either the time or resource allocation of a single job.
+\item $\St$ is the set of all possible temporal configurations and resource allocations of the jobs.
+\item $\A$ is the set of all possible changes to either the time or the resource allocation of a single job.
 \item $R$ is a measure of schedule goodness based on its length relative to the difficulty of the scheduling problem.
 \end{tightlist}
-They then use the temporal difference learning algorithm $TD(\lambda)$~\cite{suttonbarto}
-to learn a heuristic state evaluation function, used in a one-step lookahead search
-to produce good schedules. Their approach outperforms the previous state of the art for this task;
+They use $TD(\lambda)$~\cite{suttonbarto} with function approximation to learn a value function
+for this MDP. Their approach outperforms the previous state of the art for this task;
 it also scales better to larger scheduling problems after having been trained only on smaller ones.
-This application of reinforcement learning to planning has been built on extensively
+This application of RL to planning has been built on extensively
 in the literature, applied to domains such as retailer inventory
 management~\cite{van1997neuro}, single-agent manufacturing systems~\cite{Wang200573}, and multi-robot
 task allocation~\cite{dahl2009multi}.
 
-Zucker et al.~\cite{workspacebias} use reinforcement learning to find good sampling distributions
+Zucker et al.~\cite{workspacebias} use RL to bias the distribution of a rapidly exploring random tree (RRT)
 for motion planning. Their approach uses features of a discretization of the workspace to train
-a non-uniform configuration space sampler. They use stochastic policy gradient updates to learn a good weight
-vector $\theta$ for these features. Toward this end, they define the distribution
-\begin{equation}
-q(\theta, x) \propto exp(\theta^{T} f(x))
-\end{equation}
-They also define the expected reward under $q$ of an episode $\xi$ with length $\epsilon$:
-\begin{equation}
-\eta(\theta) = E_{q}[R(\xi)]
-\end{equation}
-and provide an approximation for its gradient:
-\begin{equation}
-\nabla \eta(\theta) \approx \frac{R(\xi)}{\epsilon} \sum_{i=1}^{\epsilon}(f(x_{i}) - E_{q}[f])
-\end{equation}
-where $E_{q}[f]$ is the feature vector expectation under $q$. The weight vector update is then:
-\begin{equation}
-\theta \leftarrow \theta + \alpha \nabla \eta(\theta)
-\end{equation}
-for appropriate step size $\alpha$.
+a non-uniform configuration space sampler. They use a variant of the \textsc{Reinforce} family
+of stochastic policy gradient algorithms to learn a good weight vector for these features.
+Their experimental results, which focus on biasing sampling distributions for the bidirectional
+RRT algorithm, demonstrate reduced motion planning time for a variety of scenarios involving arm path
+planning through obstructed environments. In our work, we adopt their policy gradient updates for the TAMP framework.
 
 \subsection{Task and Motion Planning}
-We formulate a task and motion planning problem as follows. A fully observed task planning
+We formulate a TAMP problem as follows. A fully observed task planning
 problem is a tuple $(\Obj, \F, \I, \G, \C)$:
 
 $\Obj$ is a set of symbolic references to \emph{objects} in the environment,
-such as cylinders, cylinder locations, and grasping poses. These are treated as strings.
+such as cylinders, cylinder locations, and grasping poses.
 
 $\F$ is a set of fluents, which define relationships among objects and hold either
 true or false in the state.
@@ -79,8 +72,7 @@ A solution to a task planning problem is a valid sequence of actions
 $a_{0}, a_{1}, ..., a_{n} \in \C$ which, when applied to the state of fluents
 successively starting with $\I$, results in a state in which all fluents of
 $\G$ hold true. We refer to this sequence of actions as a \emph{symbolic}, or
-\emph{high level}, plan: the task planner maintains no knowledge about the geometric meaning
-behind any of the symbols.
+\emph{high level}, plan.
 
 % As a simple example, we consider a pick domain where the robot is capable of
 % performing only two actions: moving to a location and grasping an object. We can
@@ -140,16 +132,24 @@ behind any of the symbols.
 % obstructed by, say, $obj_{3}$ in the environment, a possible high level plan would involve
 % grasping first $obj_{3}$ then $obj_{1}$.
 
-Any continuous variables of a high level plan, such as grasping poses for
-objects, are abstracted into symbols representing their nature. Task
-planners are, thus, unable to maintain a geometric interpretation for these symbols, so we use
-hierarchical task and motion planning to provide this interpretation. We adopt the approach of
-Srivastava et al.~\cite{srivastava2014combined}. They describe an \emph{interface layer} responsible
-for assigning continuous values to the high level plan variables, discovering geometric facts about
+Since task planners operate on a symbolic level,
+they are unable to maintain a geometric interpretation for their continuous variables, such
+as grasping poses for objects. Thus, we use TAMP to provide this interpretation. We adopt the hierarchical method of
+Srivastava et al.~\cite{srivastava2014combined}, a modular approach to TAMP
+that uses a black-box task planner and motion planner. A key step in their approach is the
+abstraction of continuous state variables into a discrete set of symbolic references to
+potential values. An \emph{interface layer} is then responsible
+for assigning continuous values to instantiate these symbolic references, discovering geometric facts about
 the environment, and sending these facts back to the task planner to be added into the fluent state.
-This process of assigning such continuous values to the abstract plan variables is known as \emph{plan refinement}.
-The authors introduce an algorithm for plan refinement called \textsc{TryRefine}, an exhaustive
-backtracking routine over feasible high level plan parameter values.
+\emph{Plan refinement} refers to this process of attempting to assign a feasible set of continuous
+values to the symbolic plan variables. The authors introduce an algorithm for plan refinement
+called \textsc{TryRefine}, an exhaustive backtracking routine over a hand-coded discrete set of feasible
+plan parameter values. (Interested readers are referred to \cite{srivastava2014combined} for details.)
+These hand-coded discretizations are domain-specific and tuned to the geometry of objects in the
+environment; for example, in a pick-place domain, end effector grasp poses for a can may be
+sampled around the can in each of the 4 cardinal directions, at a fixed distance and height.
+Such sampling distributions must be tuned for each object and domain separately and are not robust to
+increased environmental complexity.
 % For example, consider the previous pick domain specification where $obj_{3}$ does obstruct $obj_{1}$.
 % Initially, the task planner returns a high level plan to immediately grasp $obj_{1}$, because
 % it is not yet aware of the obstruction. The interface layer then samples grasp poses

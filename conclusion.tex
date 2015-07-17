@@ -8,10 +8,9 @@ performance by comparing against a baseline of hand-coded distributions
 for several challenging pick-and-place tasks. Our system demonstrated overall comparable
 to improved performance in motion planning time and number of motion planner calls.
 
-One important direction for future work is improving the feature vector to incorporate
-information about the symbolic plan and previous samples of a parameter.
-Another is training a system that decides
-whether to return to the high level on its own, instead of relying on
-reaching the iteration limit in the randomized refinement algorithm. This would
-make the training optimize more directly for producing a valid refinement,
-given an arbitrary task planning problem.
+In future work, we plan to improve the feature vector to incorporate information about
+the symbolic plan and previous samples of a parameter. Additionally, we hope to
+to extend our RL formulation to learn which parameter to resample, in addition to how
+to resample it. Finally, we plan to extend our formulation to learn a policy for
+returning error information to the task planner, instead of relying on reaching
+the iteration limit in the randomized refinement algorithm.

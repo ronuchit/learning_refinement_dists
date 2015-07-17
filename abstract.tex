@@ -1,19 +1,25 @@
 \begin{abstract}
-Long-horizon tasks in robotics
-require an agent to reason through a long sequence of high level steps in order to reach
-a goal, as well as determine appropriate joint trajectories for executing each step.
-Planning for and executing these tasks is a key challenge in the field.
-Recent work has contributed to hierarchical planning, which seeks
-to plan for such goals by combining task and motion planning. These planning systems
-rely on methods to propose candidate values for instantiating continuous variables in a symbolic plan,
-a process known as \emph{plan refinement}.
-A core limitation of task and motion planning systems is the manner in which these values are sampled:
-using hand-coded distributions that leverage specificity about the geometry of the environment
-and its objects. In this paper, we apply
-techniques in reinforcement learning to avoid hand-coding these distributions, instead learning
-ones that tend to propose good values.
-Our contributions are: 1) a novel randomized local search algorithm for plan refinement; 2) a
-formulation of plan refinement in the reinforcement learning framework; and 3) experiments showing that
-our system, using learned sampling distributions, achieves comparable to improved performance
-versus hand-coded distributions in a variety of test environments.
+A challenge in mobile manipulation planning is the length of the horizon that must
+be considered; it is not uncommon for tasks to require thousands of
+individual motions. Planning complexity is exponential in the length
+of the plan, rendering direct motion planning intractable for
+many problems of interest.
+Recent work has focused on
+\emph{task and motion planning} (TAMP) as a way to address this
+challenge. TAMP methods integrate logical search with continuous
+geometric reasoning in order to sequence several short-horizon motion plans that together
+solve a long-horizon task.
+A core limitation of these systems is the manner in which continuous parameters for motion planning are sampled:
+using hand-coded distributions that leverage domain specificity and require substantial design effort.
+In this paper, we present a method
+that uses reinforcement learning (RL) to learn distributions that propose
+values for the continuous parameters of a symbolic plan. More specifically, we
+formulate \emph{plan refinement}, the process of determining
+continuous parameter settings for a fixed task sequence, as a Markov
+decision process (MDP) and give an algorithm to learn a policy for this problem.
+Our contributions are as follows: 1) we present a randomized local search algorithm for plan refinement
+that is well-suited to an MDP formulation; 2) we give an RL algorithm that learns policies for this MDP;
+and 3) we perform experiments to evaluate the performance of our system in a simulated
+pick-and-place domain. We find that our approach achieves comparable to improved performance
+versus that of hand-coded sampling distributions in a variety of test environments.
 \end{abstract}

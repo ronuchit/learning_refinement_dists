@@ -1,11 +1,12 @@
 \section{Randomized Refinement}
-In order to move toward refining high level plans using continuous sampling distributions,
-we present one contribution of our work: randomized refinement, a local search
+Before we can apply RL to plan refinement, we need to formulate it as an MDP.
+We design our approach to imitate that of Zhang and Dietterich~\cite{JobShopSched}, by
+initializing an infeasible refinement and continually making local improvements.
+We thus present one contribution of our work: randomized refinement, a local search
 algorithm for plan refinement. It maintains at all times a value for each high level plan
 variable; at each iteration, a variable whose current value is leading to a motion planning failure or
-action precondition violation is picked randomly and resampled locally. This method of making local improvements draws
-parallels with the job shop scheduling algorithm and is straightforward to formulate
-in the reinforcement learning framework, as we show in the next section.
+action precondition violation is picked randomly and resampled locally. This refinement strategy
+is straightforward to formulate in the RL framework, as we show in the next section.
 Algorithm \ref{alg-randref} shows pseudocode for randomized refinement.
 
 \begin{algorithm}
@@ -50,35 +51,34 @@ Algorithm \ref{alg-randref} shows pseudocode for randomized refinement.
  \end{algorithmic}
 \end{algorithm}
 
-The procedure takes two arguments, the high level plan object and a maximum
-iteration count. In Line 2, all variables in the high level plan are initialized by sampling
-from the corresponding distributions. For efficiency, we only initialize the symbolic pose
-references (such as object grasping poses) with IK-feasible values, so as to avoid unnecessary calls to the
-motion planner. We then call the \textsc{MotionPlan} subroutine in Line 4, which
+The procedure takes two arguments, a high level plan and a maximum
+iteration count. In line 2, we initialize all variables in the high level plan by sampling
+from their corresponding distributions. We continue sampling
+until we find bindings for symbolic pose references that satisfy
+inverse kinematics constraints (IK feasibility). Trajectories are then
+initialized as straight lines. We call the \textsc{MotionPlan} subroutine in line 4, which
 iterates through the sequence of actions that comprise the high level plan.
-For each action, a call to the motion planner is made (Line 22) using the instantiated values
+For each action, a call to the motion planner is made (l.22) using the instantiated values
 for the parameters of that action, to attempt to find a trajectory
 linking the sampled poses. If this succeeds, the preconditions of the action
-are tested (Line 26). As part of this step, we verify that the trajectory returned by the
+are tested (l.26); as part of this step, we verify that the trajectory returned by the
 black box motion planner is collision-free, satisfying the precondition
 that the trajectory is feasible in the environment.
 
-Thus, based on the returned values of \textsc{MotionPlan}, we may distinguish
-a motion planning failure from a precondition violation, for the current
-refinement. We appropriately call the \texttt{resample} routine on the high level parameters
-associated with the failure; this routine picks one of the parameters at random and
-resamples it from its refinement distribution. Again for efficiency, we keep resampling until we
-have an IK-feasible value. If we reach the iteration limit (Line 18),
+We call the \texttt{resample} routine on the high level parameters
+associated with the failure; this routine picks one of these high level parameters at random and
+resamples it from its distribution. If we reach the iteration limit (l.18),
 we convert the most recent failure information into a symbolic representation, then raise it
 to the classical planner, which will update its fluent state and provide a new
 high level plan.
 
-We emphasize the benefits of randomized refinement. First, it
-lends itself to easy formulation as an MDP, as we show in the next section.
-Additionally, it allows the parameter instantiations for a particular action in
+Randomized refinement has two key properties. The first is a very explicit algorithm state.
+We show in the next section that this allows for a straightforward MDP
+formulation. We also found that this was beneficial from an
+engineering perspective, as the simplicity allows for easy debugging. The second is that
+ it allows the parameter instantiations for a particular action in
 the plan to be influenced by those for a \emph{future} action. For example, in a
 pick-and-place task, it can make sense for the object's grasp pose to be sampled
 conditionally on the current instantiation of the putdown pose, even though the putdown
 appears after the grasp in the plan sequence. Thus, it is easy for plan refinement to
-respond to long-term dependencies in continuous values of plan variables. Finally, its simplicity
-allows for ease of debugging.
+respond to long-term dependencies in continuous values of plan variables.
