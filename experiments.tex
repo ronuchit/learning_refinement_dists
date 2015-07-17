@@ -2,28 +2,28 @@
 \begin{figure}
   \centering
   \begin{subfigure}[b]{0.48\linewidth}
-    \includegraphics[width=\textwidth]{images/learngs.png}
+    \includegraphics[width=\textwidth]{images/learns.png}
     \caption{Initial distribution}
   \end{subfigure}
   \begin{subfigure}[b]{0.48\linewidth}
-    \includegraphics[width=\textwidth]{images/learng5.png}
-    \caption{After 5 iterations.}
+    \includegraphics[width=\textwidth]{images/learn10.png}
+    \caption{After 10 iterations.}
   \end{subfigure}
   \begin{subfigure}[b]{0.48\linewidth}
-    \includegraphics[width=\textwidth]{images/learng15.png}
+    \includegraphics[width=\textwidth]{images/learn15.png}
     \caption{After 15 iterations.}
   \end{subfigure}
   \begin{subfigure}[b]{0.48\linewidth}
-    \includegraphics[width=\textwidth]{images/learng20.png}
+    \includegraphics[width=\textwidth]{images/learn20.png}
     \caption{Final distribution.}
   \end{subfigure}
-  \caption{Learned left arm grasping distributions used to
-pick up the black can, after different training iterations.
+  \caption{Learned left arm grasp (green) and putdown (blue) distributions used to
+pick up the black can and place it on the central red square, after different training iterations.
 An iteration refers to a single run of randomized refinement,
 which terminates after $L$ calls to the resample function. The
-initial distribution is uniform because we initialize weights to $\vec{\mathbf{0}}$.
-The final distribution is after 20 iterations. The convergence of
-the distribution demonstrates the soundness of our approach.}
+initial distributions are uniform because we initialize weights to $\vec{\mathbf{0}}$.
+The final distributions are after 20 iterations. The convergence of
+the distributions demonstrates the soundness of our approach.}
   \label{fig:training}
 \end{figure}
 
