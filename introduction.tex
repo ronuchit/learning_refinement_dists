@@ -20,23 +20,23 @@ lagriffoul2014orientation, GarrettWAFR14, dornhege2012semantic}.
     \noindent
     \includegraphics[scale=0.2]{images/move_grasp.png}\hspace{10 mm}
     \includegraphics[scale=0.2]{images/move_putdown.png}
-  \caption{Screenshots showing some distributions learned by our system in a simulated pick-place
-    domain. We use reinforcement learning to train good distributions for sampling continuous parameters
-    for motion planning. The robot is tasked with grasping the black cylinder and putting it down on the
+  \caption{Screenshots showing some distributions learned by our system in a simulated pick-and-place
+    domain. We use reinforcement learning to train good sampling distributions for continuous motion
+    planning parameters in long-horizon tasks. The robot is tasked with grasping the black cylinder and putting it down on the
     central red square. The left image shows learned base motion (blue) and grasping (green) distributions,
     and the right shows learned base motion (blue) and putdown (green) distributions. The grasping policy
-    learned automatically to avoid the region close to the blue obstruction. These distributions are
-    optimized to reduce the number of motion planning calls needed to produce a complete plan.}
+    learned automatically to avoid the region close to the light blue obstruction. These distributions are
+    optimized to reduce the number of motion planner calls needed to produce a complete plan.}
   \label{fig:cover}
 \end{figure}
 
-A key limitation of TAMP systems is that they typically rely on hand-coded discretization to
-sample continuous parameter values, such as target grasp poses, for motion planning.
+A key limitation of TAMP systems is that they typically rely on hand-coded discretization when
+sampling continuous parameter values, such as target grasp poses, for motion planning.
 These heuristic sampling distributions are tuned to the specific
 geometric properties of the environment and its objects, and designing them well
 requires substantial effort. This has several negative implications: the parameters of the
 hand-coded distributions must be fine-tuned when running the system in a new setting, and the
-resulting refinement distributions lack robustness. In this paper, we present a reinforcement
+resulting distributions lack robustness. In this paper, we present a reinforcement
 learning method to train good proposal distributions for sampling continuous parameter
 values intelligently.
 
@@ -45,11 +45,11 @@ presented by Srivastava et al.~\cite{srivastava2014combined}.
 A (classical) task planner produces a symbolic plan containing
 a sequence of actions to reach a goal state. Then, in a process known as \emph{plan refinement},
 candidate values are proposed for the continuous variables in this symbolic plan, thus grounding it.
-These candidate values are then checked locally for feasibility by calling a motion planner.
+These candidate values are checked locally for feasibility by calling a motion planner.
 
 The authors propose an \emph{interface layer} for refining the plan into a set
 of collision-free trajectories; it performs an exhaustive
-backtracking search over a hand-coded discrete set of candidate plan variable values. If a motion
+backtracking search over a hand-coded discrete set of candidate parameter values. If a motion
 planning feasible refinement is not found within the resource limit,
 symbolic error information is propagated back to the task planner, and a new symbolic plan is produced.
 The system uses an off-the-shelf classical task planner and motion planner, both as black boxes.
@@ -57,7 +57,7 @@ We build upon this framework because it is easy to separate the plan refinement 
 While our method is specific to this architecture, it can be adapted for other TAMP paradigms.
 
 Reinforcement learning (RL) refers to the process of an agent learning a policy (a mapping from states to actions)
-in its environment to maximize rewards. Zhang and Dietterich~\cite{JobShopSched} first applied the RL framework
+in its environment that maximizes rewards. Zhang and Dietterich~\cite{JobShopSched} first applied the RL framework
 to planning problems, using a job shop scheduling setting. In this work, we take inspiration from
 their approach; we apply RL to plan refinement in a TAMP system. We implement our approach using methods adapted from
 Zucker et al.~\cite{workspacebias}, who train a configuration space sampler for motion planning

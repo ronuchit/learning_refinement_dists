@@ -12,13 +12,13 @@ solve a long-horizon task.
 A core limitation of these systems is the manner in which continuous parameters for motion planning are sampled:
 using hand-coded distributions that leverage domain specificity and require substantial design effort.
 In this paper, we present a method
-that uses reinforcement learning (RL) to learn distributions that propose
+for using reinforcement learning (RL) to learn distributions that propose
 values for the continuous parameters of a symbolic plan. More specifically, we
 formulate \emph{plan refinement}, the process of determining
 continuous parameter settings for a fixed task sequence, as a Markov
-decision process (MDP) and give an algorithm to learn a policy for this problem.
+decision process (MDP) and give an algorithm to learn a policy for it.
 Our contributions are as follows: 1) we present a randomized local search algorithm for plan refinement
-that is well-suited to an MDP formulation; 2) we give an RL algorithm that learns policies for this MDP;
+that is well-suited to an MDP formulation; 2) we give an RL algorithm that learns a policy for this MDP;
 and 3) we perform experiments to evaluate the performance of our system in a simulated
 pick-and-place domain. We find that our approach achieves comparable to improved performance
 versus that of hand-coded sampling distributions in a variety of test environments.

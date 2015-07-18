@@ -2,14 +2,14 @@
 We presented a novel application of reinforcement learning to plan refinement in task
 and motion planning. Our method trained a policy for refining symbolic plans
 by learning good sampling distributions for plan parameters. The choice
-of which parameter to resample at each iteration was governed by a novel
-refinement strategy we presented called randomized refinement. We evaluated
+of which parameter to resample at each iteration was governed by randomized refinement,
+a local search algorithm we presented for plan refinement. We evaluated
 performance by comparing against a baseline of hand-coded distributions
 for several challenging pick-and-place tasks. Our system demonstrated overall comparable
 to improved performance in motion planning time and number of motion planner calls.
 
 In future work, we plan to improve the feature vector to incorporate information about
-the symbolic plan and previous samples of a parameter. Additionally, we hope to
+the symbolic plan and previous samples of a parameter. Additionally, we hope
 to extend our RL formulation to learn which parameter to resample, in addition to how
 to resample it. Finally, we plan to extend our formulation to learn a policy for
 returning error information to the task planner, instead of relying on reaching

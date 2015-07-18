@@ -20,10 +20,10 @@
   \caption{Learned left arm grasp (green) and putdown (blue) distributions used to
 pick up the black can and place it on the central red square, after different training iterations.
 An iteration refers to a single run of randomized refinement,
-which terminates after $L$ calls to the resample function. The
+which terminates after $L$ calls to the \texttt{resample} routine. The
 initial distributions are uniform because we initialize weights to $\vec{\mathbf{0}}$.
-The final distributions are after 20 iterations. The convergence of
-the distributions demonstrates the soundness of our approach.}
+The final distributions are after 20 iterations. The convergence and robustness of
+the distributions demonstrate the soundness of our approach.}
   \label{fig:training}
 \end{figure}
 
@@ -41,7 +41,7 @@ the distributions demonstrates the soundness of our approach.}
     \includegraphics[width=\textwidth]{images/finalgraspobstr2.png}
     \caption{}
   \end{subfigure}
-  \caption{Our learned grasp pose distribution
+  \caption{The learned grasp pose distribution
 is shown with different obstruction layouts. The system learns to
 avoid obstructions while providing a good set of grasping poses.}
   \label{fig:obstr}
@@ -90,15 +90,15 @@ tasks, varying the number of obstructions, obstruction locations, and whether
 the base is allowed to move. We compare performance with that of the
 hand-coded sampling distributions used in Srivastava et al.~\cite{srivastava2014combined}.
 In this work, our training focuses on the problem of refining a single high level
-plan; however, during actual planning, we may start with a high level plan that
+plan. However, during actual planning, we may start with a high level plan that
 has no valid refinement, and symbolic error information must be propagated to the
 task planner, which produces a new plan. In future work, we will
 incorporate this into the learning framework, but for now we measure performance
-only on refining the final high level plan, which has a valid refinement.
+only on the refinement of the final high level plan.
 
 We use the reward function described earlier. Our weight
-vectors are initialized to $\vec{\mathbf{0}}$ for all pose parameter types.
-The initialization represents a uniform distribution across the limits of the geometric search space.
+vectors are initialized to $\vec{\mathbf{0}}$ for all parameter types.
+This initialization represents a uniform distribution across the limits of the geometric search space.
 Our domain has 3 types of continuous parameters: base poses, object grasp poses, and object putdown poses.
 The range of allowable values for grasp and putdown poses is a cube of side length 30 centimeters
 around the target object or putdown location. For base poses, the range is a
@@ -106,7 +106,7 @@ square of side length 1 meter around the object or location which the robot is a
 We use 24 features. 9 binary features encode the bucketed distance between the sample
 and target. 9 binary features encode the bucketed sample height. 3 features
 describe the number of other objects within discs of radius 7, 10, and 15 centimeters around the
-target. 3 binary features encode the angle made between the vector from the
+sample. 3 binary features describe the angle made between the vector from the
 robot to the target and the vector from the sample to the target: whether the angle is less than
 $\pi/3$, $\pi/2$, and $3\pi/4$.
 
@@ -121,8 +121,8 @@ The locations of the obstructions surrounding the target object were
 sampled uniformly from a thick ring around the object with inner radius 0.13 meters
 and outer radius 0.25 meters. Table \ref{table:results} summarizes our quantitative results.
 \figref{fig:cover} plots learned distributions for a move-grasp-move-putdown sequence of actions.
-\figref{fig:training} illustrates the training of a grasp distribution, and \figref{fig:obstr}
-shows how the learned distribution interacts with obstructions.
+\figref{fig:training} illustrates the training of grasp and putdown distributions, and \figref{fig:obstr}
+shows how the learned grasp distribution interacts with obstructions.
 
 \textbf{Experiment 1}: Grasp is obstructed by 1 through 3 objects; no base motion.
 $N = 20$, $L = 16$, $\epsilon = 4$. Our system outperforms the baseline for both 1 and 3
@@ -130,15 +130,16 @@ obstructions, but performs worse for 2. We attribute this to the fact that rando
 have a huge effect on which local optimum our policy gradient algorithm finds. An additional
 observation is that motion planner time and number of calls are not always linearly related; some target
 poses may be IK-feasible but difficult to reach, causing the motion planner to take longer
-to find a collision-free trajectory.
+to find a trajectory.
 
 \textbf{Experiment 2}: Putdown is obstructed in cardinal directions; no base motion.
-This is a contrived example to illustrate the issues with coarse discretization of the sample space.
-$N = 20$, $L = 16$, $\epsilon = 4$. The baseline system only attempts putdown pose instantiation in the
-cardinal directions, explaining the large performance disparity.
+$N = 20$, $L = 16$, $\epsilon = 4$. This is a contrived example to illustrate the
+issues with coarse discretization of the sample space.
+The baseline system only attempts putdown pose instantiation in the
+4 cardinal directions, explaining the large performance disparity.
 
 \textbf{Experiment 3}: Grasp is obstructed by 1 object; base motion allowed.
 $N = 60$, $L = 100$, $\epsilon = 20$. Our system performs slightly worse than the baseline
 here, but not significantly. We believe this is because more time is spent motion planning
-base poses for which object grasp and putdown are infeasible (since candidate base poses are no
-longer hand-engineered), triggering resampling of the base pose parameter.
+base poses from which grasps and putdowns are infeasible (since candidate base poses are no
+longer hand-engineered), triggering resampling of the value assigned to the base pose parameter.

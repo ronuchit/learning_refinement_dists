@@ -1,13 +1,19 @@
 \section{Randomized Refinement}
-Before we can apply RL to plan refinement, we need to formulate it as an MDP.
+Before we can apply RL to plan refinement, we must formulate it as an MDP.
 We design our approach to imitate that of Zhang and Dietterich~\cite{JobShopSched}, by
 initializing an infeasible refinement and continually making local improvements.
 We thus present one contribution of our work: randomized refinement, a local search
 algorithm for plan refinement. It maintains at all times a value for each high level plan
 variable; at each iteration, a variable whose current value is leading to a motion planning failure or
-action precondition violation is picked randomly and resampled locally. This refinement strategy
-is straightforward to formulate in the RL framework, as we show in the next section.
+action precondition violation is picked randomly and resampled (locally).
 Algorithm \ref{alg-randref} shows pseudocode for randomized refinement.
+
+The procedure takes two arguments, a high level plan and a maximum
+iteration count. In line 2, we initialize all variables in the high level plan by sampling
+from their corresponding distributions. We continue sampling
+until we find bindings for symbolic pose references that satisfy
+inverse kinematics constraints (IK feasibility). Trajectories are then
+initialized as straight lines.
 
 \begin{algorithm}
  \caption{Randomized refinement.} \label{alg-randref}
@@ -18,7 +24,7 @@ Algorithm \ref{alg-randref} shows pseudocode for randomized refinement.
   \State $failStep, failPred \leftarrow $\textsc{MotionPlan}($HLP$)
   \If {$failStep$ is null}
   \State \Return success
-  \Else
+  \EndIf
   \If {$failPred$ is null}
   \State \# \emph{Motion planning failure.}
   \State $failAction \leftarrow HLP.ops[failStep]$
@@ -26,7 +32,6 @@ Algorithm \ref{alg-randref} shows pseudocode for randomized refinement.
   \Else
   \State \# \emph{Action precondition violation.}
   \State resample($failPred.params$)
-  \EndIf
   \EndIf
   \EndFor
   \State Raise failure to task planner, receive new plan.
@@ -37,44 +42,36 @@ Algorithm \ref{alg-randref} shows pseudocode for randomized refinement.
   \State $res \leftarrow op_{i}$.motionPlan()
   \If {$res.failed$}
   \State \Return $i$, null
-  \Else
-  \State $failPred \leftarrow op_{i}$.checkPreconds()
-  \If {$failPred$}
-  \State \Return $i$, $failPred$
-  \Else
-  \State \# \emph{Found successful plan refinement.}
-  \State \Return null, null
   \EndIf
+  \State $failPred \leftarrow op_{i}$.checkPreconds()
+  \If {$failPred$ is not null}
+  \State \Return $i$, $failPred$
   \EndIf
   \EndFor
+  \State \# \emph{Found successful plan refinement.}
+  \State \Return null, null
   \EndProcedure
  \end{algorithmic}
 \end{algorithm}
 
-The procedure takes two arguments, a high level plan and a maximum
-iteration count. In line 2, we initialize all variables in the high level plan by sampling
-from their corresponding distributions. We continue sampling
-until we find bindings for symbolic pose references that satisfy
-inverse kinematics constraints (IK feasibility). Trajectories are then
-initialized as straight lines. We call the \textsc{MotionPlan} subroutine in line 4, which
+We call the \textsc{MotionPlan} subroutine in line 4, which
 iterates through the sequence of actions that comprise the high level plan.
 For each action, a call to the motion planner is made (l.22) using the instantiated values
 for the parameters of that action, to attempt to find a trajectory
 linking the sampled poses. If this succeeds, the preconditions of the action
-are tested (l.26); as part of this step, we verify that the trajectory returned by the
-black box motion planner is collision-free, satisfying the precondition
-that the trajectory is feasible in the environment.
+are tested (l.26); as part of this step, we check if the trajectory returned by the
+motion planner is collision-free.
 
 We call the \texttt{resample} routine on the high level parameters
-associated with the failure; this routine picks one of these high level parameters at random and
+associated with a failure; this routine picks one of these high level parameters at random and
 resamples it from its distribution. If we reach the iteration limit (l.18),
 we convert the most recent failure information into a symbolic representation, then raise it
-to the classical planner, which will update its fluent state and provide a new
+to the task planner, which will update its fluent state and provide a new
 high level plan.
 
 Randomized refinement has two key properties. The first is a very explicit algorithm state.
 We show in the next section that this allows for a straightforward MDP
-formulation. We also found that this was beneficial from an
+formulation. This is also beneficial from an
 engineering perspective, as the simplicity allows for easy debugging. The second is that
  it allows the parameter instantiations for a particular action in
 the plan to be influenced by those for a \emph{future} action. For example, in a

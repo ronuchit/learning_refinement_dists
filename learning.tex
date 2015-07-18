@@ -3,21 +3,21 @@ In this section, we present our primary contribution: an RL
 approach that learns a policy for plan refinement. Before describing our
 algorithm, we show how to formulate the problem as an MDP.
 
-\subsection{Formulation as Reinforcement Learning}
+\subsection{Formulation as Reinforcement Learning Problem}
 We formulate plan refinement as an MDP as follows:
 \begin{tightlist}
 \item A state $s \in \St$ is a tuple $(P, r_{cur}, E)$, consisting of the
 symbolic plan, its current refinement (instantiation of values for all plan parameters),
 and the environment.
 \item An action $a \in \A$ is a pair $(p, x)$, where $p$ is the discrete-space plan
-parameter to resample and $x$ is the continuous-space value to assign to $p$.
-\item The transition function is implicitly defined by $\St$ and $\A$.
+parameter to resample and $x$ is the continuous-space value assigned to $p$ in the new refinement.
+\item The transition function is defined deterministically by $\St$ and $\A$.
 \item Our reward function $R(s, a, s')$ provides constant rewards based on parameter resampling.
 \end{tightlist}
 
 We are focused on training policies for choosing the continuous value
 $x$ in our actions, by defining a sampling distribution (based on the state) for each plan parameter $p$.
-We note that randomized refinement provides a fixed policy for selecting $p$ itself.
+We note the observation that randomized refinement provides a fixed policy for selecting $p$ itself.
 
 Because we check for IK feasibility when resampling, we provide $-1$ reward every
 time we sample an IK-infeasible pose, and $+3$ reward for an IK-feasible pose.
@@ -30,12 +30,12 @@ distributions are biased toward motion planning feasible values.
 
 \subsection{Training Process}
 We now show how to apply the method of Zucker et al.~\cite{workspacebias} to learn a policy
-for plan refinement. Their method learns a weight vector that maps a feature vector to a
+for plan refinement. Their method learns a mapping from a feature vector to a
 likelihood. In our setting, we learn a weight vector for each parameter
-\emph{type}, comprised of a pose type and a gripper (e.g., ``left gripper grasp pose'', ``right
+\emph{type}, comprised of a pose type and a gripper (e.g., ``left gripper grasp pose,'' ``right
 gripper putdown pose''). This decouples the learned distributions from any single
-high level plan and allows us to test in more complicated environments than we
-trained. The weight vectors encode the policy for selecting $x$ for actions $a \in \A$,
+high level plan and allows us to test in more complicated environments than those used in
+training. The weight vectors encode the policy for selecting $x$ for actions $a \in \A$,
 as described in the previous subsection. Our feature function $f(s, p, x)$ maps the current
 state $s \in \St$, plan parameter $p$, and sampled value $x$ for $p$ to a feature vector; $f$
 defines a policy class for our problem.
@@ -46,7 +46,7 @@ Our training system is defined by the following:
 the task planning problem and the environment.
 \item[$\theta_{p}$:] The weight vector for $p$'s parameter type.
 \item[$R$:] The reward function, described in the previous subsection.
-\item[$f(s, p, x)$:] Described above.
+\item[$f(s, p, x)$:] The feature function, described above.
 \item[$N$:] The number of planning problems on which to train.
 \item[$L$:] The number of samples for one planning problem.
 \item[$\epsilon$:] The number of samples comprising an episode. We perform
@@ -57,23 +57,23 @@ The training is a natural extension of randomized
 refinement and progresses as follows. $N$ times, sample from $\Prob$ to obtain
 a complete planning problem $\Pi$. For each $\Pi$, run the randomized refinement
 algorithm to attempt to find a valid plan refinement, allowing the \texttt{resample}
-routine to be called $L$ times. As the system takes on-policy actions $a \in \A$ (based on
-current $\theta$ values), collected
-rewards are stored. Every $\epsilon$ calls to
-\texttt{resample}, we perform a gradient update on the weight vectors using the
+routine to be called $L$ times before termination. As the system takes on-policy actions $a \in \A$ (based on
+current $\theta$), collect rewards according to $R$. Every $\epsilon$ calls to
+\texttt{resample}, perform a gradient update on the weight vectors using the
 collected rewards.
 
 This process shows the strength of randomized refinement: only the variable
 values responsible for failures are resampled, so the learning is naturally
 focused toward improving sampling distributions which are not yet well-shaped.
 
+\subsection{Distribution and Gradient Updates}
 We adopt the sampling distribution used in Zucker et al.~\cite{workspacebias}
 for a parameter $p$ with sample value $x$, in state $s \in \St$:
 $$q(s, p, x) \propto exp(\theta_{p}^{T} f(s, p, x)).$$
-They then define the expected reward of an episode $\xi$:
+The authors define the expected reward of an episode $\xi$:
 $$\eta(\theta_{p}) = \mathbb{E}_{q}[R(\xi)]$$ and provide an approximation for its gradient:
-$$\nabla \eta(\theta_{p}) \approx \frac{R(\xi)}{\epsilon} \sum_{i=0}^{\epsilon}(f(s, p, x_{i}) - \mathbb{E}_{q,s}[f]).$$
-$R(\xi)$ is the sum over all rewards obtained throughout $\xi$ and
+$$\nabla \eta(\theta_{p}) \approx \frac{R(\xi)}{\epsilon} \sum_{i=1}^{\epsilon}(f(s, p, x_{i}) - \mathbb{E}_{q,s}[f]).$$
+$R(\xi)$ is the sum over all rewards obtained throughout $\xi$, and
 $\mathbb{E}_{q,s}[f]$ is the expected feature vector under $q$, in state $s \in \St$. The weight vector update is then:
 $$\theta_{p} \leftarrow \theta_{p} + \alpha \nabla \eta(\theta_{p})$$
 for appropriate step size $\alpha$.
@@ -81,4 +81,3 @@ for appropriate step size $\alpha$.
 We sample $x$ from $q$ using the Metropolis algorithm~\cite{chib1995understanding}.
 Since our distributions are continuous, we cannot easily calculate $\mathbb{E}_{q}[f]$,
 so we approximate it by averaging together the feature vectors for several samples from $q$.
-
