@@ -148,10 +148,10 @@ values to the symbolic plan variables.
 The authors introduce an algorithm for plan refinement
 called \textsc{TryRefine}, an exhaustive backtracking routine over a hand-coded discrete set of candidate
 plan parameter values. (Interested readers are referred to \cite{srivastava2014combined} for details.)
-These hand-coded discretizations are domain-specific and tuned to the geometry of objects in the
+This hand-coded discretization is domain-specific and tuned to the geometry of objects in the
 environment; for example, in a pick-and-place domain, end effector grasp poses for a can may be
 sampled around the can in each of the 4 cardinal directions, at a fixed distance and height.
-Such sampling distributions necessitate fine-tuning for each domain separately and are not robust to
+Such coarse sampling distributions necessitate fine-tuning for each domain and are not robust to
 increased environmental complexity.
 % For example, consider the previous pick domain specification where $obj_{3}$ does obstruct $obj_{1}$.
 % Initially, the task planner returns a high level plan to immediately grasp $obj_{1}$, because

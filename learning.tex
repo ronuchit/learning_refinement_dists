@@ -20,7 +20,7 @@ $x$ in our actions, by defining a sampling distribution (based on the state) for
 We note the observation that randomized refinement provides a fixed policy for selecting $p$ itself.
 
 Because we check for IK feasibility when resampling, we provide $-1$ reward every
-time we sample an IK-infeasible pose, and $+3$ reward for an IK-feasible pose.
+time we sample an IK infeasible pose, and $+3$ reward for an IK feasible pose.
 Similarly, we give $-3$ reward upon motion planning failure or action precondition violation,
 and $+5$ reward upon a successful call to the motion planner for an action.
 This choice of $R$ implies that our training optimizes the sampling distributions for
