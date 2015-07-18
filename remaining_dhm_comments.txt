@@ -1,0 +1,70 @@
+Related Work
+------------
+You have enough here on learning for planning; I think what missing is
+related work for task and motion planning.
+
+Background
+-----------
+A
+-----
+Wrap the MDP definition in a definition environment.
+
+What makes RL hard? What kinds of approaches do people use? 
+
+B
+------
+Its important to mention that they allow infeasible schedules in the
+algorithm.
+
+C
+-----
+need to do a better job explaining HP (using less arcane terminology)
+
+Learning Refinement distributions
+---------------------------------
+A
+----
+This may not be possible in time constraints, but one thing that's
+missing from the formulation is domain specificity. In our
+experiments, we are always using the pick-place domain, so the domain
+is the same. But (I think) that we'd want to have a seperate MDP for
+pick-place vs laundry vs planning with quadcopters; this means we need
+the pddl domain file (but not the problem file) to be a part of the
+formulation.
+
+B
+----
+I also realized that you also don't have types in
+your problem definition for TAMP.... Maybe it makes sense to split the
+TAMP definition into components a domain (a set of types, a set of
+fluents, and a set of operators) and a planning problem (a set of
+objects, an initial state, and a goal state). Its important to get
+this right, because otherwise this is one of the main details of the
+algorithm.
+
+RE: "You mentioned that a lot of things in my "Training Process"
+subsection actually belong in the previous subsection, but I intended
+for the split to be as follows: A) "Formulation as Reinforcement
+Learning: how is this plan refinement stuff actually a MDP/RL
+problem?" B) "Training Process: how were things trained, how did you
+define your weights, etc?" I think the current draft of the paper
+handles this split effectively."
+
+   That's a sensible split, but I don't think that's reflected in this
+   draft. For example, the initial state distribution $\mathcal{P}$ is
+   a property of the MDP, not the training algorithm. The same goes
+   for $L$ (which defines the transition distribution) and
+   $R$. Describing the features here makes sense, but IMO the others
+   are out of place.
+
+The description of the training algorithm is hard to follow. Maybe
+split it into two parts:
+
+1) executing a policy (we use MCMC to sample + keep a history of (f_t, r_t) tuples)
+2) updating your policy (given a history of features and rewards what do we do
+
+It also might be a good idea to put in some pseudocode for this.
+
+As a side note, the term "motion planning feasible" should be defined
+somewhere (its a phrase you and I use a lot, but I don't think its
+fair to expect that readers will be familiar with it).
