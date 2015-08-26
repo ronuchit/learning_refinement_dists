@@ -17,10 +17,16 @@ A solution to an MDP is a policy $\pi: \St \rightarrow \A$ that maps states to
 actions. The value $V_{\pi}(s)$ of a state under $\pi$ is the sum of expected
 discounted future rewards from starting in state $s$ and selecting actions according
 to $\pi$:
-$$V_{\pi}(s) = \mathbb{E}[\sum_{t=0}^{\infty}\gamma^{t}R(s_{t}) | \pi, s_{0} = s]$$
+$$V_{\pi}(s) = \mathbb{E}[\sum_{t=0}^{\infty}\gamma^{t}R(s_{t}) | \pi, s_{0} = s].$$
 The optimal policy $\pi^{*}$ maximizes this value for all states. The goal of an RL
 problem is for an agent to learn $\pi^{*}$ (or an approximation) automatically
-through interaction with its environment.
+through interaction with its environment, taking actions within it and obtaining
+rewards. Key challenges in RL include determining how to assign
+the credit of received rewards to each undertaken action, balancing the tradeoff between
+exploration of new actions and exploitation of known good actions in the environment, and handling
+potential limited perception of the current state. Two widely used techniques for RL are value
+function approximation, using methods such as temporal difference (TD) learning~\cite{suttonbarto},
+and direct policy estimation, which encompasses both gradient-based and gradient-free methods.
 
 \subsection{Reinforcement Learning for Planning}
 Our problem formulation is motivated by Zhang and Dietterich's application of RL to job
@@ -34,7 +40,7 @@ existing suboptimal schedule. The authors formulate this search as an MDP as fol
 \item $R$ is a measure of schedule goodness based on its length relative to the difficulty of the scheduling problem.
 \end{tightlist}
 They use $TD(\lambda)$~\cite{suttonbarto} with function approximation to learn a value function
-for this MDP. Their approach outperforms the previous state of the art for this task;
+for this MDP, allowing infeasible schedules. Their approach outperforms the previous state of the art for this task;
 it also scales better to larger scheduling problems after having been trained only on smaller ones.
 This application of RL to planning has been built on extensively
 in the literature, applied to domains such as retailer inventory
@@ -51,24 +57,20 @@ planning through obstructed environments. In our work, we adopt their policy gra
 (Section V-C).
 
 \subsection{Task and Motion Planning}
-We formulate a TAMP problem as follows. A fully observed task planning
-problem is a tuple $(\Obj, \F, \I, \G, \C)$:
-
-$\Obj$ is a set of symbolic references to \emph{objects} in the environment,
+A fully observed task planning problem is a tuple $(\Obj, \T, \F, \I, \G, \C)$:
+\begin{tightlist}
+\item $\Obj$ is a set of symbolic references to \emph{objects} in the environment,
 such as cylinders, cylinder locations, and grasping poses.
-
-$\F$ is a set of fluents, which define relationships among objects and hold either
+\item $\T$ is the set of object \emph{types}, such as robot manipulators, cylinders, poses, and locations.
+\item $\F$ is a set of fluents, which define relationships among objects and hold either
 true or false in the state.
-
-$\I$ is the set of fluents that hold true in the initial state. All others are assumed false.
-
-$\G$ is the set of fluents defining the goal state.
-
-$\C$ is a set of parametrized \emph{high level actions}, defined by \emph{preconditions}, a set
+\item $\I$ is the set of fluents that hold true in the initial state. All others are assumed false.
+\item $\G$ is the set of fluents defining the goal state.
+\item $\C$ is a set of parametrized \emph{high level actions}, defined by \emph{preconditions}, a set
 of fluents characterizing what must hold true in the current state for the action
 to be validly performed, and \emph{effects}, a set of fluents that hold true after
 the action is performed.
-
+\end{tightlist}
 A solution to a task planning problem is a valid sequence of actions
 $a_{0}, a_{1}, ..., a_{n} \in \C$ which, when applied to the state of fluents
 successively starting with $\I$, results in a state in which all fluents of
@@ -138,18 +140,31 @@ they are unable to maintain a geometric interpretation for their continuous vari
 as grasping poses for objects. Thus, we use TAMP to provide this interpretation. We adopt the hierarchical method of
 Srivastava et al.~\cite{srivastava2014combined}, a modular approach to TAMP
 that uses a black-box task planner and motion planner. A key step in their approach is the
-abstraction of continuous state variables into a discrete set of symbolic references to
-potential values. An \emph{interface layer} is then responsible
-for assigning continuous values to instantiate these symbolic references, discovering geometric facts about
-the environment, and sending these facts back to the task planner to be added into the fluent state.
-\emph{Plan refinement} refers to the process of attempting to assign a feasible set of
-values to the symbolic plan variables.
+abstraction of continuous state variables, such as robot grasping poses for objects, into a
+discrete set of symbolic references to potential values.
+
+An \emph{interface layer} is then responsible
+for assigning continuous values to instantiate these symbolic references and calling a motion planner to find valid
+linking trajectories for these instantiated values. In the process, the interface layer may discover
+geometric facts about the environment which cannot be resolved by motion planning (such as finding that an object
+to be grasped is obstructed), upon which it sends symbolic representations of these facts back to
+the task planner to be added into the fluent state. \emph{Plan refinement} refers to this process
+of attempting to assign a feasible set of values to the symbolic plan variables. In this context, feasibility
+means that there exists a set of collision-free trajectories for the robot that link all instantiated
+values associated with robot pose.
+
+The system also maintains a \emph{plan refinement graph}, whose nodes each store a symbolic plan and
+its current refinement, the set of instantiated plan variable values. If refinement of a plan $p$ stored in node
+$n$ leads to discovered facts being propagated to the task planner, the newly produced plan $p'$ based on
+the updated fluent state is added as a child node $n'$ of $n$. The search policy through the plan refinement graph
+enforces an ordering over which refinement is attempted for plans. In the existing infrastructure, this policy
+always selects the deepest node (which incorporates the highest number of discovered facts) for refinement.
 
 The authors introduce an algorithm for plan refinement
 called \textsc{TryRefine}, an exhaustive backtracking routine over a hand-coded discrete set of candidate
 plan parameter values. (Interested readers are referred to \cite{srivastava2014combined} for details.)
 This hand-coded discretization is domain-specific and tuned to the geometry of objects in the
-environment; for example, in a pick-and-place domain, end effector grasp poses for a can may be
+environment; for example, in a pick-and-place domain, end effector grasp poses for a can are
 sampled around the can in each of the 4 cardinal directions, at a fixed distance and height.
 Such coarse sampling distributions necessitate fine-tuning for each domain and are not robust to
 increased environmental complexity.

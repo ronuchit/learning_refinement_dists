@@ -10,16 +10,21 @@ challenge. TAMP methods integrate logical search with continuous
 geometric reasoning in order to sequence several short-horizon motion plans that together
 solve a long-horizon task.
 A core limitation of these systems is the manner in which continuous parameters for motion planning are sampled:
-using hand-coded distributions that leverage domain specificity and require substantial design effort.
+using hand-coded distributions that leverage domain specificity, lack robustness, and require substantial design effort.
 In this paper, we present a method
 for using reinforcement learning (RL) to learn distributions that propose
 values for the continuous parameters of a symbolic plan. More specifically, we
 formulate \emph{plan refinement}, the process of determining
 continuous parameter settings for a fixed task sequence, as a Markov
 decision process (MDP) and give an algorithm to learn a policy for it.
+Additionally, we show how to train heuristics that guide meta-level search
+through a \emph{plan refinement graph}, a data structure whose nodes are candidate symbolic
+plans for reaching the goal and their current refinements. This allows our system
+to determine \emph{which} symbolic plans to focus refinement on, in addition to \emph{how} to perform this refinement.
 Our contributions are as follows: 1) we present a randomized local search algorithm for plan refinement
-that is well-suited to an MDP formulation; 2) we give an RL algorithm that learns a policy for this MDP;
-and 3) we perform experiments to evaluate the performance of our system in a simulated
-pick-and-place domain. We find that our approach achieves comparable to improved performance
-versus that of hand-coded sampling distributions in a variety of test environments.
+that is easily formulable as an MDP; 2) we give an RL algorithm that learns a policy for this MDP;
+3) we present a method for training heuristics to search through a plan refinement graph;
+and 4) we perform experiments to evaluate the performance of our system in a variety of simulated
+domains. We find that our approach yields significantly improved performance over that
+of hand-coded sampling distributions.
 \end{abstract}

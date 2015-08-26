@@ -1,0 +1,33 @@
+\section{Searching the Plan Refinement Graph}
+The approach presented thus far can be succinctly described as learning \emph{how} to
+refine a single high level plan. We are also interested in learning heuristics for the
+meta-level decision of searching through the plan refinement graph $\Gr = (\V, \E)$, which grows as geometric
+facts about the environment are discovered by the interface layer and propagated to the
+task planner to be added into the fluent state. Each node $v \in \V$ contains a high level plan and its current
+refinement. The decision to be made is of the form $(v, b)$,
+where $v \in \V$ denotes \emph{which} node to visit next, and $b$ is a boolean that indicates the action
+to be performed at $v$. There are two possible actions: 1) attempt to find a valid refinement
+for the plan stored in $v$, or 2) recognize that a valid refinement does not exist for this plan
+and instead try to discover geometric facts to incorporate into the fluent state. As an example, action 2
+is useful if the plan attempts to grasp an object that is completely surrounded by obstructions,
+so that no valid refinement of the grasping pose exists.
+
+We train two decision tree regressors which predict answers for the
+following questions about a single node $n$ containing plan $p$: 1) how many iterations of randomized refinement
+would be needed to achieve a valid refinement for $p$ ($\infty$ if $p$ has no valid refinement); 2)
+if we quickly generate a child node $n'$ under $n$ by discovering geometric facts and producing a new plan $p'$,
+how many iterations would be needed to refine $p'$?
+
+The features for our regressors are as follows. 3 geometric features encode the closeness of the objects
+of interest in our environment, considering the distance to and placement of nearby obstructions. Another
+feature describes how many times the node has been visited before. The final feature describes the fraction
+of the high level plan for which the current refinement is valid. To train the regressors, we fix pretrained policies for
+plan refinement and construct supervised learning datasets as follows.
+Over 500 random environments sampled from $\Prob$, we run the default graph search policy (which always selects
+the deepest node in the graph and attempts to refine it) and measure the feature vector and
+quantities of interest. We then fit a standard decision tree regressor to our data.
+
+At test time, we make the decision $(v, b)$ as follows. We select $v$ according to a softmin (with decreasing temperature) over the values
+predicted by the first regressor. Then, we select $b$ using a softmin comparison between the two regressors'
+predicted values for $v$ -- if producing a child node would reduce the number of steps to a valid refinement,
+we bias toward selecting action 2 for $v$.

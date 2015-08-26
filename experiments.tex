@@ -53,56 +53,51 @@ avoid obstructions while providing a good set of grasping poses.}
   \tabcolsep=0.11cm{
   \begin{tabular}{ccccc}
     \toprule[1.5pt]
-      \textbf{System} & \textbf{Experiment} & \textbf{\% Solved} & \textbf{Avg MP Time (s)} & \textbf{Avg \# MP Calls}\\
+      \textbf{\# Objects} & \textbf{System} & \textbf{\% Solved (SD)} & \textbf{Avg MP Time (s)} & \textbf{Avg \# MP Calls}\\
     \midrule[2pt]
-      B & 1, 1 obstr & 100 & 8.16 & 18.93\\
+      2 (dinner) & B & 100 & 8.16 & 18.93\\
     \midrule
-      L & 1, 1 obstr & 96 & 6.11 & 11.5\\
+      2 (dinner) & L & 100 & 8.16 & 18.93\\
     \midrule[1.5pt]
-      B & 1, 2 obstr & 96 & 8.74 & 19.7\\
+      4 (dinner) & B & 100 & 8.16 & 18.93\\
     \midrule
-      L & 1, 2 obstr & 94 & 12.26 & 20.77\\
+      4 (dinner) & L & 100 & 8.16 & 18.93\\
     \midrule[1.5pt]
-      B & 1, 3 obstr & 84.44 & 10.77 & 23.16\\
+      25 (cans) & B & 100 & 8.16 & 18.93\\
     \midrule
-      L & 1, 3 obstr & 97.78 & 10.6 & 19.1\\
+      25 (cans) & L & 96 & 6.11 & 11.5\\
+    \midrule
+      25 (cans) & F & 96 & 8.74 & 19.7\\
     \midrule[1.5pt]
-      B & 2 & 33.33 & 12.1 & 21.1\\
+      30 (cans) & B & 94 & 12.26 & 20.77\\
     \midrule
-      L & 2 & 96.67 & 9.19 & 17.78\\
-    \midrule[1.5pt]
-      B & 3 & 100 & 4.52 & 12.24\\
+      30 (cans) & L & 84.44 & 10.77 & 23.16\\
     \midrule
-      L & 3 & 100 & 5.94 & 15.36\\
+      30 (cans) & F & 97.78 & 10.6 & 19.1\\
     \bottomrule[1.5pt]
   \end{tabular}}
-  \caption{Percent solved, along with time spent motion planning and number of calls to the motion
-planner for the final refinement. Results are averaged across 50 test environments per experiment, when both
-the baseline and our system succeed. The test environments were grouped into 10 batches of 5, and
-each batch received independent training with a distinct random seed. For each experiment,
-we provide baseline system results using hand-tuned sampling distributions (B) and results from running
-our system (L).}
+  \caption{Percent solved and standard deviation, along with time spent motion planning and number of calls to the motion
+planner for baseline system (B), our system without heuristics for plan refinement graph search (L),
+and our full system (F). Results using our system are averaged across 10 different sets of weights. Time limit: 300s.}
   \label{table:results}
 \end{table}
 
-We evaluate our approach in several pick-and-place
-tasks, varying the number of obstructions, obstruction locations, and whether
-the base is allowed to move. We compare performance with that of the
-hand-coded sampling distributions used in Srivastava et al.~\cite{srivastava2014combined}.
-In this work, our training focuses on the problem of refining a single high level
-plan. However, during actual planning, we may start with a high level plan that
-has no valid refinement, and symbolic error information must be propagated to the
-task planner, which produces a new plan. In future work, we will
-incorporate this into the learning framework, but for now we measure performance
-only on the refinement of the final high level plan.
+Our experiments are conducted in Python 2.7 using the OpenRave simulator~\cite{Diankov_2008_6117} with a PR2 robot.
+The motion planner we use is trajopt~\cite{schulman2013finding}, and the task planner is Fast-Forward~\cite{FF}.
+The experiments were carried out in series on an Intel Core i7-4790K machine with 16GB RAM.
+
+We evaluate our approach in two distinct domains: cans distributed on a table (the \emph{can domain})
+and setting up kitchenware for dinner (the \emph{dinner domain}).
+We compare performance with that of the hand-coded sampling distributions
+used in Srivastava et al.~\cite{srivastava2014combined}. In both domains, plan refinement samples
+are drawn from continuous distributions trained using the described algorithms. For the can domain, we
+show results both with and without our trained heuristics for searching the plan refinement graph. However,
+for the dinner domain, objects in the environment are never obstructed by others, so the default search policy
+of picking the deepest node in the graph to refine is already optimal.
 
 We use the reward function described earlier. Our weight
-vectors are initialized to $\vec{\mathbf{0}}$ for all parameter types.
-This initialization represents a uniform distribution across the limits of the geometric search space.
-Our domain has 3 types of continuous parameters: base poses, object grasp poses, and object putdown poses.
-The range of allowable values for grasp and putdown poses is a cube of side length 30 centimeters
-around the target object or putdown location. For base poses, the range is a
-square of side length 1 meter around the object or location which the robot is approaching.
+vectors are initialized to $\vec{\mathbf{0}}$ for all parameter types -- this
+initialization represents a uniform distribution across the limits of the geometric search space.
 We use 24 features. 9 binary features encode the bucketed distance between the sample
 and target. 9 binary features encode the bucketed sample height. 3 features
 describe the number of other objects within discs of radius 7, 10, and 15 centimeters around the
@@ -110,36 +105,42 @@ sample. 3 binary features describe the angle made between the vector from the
 robot to the target and the vector from the sample to the target: whether the angle is less than
 $\pi/3$, $\pi/2$, and $3\pi/4$.
 
-Our experiments are conducted in Python 2.7 using the OpenRave simulator~\cite{Diankov_2008_6117} with a PR2 robot.
-The motion planner we use is trajopt~\cite{schulman2013finding}, and the task planner is Fast-Forward~\cite{FF}.
-The experiments were carried out in series on an Intel Core i7-4770K machine
-with 16GB RAM.
+For the can domain, the goal across all experiments is for the robot to pick up a particular object with its
+left gripper. We disabled the right gripper, so any obstructions to the target object must be picked up and
+placed elsewhere on the table. This domain has 4 types of continuous parameters: base poses, object grasp
+poses, object putdown poses, and object putdown locations onto the table. The range of allowable values for
+grasp and putdown poses is a cube of side length 30 centimeters around
+the target object or putdown location. For base poses, the range is a
+square of side length 1 meter around the object or location which the robot is approaching. For putdown locations,
+the range is defined by the edges of the table.
 
-We train and test 3 different experiments, all of which share a common goal of
-grasping a target object from a table and putting it down at a specific location on the table.
-The locations of the obstructions surrounding the target object were
-sampled uniformly from a thick ring around the object with inner radius 0.13 meters
-and outer radius 0.25 meters. Table \ref{table:results} summarizes our quantitative results.
-\figref{fig:cover} plots learned distributions for a move-grasp-move-putdown sequence of actions.
-\figref{fig:training} illustrates the training of grasp and putdown distributions, and \figref{fig:obstr}
-shows how the learned grasp distribution interacts with obstructions.
+Initial experimentation revealed that training jointly for all these continuous
+parameter types was infeasible due to a dearth of valid plan refinements being produced, so we decided to
+incorporate curriculum learning. Thus, we train $N = 10$ iterations of plans involving just base motion and grasping,
+then $N = 20$ iterations of base motion, grasping, and putdown at a predefined location, then $N = 30$ iterations of
+the full set of parameter types, including a varying putdown location. We fixed $L = 100$ and $\epsilon = 20$.
 
-\textbf{Experiment 1}: Grasp is obstructed by 1 through 3 objects; no base motion.
-$N = 20$, $L = 16$, $\epsilon = 4$. Our system outperforms the baseline for both 1 and 3
-obstructions, but performs worse for 2. We attribute this to the fact that random seeding can
-have a huge effect on which local optimum our policy gradient algorithm finds. An additional
-observation is that motion planner time and number of calls are not always linearly related; some target
-poses may be IK feasible but difficult to reach, causing the motion planner to take longer
-to find a trajectory.
+For the experiments which only use the trained plan refinement policies (no learned heuristics for searching the plan
+refinement graph), we trained 10 different sets of weights using the described curriculum learning system, varying
+only the random number generator's initial seed. Then, for the experiments which also search the plan refinement graph
+intelligently, we employed an improved training methodology to reduce variation due to seeding. We trained 30 different
+sets of weights, and for every group of 3 sets, we picked the best one based on performance in a validation set and discarded
+the other two. To test performance, we randomly generated 50 environments for both 25 cans and 30 cans on the table,
+and measured success rate, motion planning time, and number of motion planner calls for the baseline system and each
+trained set of weights.
 
-\textbf{Experiment 2}: Putdown is obstructed in cardinal directions; no base motion.
-$N = 20$, $L = 16$, $\epsilon = 4$. This is a contrived example to illustrate the
-issues with coarse discretization of the sample space.
-The baseline system only attempts putdown pose instantiation in the
-4 cardinal directions, explaining the large performance disparity.
+For the dinner domain, we run three sets of experiments, in which the robot must move 2, 4, and 6
+objects from their initial location on one table to target locations on the other. We assign a cost to
+base motion in the environment, so the robot is encouraged to use the provided tray, onto which objects can be stacked.
+This domain has 5 types of continuous parameters: base poses, object grasp poses, object putdown poses, tray pickup
+poses, and tray putdown poses. Our curriculum learning system first trains the tray pickup and putdown poses for
+$N = 20$ iterations, then the object grasp and putdown poses for $N = 20$ iterations. We fixed $L = 100$ and $\epsilon = 10$.
+We trained 10 different sets of weights and tested performance across 50 randomly generated
+environments for each number of objects.
 
-\textbf{Experiment 3}: Grasp is obstructed by 1 object; base motion allowed.
-$N = 60$, $L = 100$, $\epsilon = 20$. Our system performs slightly worse than the baseline
-here, but not significantly. We believe this is because more time is spent motion planning
-base poses from which grasps and putdowns are infeasible (since candidate base poses are no
-longer hand-engineered), triggering resampling of the value assigned to the base pose parameter.
+Table \ref{table:results} summarizes our quantitative results, which demonstrate
+comparable performance to the baseline system for the dinner domain, and significant improvements for
+the can domain. The reason performance does not greatly improve for the dinner domain is that the
+hand-coded discretizations of the sample space are very good in this environment. For example, the optimal
+robot base pose from which to pick up the tray is directly in front of it, which is quickly found through
+the baseline's discretization for the tray pickup pose parameter.

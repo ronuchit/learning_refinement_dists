@@ -11,54 +11,44 @@ symbolic plan, its current refinement (instantiation of values for all plan para
 and the environment.
 \item An action $a \in \A$ is a pair $(p, x)$, where $p$ is the discrete-space plan
 parameter to resample and $x$ is the continuous-space value assigned to $p$ in the new refinement.
-\item The transition function is defined deterministically by $\St$ and $\A$.
-\item Our reward function $R(s, a, s')$ provides constant rewards based on parameter resampling.
+\item The transition function is defined implicitly by the motion planning algorithms we use as a black box.
+\item The reward function $R(s, a, s')$ provides rewards based on closeness to a valid plan refinement.
+\item $\Prob$, a distribution over planning problems, encompassing both the task planning problem
+and the environment. This defines the initial state distribution for the MDP.
+\item $L$, the number of samples for one planning problem, which partially defines the
+transition function for the MDP. (After $L$ calls to the sampler, the next state is drawn uniformly
+at random from $\Prob$.)
 \end{tightlist}
 
 We are focused on training policies for choosing the continuous value
-$x$ in our actions, by defining a sampling distribution (based on the state) for each plan parameter $p$.
-We note the observation that randomized refinement provides a fixed policy for selecting $p$ itself.
+$x$ in actions $a \in \A$, by defining a sampling distribution (based on the state) for each plan parameter $p$.
+We note that randomized refinement provides a fixed policy for selecting $p$ itself.
 
-Because we check for IK feasibility when resampling, we provide $-1$ reward every
-time we sample an IK infeasible pose, and $+3$ reward for an IK feasible pose.
-Similarly, we give $-3$ reward upon motion planning failure or action precondition violation,
-and $+5$ reward upon a successful call to the motion planner for an action.
-This choice of $R$ implies that our training optimizes the sampling distributions for
-motion planning feasibility, rather than explicitly for refining plans. However, the two are
-closely correlated -- randomized refinement succeeds in fewer iterations when the sampling
-distributions are biased toward motion planning feasible values.
+Our reward function $R$ explicitly encourages successful plan refinement, providing positive reward linearly
+interpolated between 0 and 20 based on the fraction of the plan variables whose current instantiation causes
+action preconditions to be met. Additionally, we give $-1$ reward every time we sample an IK infeasible pose,
+to minimize how long the system spends resampling plan variables until obtaining IK feasible samples.
 
 \subsection{Training Process}
-We now show how to apply the method of Zucker et al.~\cite{workspacebias} to learn a policy
-for plan refinement. Their method learns a mapping from a feature vector to a
-likelihood. In our setting, we learn a weight vector for each parameter
-\emph{type}, comprised of a pose type and a gripper (e.g., ``left gripper grasp pose,'' ``right
-gripper putdown pose''). This decouples the learned distributions from any single
-high level plan and allows us to test in more complicated environments than those used in
-training. The weight vectors encode the policy for selecting $x$ for actions $a \in \A$,
-as described in the previous subsection. Our feature function $f(s, p, x)$ maps the current
-state $s \in \St$, plan parameter $p$, and sampled value $x$ for $p$ to a feature vector; $f$
-defines a policy class for our problem.
+We learn a policy for this MDP by adapting the method of Zucker et al.~\cite{workspacebias}, which
+learns a mapping from a feature vector to a likelihood. In our setting, we learn a weight
+vector $\theta_{p}$ for each parameter \emph{type}, comprised of a pose type and a gripper
+(e.g., ``left gripper grasp pose,'' ``right gripper putdown pose''). This decouples the learned
+distributions from any single high level plan and allows us to test in more complicated environments
+than those used in training. These weight vectors encode the policy for selecting $x$ in actions $a \in \A$.
 
-Our training system is defined by the following:
-\begin{tightlist}
-\item[$\Prob$:] A distribution over planning problems, encompassing both
-the task planning problem and the environment.
-\item[$\theta_{p}$:] The weight vector for $p$'s parameter type.
-\item[$R$:] The reward function, described in the previous subsection.
-\item[$f(s, p, x)$:] The feature function, described above.
-\item[$N$:] The number of planning problems on which to train.
-\item[$L$:] The number of samples for one planning problem.
-\item[$\epsilon$:] The number of samples comprising an episode. We perform
-a weight vector update after each episode.
-\end{tightlist}
+We develop a feature function $f(s, p, x)$ that maps the current
+state $s \in \St$, plan parameter $p$, and sampled value $x$ for $p$ to a
+feature vector; $f$ defines a policy class for the MDP. Additionally, we define
+$N$ as the number of planning problems on which to train, and
+$\epsilon$ as the number of samples comprising a training episode.
 
 The training is a natural extension of randomized
 refinement and progresses as follows. $N$ times, sample from $\Prob$ to obtain
 a complete planning problem $\Pi$. For each $\Pi$, run the randomized refinement
 algorithm to attempt to find a valid plan refinement, allowing the \texttt{resample}
 routine to be called $L$ times before termination. As the system takes on-policy actions $a \in \A$ (based on
-current $\theta$), collect rewards according to $R$. Every $\epsilon$ calls to
+current $\theta$), collect rewards according to $R$. After every $\epsilon$ calls to
 \texttt{resample}, perform a gradient update on the weight vectors using the
 collected rewards.
 

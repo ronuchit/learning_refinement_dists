@@ -55,7 +55,7 @@ initialized as straight lines.
 \end{algorithm}
 
 We call the \textsc{MotionPlan} subroutine in line 4, which
-iterates through the sequence of actions that comprise the high level plan.
+iterates through the sequence of actions that comprise the high level plan (l.20).
 For each action, a call to the motion planner is made (l.22) using the instantiated values
 for the parameters of that action, to attempt to find a trajectory
 linking the sampled poses. If this succeeds, the preconditions of the action
@@ -73,7 +73,7 @@ Randomized refinement has two key properties. The first is a very explicit algor
 We show in the next section that this allows for a straightforward MDP
 formulation. This is also beneficial from an
 engineering perspective, as the simplicity allows for easy debugging. The second is that
- it allows the parameter instantiations for a particular action in
+it allows the parameter instantiations for a particular action in
 the plan to be influenced by those for a \emph{future} action. For example, in a
 pick-and-place task, it can make sense for the object's grasp pose to be sampled
 conditionally on the current instantiation of the putdown pose, even though the putdown
