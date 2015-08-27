@@ -20,11 +20,11 @@ to $\pi$:
 $$V_{\pi}(s) = \mathbb{E}[\sum_{t=0}^{\infty}\gamma^{t}R(s_{t}) | \pi, s_{0} = s].$$
 The optimal policy $\pi^{*}$ maximizes this value for all states. The goal of an RL
 problem is for an agent to learn $\pi^{*}$ (or an approximation) automatically
-through interaction with its environment, taking actions within it and obtaining
+through interaction with its environment: taking actions within it and obtaining
 rewards. Key challenges in RL include determining how to assign
 the credit of received rewards to each undertaken action, balancing the tradeoff between
 exploration of new actions and exploitation of known good actions in the environment, and handling
-potential limited perception of the current state. Two widely used techniques for RL are value
+potentially limited perception of the current state. Widely used techniques for RL include value
 function approximation, using methods such as temporal difference (TD) learning~\cite{suttonbarto},
 and direct policy estimation, which encompasses both gradient-based and gradient-free methods.
 
@@ -150,15 +150,18 @@ geometric facts about the environment which cannot be resolved by motion plannin
 to be grasped is obstructed), upon which it sends symbolic representations of these facts back to
 the task planner to be added into the fluent state. \emph{Plan refinement} refers to this process
 of attempting to assign a feasible set of values to the symbolic plan variables. In this context, feasibility
-means that there exists a set of collision-free trajectories for the robot that link all instantiated
+means that there exists a set of collision-free trajectories for the robot that links all instantiated
 values associated with robot pose.
 
 The system also maintains a \emph{plan refinement graph}, whose nodes each store a symbolic plan and
 its current refinement, the set of instantiated plan variable values. If refinement of a plan $p$ stored in node
 $n$ leads to discovered facts being propagated to the task planner, the newly produced plan $p'$ based on
-the updated fluent state is added as a child node $n'$ of $n$. The search policy through the plan refinement graph
+the updated fluent state is added as a child node $n'$ of $n$. Thus, each node in the graph corresponds to a
+plan constructed from a fluent state incorporating some distinct subset of all facts
+discovered by the interface layer so far. The search policy through the plan refinement graph
 enforces an ordering over which refinement is attempted for plans. In the existing infrastructure, this policy
-always selects the deepest node (which incorporates the highest number of discovered facts) for refinement.
+always selects the deepest node for refinement, meaning all propagated errors are incorporated into the plan.
+(Work on this portion of the system is still in progress and will be published in the future.)
 
 The authors introduce an algorithm for plan refinement
 called \textsc{TryRefine}, an exhaustive backtracking routine over a hand-coded discrete set of candidate

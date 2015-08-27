@@ -1,51 +1,51 @@
 \section{Experiments}
-\begin{figure}
-  \centering
-  \begin{subfigure}[b]{0.48\linewidth}
-    \includegraphics[width=\textwidth]{images/learns.png}
-    \caption{Initial distribution}
-  \end{subfigure}
-  \begin{subfigure}[b]{0.48\linewidth}
-    \includegraphics[width=\textwidth]{images/learn10.png}
-    \caption{After 10 iterations.}
-  \end{subfigure}
-  \begin{subfigure}[b]{0.48\linewidth}
-    \includegraphics[width=\textwidth]{images/learn15.png}
-    \caption{After 15 iterations.}
-  \end{subfigure}
-  \begin{subfigure}[b]{0.48\linewidth}
-    \includegraphics[width=\textwidth]{images/learn20.png}
-    \caption{Final distribution.}
-  \end{subfigure}
-  \caption{Learned left arm grasp (green) and putdown (blue) distributions used to
-pick up the black can and place it on the central red square, after different training iterations.
-An iteration refers to a single run of randomized refinement,
-which terminates after $L$ calls to the \texttt{resample} routine. The
-initial distributions are uniform because we initialize weights to $\vec{\mathbf{0}}$.
-The final distributions are after 20 iterations. The convergence and robustness of
-the distributions demonstrate the soundness of our approach.}
-  \label{fig:training}
-\end{figure}
+% \begin{figure}
+%   \centering
+%   \begin{subfigure}[b]{0.48\linewidth}
+%     \includegraphics[width=\textwidth]{images/learns.png}
+%     \caption{Initial distribution}
+%   \end{subfigure}
+%   \begin{subfigure}[b]{0.48\linewidth}
+%     \includegraphics[width=\textwidth]{images/learn10.png}
+%     \caption{After 10 iterations.}
+%   \end{subfigure}
+%   \begin{subfigure}[b]{0.48\linewidth}
+%     \includegraphics[width=\textwidth]{images/learn15.png}
+%     \caption{After 15 iterations.}
+%   \end{subfigure}
+%   \begin{subfigure}[b]{0.48\linewidth}
+%     \includegraphics[width=\textwidth]{images/learn20.png}
+%     \caption{Final distribution.}
+%   \end{subfigure}
+%   \caption{Learned left arm grasp (green) and putdown (blue) distributions used to
+% pick up the black can and place it on the central red square, after different training iterations.
+% An iteration refers to a single run of randomized refinement,
+% which terminates after $L$ calls to the \texttt{resample} routine. The
+% initial distributions are uniform because we initialize weights to $\vec{\mathbf{0}}$.
+% The final distributions are after 20 iterations. The convergence and robustness of
+% the distributions demonstrate the soundness of our approach.}
+%   \label{fig:training}
+% \end{figure}
 
-\begin{figure}
-  \centering
-  \begin{subfigure}[b]{0.3\linewidth}
-    \includegraphics[width=\textwidth]{images/finalgraspnoobstr.png}
-    \caption{}
-  \end{subfigure}
-  \begin{subfigure}[b]{0.3\linewidth}
-    \includegraphics[width=\textwidth]{images/finalgraspobstr.png}
-    \caption{}
-  \end{subfigure}
-  \begin{subfigure}[b]{0.3\linewidth}
-    \includegraphics[width=\textwidth]{images/finalgraspobstr2.png}
-    \caption{}
-  \end{subfigure}
-  \caption{The learned grasp pose distribution
-is shown with different obstruction layouts. The system learns to
-avoid obstructions while providing a good set of grasping poses.}
-  \label{fig:obstr}
-\end{figure}
+% \begin{figure}
+%   \centering
+%   \begin{subfigure}[b]{0.3\linewidth}
+%     \includegraphics[width=\textwidth]{images/finalgraspnoobstr.png}
+%     \caption{}
+%   \end{subfigure}
+%   \begin{subfigure}[b]{0.3\linewidth}
+%     \includegraphics[width=\textwidth]{images/finalgraspobstr.png}
+%     \caption{}
+%   \end{subfigure}
+%   \begin{subfigure}[b]{0.3\linewidth}
+%     \includegraphics[width=\textwidth]{images/finalgraspobstr2.png}
+%     \caption{}
+%   \end{subfigure}
+%   \caption{The learned grasp pose distribution
+% is shown with different obstruction layouts. The system learns to
+% avoid obstructions while providing a good set of grasping poses.}
+%   \label{fig:obstr}
+% \end{figure}
 
 \begin{table}
   \centering
@@ -55,29 +55,29 @@ avoid obstructions while providing a good set of grasping poses.}
     \toprule[1.5pt]
       \textbf{\# Objects} & \textbf{System} & \textbf{\% Solved (SD)} & \textbf{Avg MP Time (s)} & \textbf{Avg \# MP Calls}\\
     \midrule[2pt]
-      2 (dinner) & B & 100 & 8.16 & 18.93\\
+      2 (dinner) & B & TODO (X) & 0 & 0\\
     \midrule
-      2 (dinner) & L & 100 & 8.16 & 18.93\\
+      2 (dinner) & L & TODO (X) & 0 & 0\\
     \midrule[1.5pt]
-      4 (dinner) & B & 100 & 8.16 & 18.93\\
+      4 (dinner) & B & TODO (X) & 0 & 0\\
     \midrule
-      4 (dinner) & L & 100 & 8.16 & 18.93\\
+      4 (dinner) & L & TODO (X) & 0 & 0\\
     \midrule[1.5pt]
-      25 (cans) & B & 100 & 8.16 & 18.93\\
+      25 (cans) & B & 74 (0) & 15.8 & 19.7\\
     \midrule
-      25 (cans) & L & 96 & 6.11 & 11.5\\
+      25 (cans) & L & 82 (4.8) & 15.6 & 14.6\\
     \midrule
-      25 (cans) & F & 96 & 8.74 & 19.7\\
+      25 (cans) & F & 92 (4.2) & 11.2 & 12.4\\
     \midrule[1.5pt]
-      30 (cans) & B & 94 & 12.26 & 20.77\\
+      30 (cans) & B & 36 (0) & 48.8 & 35.8\\
     \midrule
-      30 (cans) & L & 84.44 & 10.77 & 23.16\\
+      30 (cans) & L & 65 (6.1) & 24.6 & 9.7\\
     \midrule
-      30 (cans) & F & 97.78 & 10.6 & 19.1\\
+      30 (cans) & F & 74 (5.5) & 23.3 & 21.7\\
     \bottomrule[1.5pt]
   \end{tabular}}
   \caption{Percent solved and standard deviation, along with time spent motion planning and number of calls to the motion
-planner for baseline system (B), our system without heuristics for plan refinement graph search (L),
+planner for the baseline system (B), our system with only learned refinement policies (no graph search heuristics) (L),
 and our full system (F). Results using our system are averaged across 10 different sets of weights. Time limit: 300s.}
   \label{table:results}
 \end{table}
@@ -87,9 +87,9 @@ The motion planner we use is trajopt~\cite{schulman2013finding}, and the task pl
 The experiments were carried out in series on an Intel Core i7-4790K machine with 16GB RAM.
 
 We evaluate our approach in two distinct domains: cans distributed on a table (the \emph{can domain})
-and setting up kitchenware for dinner (the \emph{dinner domain}).
-We compare performance with that of the hand-coded sampling distributions
-used in Srivastava et al.~\cite{srivastava2014combined}. In both domains, plan refinement samples
+and setting up bowls for dinner (the \emph{dinner domain}).
+We compare performance with that of the hand-coded sampling distributions and default plan refinement graph search
+strategy used in Srivastava et al.~\cite{srivastava2014combined}. In both domains, plan refinement samples
 are drawn from continuous distributions trained using the described algorithms. For the can domain, we
 show results both with and without our trained heuristics for searching the plan refinement graph. However,
 for the dinner domain, objects in the environment are never obstructed by others, so the default search policy
@@ -129,13 +129,13 @@ the other two. To test performance, we randomly generated 50 environments for bo
 and measured success rate, motion planning time, and number of motion planner calls for the baseline system and each
 trained set of weights.
 
-For the dinner domain, we run three sets of experiments, in which the robot must move 2, 4, and 6
-objects from their initial location on one table to target locations on the other. We assign a cost to
-base motion in the environment, so the robot is encouraged to use the provided tray, onto which objects can be stacked.
+For the dinner domain, we run two sets of experiments, in which the robot must move 2 and 4
+bowls from their initial location on one table to target locations on the other. We assign a cost to
+base motion in the environment, so the robot is encouraged to use the provided tray, onto which bowls can be stacked.
 This domain has 5 types of continuous parameters: base poses, object grasp poses, object putdown poses, tray pickup
 poses, and tray putdown poses. Our curriculum learning system first trains the tray pickup and putdown poses for
 $N = 20$ iterations, then the object grasp and putdown poses for $N = 20$ iterations. We fixed $L = 100$ and $\epsilon = 10$.
-We trained 10 different sets of weights and tested performance across 50 randomly generated
+We trained 10 different sets of weights (varying only the seed) and tested performance across 50 randomly generated
 environments for each number of objects.
 
 Table \ref{table:results} summarizes our quantitative results, which demonstrate
@@ -143,4 +143,4 @@ comparable performance to the baseline system for the dinner domain, and signifi
 the can domain. The reason performance does not greatly improve for the dinner domain is that the
 hand-coded discretizations of the sample space are very good in this environment. For example, the optimal
 robot base pose from which to pick up the tray is directly in front of it, which is quickly found through
-the baseline's discretization for the tray pickup pose parameter.
+the baseline system's discretization for the tray pickup pose parameter.

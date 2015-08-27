@@ -44,7 +44,7 @@ robot trajectories. We also develop a method for making the meta-level decision 
 symbolic task sequence to sample for, given options that stem from several potential logical
 states of the world.
 
-Our solution builds on the TAMP system
+Our methods build on the TAMP system
 presented by Srivastava et al.~\cite{srivastava2014combined}.
 In this system, a (classical) task planner produces a symbolic plan containing
 a sequence of actions to reach a goal state. Then, in a process known as \emph{plan refinement},
@@ -57,7 +57,7 @@ backtracking search over a hand-coded discrete set of candidate parameter values
 planning feasible refinement is not found within the resource limit,
 symbolic error information is propagated back to the task planner, and a new symbolic plan is produced.
 This plan is added as a child node in the \emph{plan refinement graph}, whose nodes store each
-symbolic plan and associated current refinement. The search policy through this graph determines the order
+symbolic plan and associated current refinement. This graph's search policy determines the order
 in which plans are attempted to be refined. The system uses an off-the-shelf classical task planner and motion planner, both as black boxes.
 While our method is specific to this architecture, it can be adapted for other TAMP paradigms.
 
@@ -66,16 +66,18 @@ in its environment that maximizes rewards. Zhang and Dietterich~\cite{JobShopSch
 to planning problems, using a job shop scheduling setting. In this work, we take inspiration from
 their approach; we apply RL to plan refinement in a TAMP system. We implement our approach using methods adapted from
 Zucker et al.~\cite{workspacebias}, who train a configuration space sampler for motion planning
-using features of the discretized workspace. We train a policy that
-determines how to sample values for plan refinement, using policy optimization with linear function
+using features of the discretized workspace.
+
+We train a policy that determines how to sample values for plan refinement, using policy optimization with linear function
 approximation. Our approach allows the learned distributions to be continuous, robust to changes in
 the environment, and trainable for any experimental setting, eliminating the need for hand-tuned
-distribution parameters. We also train heuristics that encode a search policy through a plan refinement graph.
+distribution parameters. Also, we train heuristics that encode a search policy through a plan refinement graph,
+thus providing an ordering for which plan to try refining next.
 
 The four contributions of our work are as follows: 1) we present randomized refinement, a local search
 algorithm for plan refinement that is easily formulable as an MDP; 2) we formulate plan refinement in the
 RL framework and learn a policy for this MDP; 3) we train heuristics to search intelligently
-through a plan refinement graph, allowing us to decide \emph{which} plan to refine next;
+through a plan refinement graph, allowing us to decide \emph{which} plan to try refining next;
 and 4) we present experiments to evaluate our approach in a variety of simulated
-domains. Our experimental results demonstrate that our approach yields significantly improved
+domains. Our results demonstrate that our approach yields significantly improved
 performance over that of hand-coded discretization of the plan refinement sample space.

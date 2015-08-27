@@ -1,6 +1,6 @@
 \section{Related Work}
-Our work uses RL techniques to improve upon results in recent TAMP systems,
-by training good policies for sampling plan variable values. Other
+Our work uses RL techniques to improve upon results in recent TAMP systems.
+We train good policies for sampling plan variable values, whereas other
 systems use hand-coded heuristics to guide this sampling.
 
 Srivastava et al.~\cite{srivastava2014combined} hand-tune coarse, domain-specific discretizations
@@ -16,9 +16,8 @@ about reachability in the robot configuration space and symbolic state space to 
 \emph{relaxed plan graph} that guides motion planning queries, using geometric biases to break ties
 among states with the same heuristic value.
 
-By contrast to these systems, our method learns continuous sampling distributions for plan variables.
-These distributions are more robust to different environment layouts and are immediately applicable to a
-variety of domains involving objects with different geometries and structure.
+By contrast to these systems, our method learns continuous sampling distributions for plan variables,
+which are significantly more robust to different environment layouts.
 
 Prior work has been devoted to using machine learning techniques for
 training heuristics to guide search algorithms. This general formulation

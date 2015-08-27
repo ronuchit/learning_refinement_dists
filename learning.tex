@@ -49,12 +49,8 @@ a complete planning problem $\Pi$. For each $\Pi$, run the randomized refinement
 algorithm to attempt to find a valid plan refinement, allowing the \texttt{resample}
 routine to be called $L$ times before termination. As the system takes on-policy actions $a \in \A$ (based on
 current $\theta$), collect rewards according to $R$. After every $\epsilon$ calls to
-\texttt{resample}, perform a gradient update on the weight vectors using the
+\texttt{resample}, perform a gradient update on the weights using the
 collected rewards.
-
-This process shows the strength of randomized refinement: only the variable
-values responsible for failures are resampled, so the learning is naturally
-focused toward improving sampling distributions which are not yet well-shaped.
 
 \subsection{Distribution and Gradient Updates}
 We adopt the sampling distribution used in Zucker et al.~\cite{workspacebias}
