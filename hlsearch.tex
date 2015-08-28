@@ -1,28 +1,24 @@
-\section{Searching the Plan Refinement Graph}
+\section{Selecting a Plan to Refine}
 The approach presented thus far can be succinctly described as learning \emph{how} to
-refine a single high level plan. We are also interested in learning heuristics for the
-meta-level decision of searching through the plan refinement graph $\Gr = (\V, \E)$, which grows as geometric
-facts about the environment are discovered by the interface layer and propagated to the
-task planner to be added into the fluent state (Section III-C). Each node $v \in \V$ contains a high level plan and its current
-refinement. The decision to be made is of the form $(v, b)$,
+refine a single high level plan. In this section, we present a method for learning
+\emph{which} plan to try refining. Section III-C describes the plan refinement graph $\Gr = (\V, \E)$,
+which maintains a set of candidate plans and their current refinements. The decision to be made is of the form $(v, b)$,
 where $v \in \V$ denotes \emph{which} node to visit next, and $b$ is a boolean that indicates the action
 to be performed at $v$. There are two possible actions: 1) attempt to find a valid refinement
 for the plan stored in $v$, or 2) recognize that a valid refinement does not exist for this plan
-and instead try to discover geometric facts to incorporate into the fluent state. As an example, action 2
+and generate a geometric fact to use for replanning. As an example, action 2
 is useful if the plan attempts to grasp an object that is surrounded by obstructions,
 so that no valid refinement of the grasping pose exists.
 
-We train two decision tree regressors which approximate answers for the
-following questions about a single node $n$ containing plan $p$: 1) how many iterations of randomized refinement
+To select between the potential refinement options, we learn decision tree regressors
+to answer the following questions about a single node $n$ containing plan $p$: 1) how many iterations of randomized refinement
 would be needed to achieve a valid refinement for $p$ ($\infty$ if $p$ has no valid refinement); 2)
 if we quickly generate a child node $n'$ under $n$ by discovering geometric facts and producing a new plan $p'$,
-how many iterations would be needed to refine $p'$? Because it is challenging to predict answers to these questions
-directly, we estimate by instead training regressors that answer these two questions for a manipulation
-action involving a \emph{single} object in the environment, then approximating the desired quantities for an entire high
-level plan by summing the predicted values over all manipulations that occur throughout. This approximation
-depends heavily on the localized nature of plans in our domain; it only makes sense if a plan can be split
-into subportions whose refinements are mostly independent. Addressing this will be an important area of future
-work.
+how many iterations would be needed to refine $p'$? We approach this problem by learning an estimate of the
+number of motion planning steps needed to refine each action. To obtain an estimate for a full plan, we
+sum this number across all of the plan's actions. This implicitly assumes that dependencies in plans are, in some way, local;
+it only makes sense if a plan can be split into subportions whose refinements are mostly independent.
+Addressing this will be an important area of future work.
 
 The features for our regressors are as follows. 3 geometric features encode the closeness of the objects
 of interest in our environment, considering the distance to and placement of nearby obstructions. The other
@@ -31,10 +27,9 @@ policies for plan refinement and construct supervised learning datasets as follo
 For the first regressor, we run refinement on the root
 node of the graph over 500 random environments sampled from $\Prob$, and measure the feature vector and quantities of interest.
 For the second regressor, we do the same but on a single child node spawned from the root node.
-We then fit a standard decision tree regressor to our data.
+We then fit standard decision tree regressors to our data.
 
 At test time, we make the decision $(v, b)$ as follows. We select $v$ according to a softmin (with decreasing temperature) over the values
 predicted by the first regressor. Then, we select $b$ using a softmin comparison between the two regressors'
 predicted values for $v$ -- if producing a child node would reduce the number of steps to a valid refinement,
-we bias toward selecting action 2 for $v$. Note that this procedure treats $\V$ as an unordered set and ignores
-the structure of $\Gr$.
+we bias toward selecting action 2 for $v$.
