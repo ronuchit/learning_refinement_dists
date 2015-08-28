@@ -1,0 +1,217 @@
+Background
+------------
+
+A. Reinforcement Learning
+---------------------------
+
+Change section title to "Markov Decision Processes and Reinforcement Learning"
+
+2 paragraphs: MDP and RL
+
+Include 1 sentence high-level description/motivation. (e.g., "Markov
+decision processes are the standard AI approach to formulate
+interactions between agents and environments. At each step of an MDP,
+the agent knows the current state and selects an action. Then the
+state transitions according to a known transition
+distribution. Formally an MDP is a tuple (S, A, T ,R, y):"
+
+include initial state distribution in the formulation of an MDP
+
+"for all states. The goal of an RL" --> split into two paragraphs
+
+"The goal of an RL problem ... obtaining rewards" --> I think we can
+be clearer. "In reinforcement learning, an agent must determine \pi*
+from interactions with the environment (i.e. without explicit access
+to S or T). At each timestep, the agent knows the state and what
+actions are available, but initially does not know how actions will
+effect the state."
+
+"Widely used techniques for RL" --> "There is a large body of research on RL and standard techniques include:"
+"Value function approximation...direct policy estimation" --> list structure is inconsistent (middle item is verb phrase, others are nouns)
+Citation in the last sentence should be for the full sentence (not just TD).
+
+B. Reinforcement Learning for Planning
+--------------------------------------
+
+"formulate this search as an MDP as follows:" --> "formulate scheduling as the following MDP"
+
+Citation for REINFORCE needed
+
+C. Task and Motion Planning
+-----------------------------
+
+"a fully observed task planning problem is a " --> "We define a task and motion planning as a" (This is not pure task planning b/c there are continuous variables"
+"(O, T, F, I, G, C)" --> "$\langle O, T, F, I, G, C \rangle$"
+Why using C for high-level actions? Seems confusing.
+"We refer to this sequence ... symbolic, or high level, plan" --> not really right, b/c your formulation has continuous variables. As you've described it, a_0 ... a_n is just the plan. I'd just delete this sentence.
+
+"Since task planners operate ... TAMP to provide this interpretation"
+--> "Classical task planners operate on discrete, purely logical
+problems and so can not directly solve this problem. We adopt the
+hierarchical method of Srivastava et al. to account for this
+discrepancy."
+
+After the last sentence "...references to potential values." include 1 sentence definining high level plan 
+
+"An interface layer is then responsible for assigning ... and calling..." --> "An interface layer assigns continuous values to symbolic references, in a process called \emph{Plan Refinement}. These parameters define a sequence of states and a motion planner is used to find trajectories between these states."
+
+"In the process...into the fluent state." --> "If no satisfying set of parameters can be found (e.g., because an object is unreachable) the interface layer augments the symbolic state description to reflect this and obtains a new high-level plan."
+
+"Plan refinement refers...." --> delete
+
+Plan refinement graph:
+    - Move this to after TryRefine
+    - Begin with context (unpublished extension to [1] to achieve completeness"
+    - Don't get into search algorithms for PRG, just say that it is possible to maintain a set of HLPs and interleave refinement
+
+"a hand-coded discrete set of" --> "a discrete set of"
+
+When you describe the discretization as the 4 cardinal directions it
+sounds as if you are describing the parameters used in the ICRA
+paper. You should make sure that this is accurate (and not just a
+description of our experimental setting).
+
+Randomized Refinement
+----------------------
+
+", by initializing an infeasible..." --> ": we initialize an
+infeasible refinement and use a randomized local search to propose
+improvements."
+
+"We thus present...for plan refinement" --> can remove this sentence
+"It maintains at all times" --> "We maintain"
+"variable; at each" --> "variable. At each"
+"resampled (locally)" --> "resampled"
+"pseudocode for randomized refinement" --> "pseudocode for this randomized refinement"
+
+"Trajectories are then" --> "Trajectories are"
+
+I think we can probably remove the motionplan subroutine and just give
+a description in words.
+
+Learning Refinement Distributions
+---------------------------------
+
+"Before describing ... as an MDP" --> can probably delete this
+
+Before you give the bulleted list, give a brief 1P overview of the
+important points of the formulation.
+
+state definition could have a little more information about what the
+environment is (right now its not clear how it is different from the
+refinement)
+
+state definition should include a counter for the reset number of
+resampling steps
+
+"discrete-space" --> "discrete"
+"continuous-space" --> "continuous"
+
+Modify the transition bullet to be in 3 cases. n always increments by 1 then
+    1) n > L --> draw new state from initial state distribution, reset n to 0
+    2) IK infeasible intermediate state --> refinement does not change
+    3) else --> motion planner calls, returns potentially infeasible trajectory, variables accepted
+
+then, remove L from explicit formulation
+
+"based on closeness to a" --> "based on a measure of closeness to a"
+
+"We are focused on training policies for choosing...by defining..."
+--> passive voice, and unclear "In this work we restrict our attention
+to policies that suggest the values of continuous parameters. We use
+randomized refinement to select which parameters to resample."
+
+"based on the frantion of plan variables whose current instantiation
+causes action preconditions to be met" --> "based on the fraction of
+high-level actions whose preconditions are satisfied"
+
+"which learns a mapping from a feature vector to a likelihood" --> vague, maybe "uses a linear combination of features to define a distribution over poses" ?
+
+Maybe add a sentence here --- "In our setting, we need to take the
+situation into account. We learn a weight vector..."
+
+"This decouples the learned...than those used in training" --> "This
+split allows pose distributions to generalize well across different
+high level plans."
+
+"These weight vectors...$a\inA$" --> move before previous sentence
+
+"As the system takes on policy .. collect" --> "The system uses $\theta_p$ to select actions and collects"
+
+C. Distribution and Gradient Updates
+-------------------------------------
+
+This looks good, but you might want to make sure the citation is
+right. (ie it might be that you should cite the people that Zucker et al. cites for
+this)
+
+SEARCHING THE PLAN REFINEMENT GRAPH
+-----------------------------------
+
+Probably change title here. Maybe "Selecting a plan to refine"
+
+"We are also interested in learning...fluent state" --> Run-on. "In
+this section, we describe an initial approach to learn \emph{what} to
+plan. Section III-C describes a set of candidate plans maintained by
+the interface layer."
+
+"and instead try to ... fluent state" --> "and generate a geometric fact to use for replanning."
+
+"We train two ... questions" --> "To select between the potential
+refinement options, we learn decision trees to answer the following
+questions"
+
+"Because it is challenging to ... occur throughout" --> run on. "We
+approach this problem by learning an estimate of the number of motion
+planning steps needed to refine each action. To obtain an estimate of
+the number of steps for a full plan, we sum across action in that plan."
+
+ -- there's also an issue here with using the phrase "manipulation
+    action involving a single object" because the term is undefined. I
+    tried to interpret it in a way that would make sense, but it might
+    be wrong.
+
+"This approximation ... our domain" --> "This implicitly assumes that dependencies in plans are in some way `local'"
+
+"Note that this...of G" --> delete
+
+Experiments
+-----------
+
+split into sections: training details (needs better title), can world, dinner world
+
+training details:
+   1. features used
+   2. curriculum learning   
+   3. setup: (we report 3 numbers, Baseline, Low-level, full --> how are they different)
+   4. Method to train low-level and high level
+
+
+Getting this section right looks like a bit of work, so I won't give
+detailed comments on language. A couple of observations/suggestions
+
+"the graph to refine is already optimal" -- you're using the term
+'optimal' here in a very loose sense, I'll admit that this is somewhat
+of a personal preference but I think just say 'performs well'
+
+"Initial experimentation revealed that training jointly...curriculum
+learning" -- this is a bit of a run-on and doesn't really set it up
+well. I'd motivate curriculum learning as follows: 1) training all
+parameters jointly is hard because it takes a long time to plan
+anything 2) potential fixes would explore alternative RL algorithms 3)
+we're not focused on that, so we just do a curriculum and
+progressively makes $\mathcal{P}$ more difficult.
+
+"We trained 30 different sets of weights..." -- this is what we did, but
+it doesn't make it clear /why/ we did it. I'd approach this as follows: 
+   -- we use the following algorithm to train a low-level and high-level policy
+   -- describe algorithm (train 3 sets of weights, cross-validate ...etc)
+   -- we run this process 10 times and evaluate each final set of weights against a hold-out set of 50 problems
+
+Can world & dinner world should just describe the curriculums and analyze the results (shouldn't really change)
+
+
+
+
+
+
