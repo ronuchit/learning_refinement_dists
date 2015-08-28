@@ -30,36 +30,35 @@ lagriffoul2014orientation, GarrettWAFR14, dornhege2012semantic}.
   \label{fig:cover}
 \end{figure}
 
-A key limitation of TAMP systems is that they typically rely on hand-coded discretization when
-sampling continuous parameter values, such as target grasp poses, for motion planning.
-Designing these heuristic sampling distributions often requires substantial effort, as it necessitates
-a parametrization of the trajectories a robot must follow to perform actions in its environment.
-Often, these parametrizations are tuned based on geometric attributes of the environment and its objects,
-meaning that they must be recalibrated when running the system in a new setting. Further,
-such discretizations must be fairly coarse to allow reasonable search speeds, meaning they inherently lack
-robustness to increased environmental complexity. In this paper, we present a reinforcement
-learning method to train good proposal distributions for sampling continuous parameter
-values intelligently. The distributions we learn are not discrete, and they implicitly parametrize feasible
-robot trajectories. We also develop a method for making the meta-level decision of which
-symbolic task sequence to sample for, given options that stem from several potential logical
-states of the world.
-
-Our methods build on the TAMP system
-presented by Srivastava et al.~\cite{srivastava2014combined}.
+Our methods build on the TAMP system presented by Srivastava et al.~\cite{srivastava2014combined}.
 In this system, a (classical) task planner produces a symbolic plan containing
 a sequence of actions to reach a goal state. Then, in a process known as \emph{plan refinement},
-candidate values are proposed for the continuous variables in this symbolic plan, thus grounding it.
-These candidate values are checked locally for feasibility by calling a motion planner.
+candidate values are proposed for the continuous variables in this symbolic plan.
+These values are checked locally for feasibility by calling a motion planner.
+Both the task planner and the motion planner are used as black boxes.
 
 The authors propose an \emph{interface layer} for refining the plan into a set
-of collision-free trajectories; it performs an exhaustive
-backtracking search over a hand-coded discrete set of candidate parameter values. If a motion
-planning feasible refinement is not found within the resource limit,
-symbolic error information is propagated back to the task planner, and a new symbolic plan is produced.
-This plan is added as a child node in the \emph{plan refinement graph}, whose nodes store each
-symbolic plan and associated current refinement. This graph's search policy determines the order
-in which plans are attempted to be refined. The system uses an off-the-shelf classical task planner and motion planner, both as black boxes.
-While our method is specific to this architecture, it can be adapted for other TAMP paradigms.
+of collision-free trajectories; it performs an exhaustive backtracking search over a
+set of sampled candidate parameter values. If a motion planning feasible
+refinement is not found within the resource limit, symbolic error information is
+propagated back to the task planner, and a new symbolic plan is produced.
+
+The system, however, relies on hand-coded discretizations to sample continuous values for these
+plan parameters. Designing these heuristic sampling distributions requires substantial effort,
+as they are tuned based on geometric attributes of the environment and its objects, meaning they
+must be recalibrated when running the system in a new setting. Further,
+the discretizations must be fairly coarse to allow reasonable search speeds, meaning they inherently lack
+robustness to increased environmental complexity. In this paper, we present a reinforcement
+learning method to train good continuous proposal distributions for sampling plan parameter values.
+
+Unpublished work that is currently in progress extends this system to achieve completeness by
+maintaining a \emph{plan refinement graph}, whose nodes each store a valid
+symbolic plan (that reaches the goal) and its current parameter values. This makes it possible to interleave attempted refinement of several
+different plans. In this paper, we also develop a method for making the meta-level decision of
+\emph{which} plan to try refining next.
+
+Other TAMP paradigms use similar hand-coded heuristics to sample continuous values for symbolic variables.
+While our method is specific to this architecture, it can be adapted for these systems.
 
 Reinforcement learning (RL) refers to the process of an agent learning a policy (a mapping from states to actions)
 in its environment that maximizes rewards. Zhang and Dietterich~\cite{JobShopSched} first applied the RL framework
@@ -67,12 +66,6 @@ to planning problems, using a job shop scheduling setting. In this work, we take
 their approach; we apply RL to plan refinement in a TAMP system. We implement our approach using methods adapted from
 Zucker et al.~\cite{workspacebias}, who train a configuration space sampler for motion planning
 using features of the discretized workspace.
-
-We train a policy that determines how to sample values for plan refinement, using policy optimization with linear function
-approximation. Our approach allows the learned distributions to be continuous, robust to changes in
-the environment, and trainable for any experimental setting, eliminating the need for hand-tuned
-distribution parameters. Also, we train heuristics that encode a search policy through a plan refinement graph,
-thus providing an ordering for which plan to try refining next.
 
 The four contributions of our work are as follows: 1) we present randomized refinement, a local search
 algorithm for plan refinement that is easily formulable as an MDP; 2) we formulate plan refinement in the

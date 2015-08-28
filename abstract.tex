@@ -3,24 +3,19 @@ A challenge in mobile manipulation planning is the length of the horizon that mu
 be considered; it is not uncommon for tasks to require thousands of
 individual motions. Planning complexity is exponential in the length
 of the plan, rendering direct motion planning intractable for
-many problems of interest.
-Recent work has focused on
+many problems of interest. Recent work has focused on
 \emph{task and motion planning} (TAMP) as a way to address this
 challenge. TAMP methods integrate logical search with continuous
 geometric reasoning in order to sequence several short-horizon motion plans that together
-solve a long-horizon task.
-A core limitation of these systems is the manner in which continuous parameters for motion planning are sampled:
-using hand-coded distributions that leverage domain specificity, lack robustness, and require substantial design effort.
-In this paper, we present a method
-for using reinforcement learning (RL) to learn distributions that propose
-values for the continuous parameters of a symbolic plan. More specifically, we
-formulate \emph{plan refinement}, the process of determining
-continuous parameter settings for a fixed task sequence, as a Markov
-decision process (MDP) and give an algorithm to learn a policy for it.
-Additionally, we show how to train heuristics that guide meta-level search
-through a \emph{plan refinement graph}, a data structure whose nodes store candidate symbolic
-plans for reaching the goal state and their current refinements. This allows our system
-to determine \emph{which} symbolic plans to focus refinement on, in addition to \emph{how} to perform this refinement.
+solve a long-horizon task. To do so, these systems find
+continuous-valued interpretations for the symbolic parameters of a fixed task sequence, a process known
+as \emph{plan refinement}. Often, these values are found through sampling from a
+hand-coded distribution that leverages domain specificity; however, this approach lacks robustness and
+requires substantial design effort. In this paper, we present methods to improve the reliability
+and speed of planning in a TAMP system. We formulate plan refinement as a
+Markov decision process (MDP) and give a reinforcement learning (RL) algorithm
+to learn a policy for it. We also train heuristics that guide meta-level search through
+a \emph{plan refinement graph}, to determine on \emph{which} symbolic plans to focus refinement.
 Our contributions are as follows: 1) we present a randomized local search algorithm for plan refinement
 that is easily formulable as an MDP; 2) we give an RL algorithm that learns a policy for this MDP;
 3) we present a method that trains heuristics for searching through a plan refinement graph;

@@ -1,23 +1,23 @@
 \section{Related Work}
-Our work uses RL techniques to improve upon results in recent TAMP systems.
-We train good policies for sampling plan variable values, whereas other
-systems use hand-coded heuristics to guide this sampling.
+Our work uses RL techniques to improve planning reliability and speed in a TAMP system.
 
-Srivastava et al.~\cite{srivastava2014combined} hand-tune coarse, domain-specific discretizations
-for determining the robot pose in actions such as moving the base and picking up an object from a table.
-Kaelbling et al.~\cite{kaelbling2011hierarchical} use ``geometric suggesters'' to propose
+Kaelbling et al.~\cite{kaelbling2011hierarchical} use hand-coded ``geometric suggesters'' to propose
 continuous geometric values for the plan parameters. These suggesters are heuristic
 computations which map information about the robot type and geometric operators to a restricted
-set of values to sample for each plan parameter. Lagriffoul et al.~\cite{lagriffoul2014orientation}
+set of values to sample for each plan parameter. Our methods could be adapted here to learn these
+suggesters.
+
+Lagriffoul et al.~\cite{lagriffoul2014orientation}
 propose a set of geometric constraints involving the kinematics and sizes of the specific objects of
 interest in the environment. These constraints then define a feasible region from which to search
-for geometric instantiations of plan parameters. Garrett et al.~\cite{GarrettWAFR14} use information
-about reachability in the robot configuration space and symbolic state space to construct a
-\emph{relaxed plan graph} that guides motion planning queries, using geometric biases to break ties
-among states with the same heuristic value.
+for geometric instantiations of plan parameters. Our approach could be adapted to learn generalized
+versions of these constraints that apply to various domains.
 
-By contrast to these systems, our method learns continuous sampling distributions for plan variables,
-which are significantly more robust to different environment layouts.
+Garrett et al.~\cite{GarrettWAFR14} use information about reachability in the robot configuration
+space and symbolic state space to construct a \emph{relaxed plan graph} that guides motion
+planning queries, using geometric biases to break ties among states with the same heuristic value.
+By contrast, we allow RL to shape distributions for motion planning queries, so reachability information
+is naturally incorporated.
 
 Prior work has been devoted to using machine learning techniques for
 training heuristics to guide search algorithms. This general formulation
