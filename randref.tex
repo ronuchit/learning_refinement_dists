@@ -1,21 +1,20 @@
 \section{Randomized Refinement}
 Before we can apply RL to plan refinement, we must formulate it as an MDP.
-We design our approach to imitate that of Zhang and Dietterich~\cite{JobShopSched}, by
-initializing an infeasible refinement and continually making local improvements.
-We thus present one contribution of our work: randomized refinement, a local search
-algorithm for plan refinement. It maintains at all times a value for each high level plan
-variable; at each iteration, a variable whose current value is leading to a motion planning failure or
-action precondition violation is picked randomly and resampled (locally).
-Algorithm \ref{alg-randref} shows pseudocode for randomized refinement.
+We design our approach to imitate that of Zhang and Dietterich~\cite{JobShopSched}:
+we initialize an infeasible refinement and use a randomized local search to propose
+improvements. We maintain a value for each high level plan
+variable. At each iteration, a variable whose current value is leading to a motion planning failure or
+action precondition violation is picked randomly and resampled.
+Algorithm \ref{alg-randref} shows pseudocode for this randomized refinement.
 
 The procedure takes two arguments, a high level plan and a maximum
 iteration count. In line 2, we initialize all variables in the high level plan by sampling
 from their corresponding distributions. We continue sampling
 until we find bindings for symbolic pose references that satisfy
-inverse kinematics constraints (IK feasibility). Trajectories are then
+inverse kinematics constraints (IK feasibility). Trajectories are
 initialized as straight lines.
 
-\begin{algorithm}
+\begin{algorithm}[t]
  \caption{Randomized refinement.} \label{alg-randref}
  \begin{algorithmic}[1]
   \Procedure{RandRef}{$HLP, N$}

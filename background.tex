@@ -2,38 +2,45 @@
 We provide relevant technical background and introduce notation
 used throughout the paper.
 
-\subsection{Reinforcement Learning}
-A reinforcement learning (RL) problem is typically formulated as
-a Markov decision process (MDP). An MDP is defined by the following:
-
+\subsection{Markov Decision Processes and Reinforcement Learning}
+Markov decision processes (MDPs) are the standard AI approach for formulating
+interactions between agents and environments. At each step of an MDP,
+the agent knows its current state and selects an action, causing the
+state to transition according to a known transition distribution. Formally,
+an MDP is a tuple $\langle \St, \A, T, R, \gamma, \Prob \rangle$:
 \begin{tightlist}
-\item A state space $\St$.
-\item An action space $\A$.
-\item A transition function $P(s' | s, a)$ for $s, s' \in \St, a \in \A$.
-\item A reward function $R(s, a, s')$ for $s, s' \in \St, a \in \A$.
-\item A discount factor $\gamma \in [0, 1]$.
+\item $\St$ is the state space.
+\item $\A$ is the action space.
+\item $T(s, a, s') = Pr(s' | s, a)$ for $s, s' \in \St, a \in \A$ is the transition distribution.
+\item $R(s, a, s')$ for $s, s' \in \St, a \in \A$ is the reward function.
+\item $\gamma \in [0, 1]$ is the discount factor.
+\item $\Prob$ is the initial state distribution.
 \end{tightlist}
 A solution to an MDP is a policy $\pi: \St \rightarrow \A$ that maps states to
 actions. The value $V_{\pi}(s)$ of a state under $\pi$ is the sum of expected
 discounted future rewards from starting in state $s$ and selecting actions according
 to $\pi$:
 $$V_{\pi}(s) = \mathbb{E}[\sum_{t=0}^{\infty}\gamma^{t}R(s_{t}) | \pi, s_{0} = s].$$
-The optimal policy $\pi^{*}$ maximizes this value for all states. The goal of an RL
-problem is for an agent to learn $\pi^{*}$ (or an approximation) automatically
-through interaction with its environment: taking actions within it and obtaining
-rewards. Key challenges in RL include determining how to assign
+The optimal policy $\pi^{*}$ maximizes this value for all states.
+
+In reinforcement learning (RL), an agent must determine $\pi^{*}$
+through interaction with its environment (i.e. without explicit access
+to $\St$ or $T$). At each timestep, the agent knows the state and what
+actions are available, but initially does not know how taking actions will
+affect the state. Key challenges in RL include determining how to assign
 the credit of received rewards to each undertaken action, balancing the tradeoff between
 exploration of new actions and exploitation of known good actions in the environment, and handling
-potentially limited perception of the current state. Widely used techniques for RL include value
-function approximation, using methods such as temporal difference (TD) learning~\cite{suttonbarto},
-and direct policy estimation, which encompasses both gradient-based and gradient-free methods.
+potentially limited perception of the current state. There is a large body of research on RL, and
+standard techniques include value function approximation, which uses methods such as temporal difference
+(TD) learning, and direct policy estimation, which encompasses both gradient-based
+and gradient-free methods~\cite{suttonbarto}.
 
 \subsection{Reinforcement Learning for Planning}
 Our problem formulation is motivated by Zhang and Dietterich's application of RL to job
 shop scheduling~\cite{JobShopSched}. Job shop scheduling is a combinatorial optimization problem where the goal is to find
 a minimum-duration schedule of a set of jobs with temporal and resource constraints. An empirically
 successful approach to this problem relies on a randomized local search that proposes changes to an
-existing suboptimal schedule. The authors formulate this search as an MDP as follows:
+existing suboptimal schedule. The authors formulate scheduling as the following MDP:
 \begin{tightlist}
 \item $\St$ is the set of all possible temporal configurations and resource allocations of the jobs.
 \item $\A$ is the set of all possible changes to either the time or the resource allocation of a single job.
@@ -50,14 +57,14 @@ task allocation~\cite{dahl2009multi}.
 Zucker et al.~\cite{workspacebias} use RL to bias the distribution of a rapidly exploring random tree (RRT)
 for motion planning. Their approach uses features of a discretization of the workspace to train
 a non-uniform configuration space sampler. They use a variant of the \textsc{Reinforce} family
-of stochastic policy gradient algorithms to learn a good weight vector for these features.
+of stochastic policy gradient algorithms~\cite{reinforce1992} to learn a good weight vector for these features.
 Their experimental results, which focus on biasing sampling distributions for the bidirectional
 RRT algorithm, demonstrate reduced motion planning time for a variety of scenarios involving path
 planning through obstructed environments. In our work, we adopt their policy gradient updates for the TAMP framework
 (Section V-C).
 
 \subsection{Task and Motion Planning}
-A fully observed task planning problem is a tuple $(\Obj, \T, \F, \I, \G, \C)$:
+We define task and motion planning (TAMP) as a tuple $\langle \Obj, \T, \F, \I, \G, \C \rangle$:
 \begin{tightlist}
 \item $\Obj$ is a set of symbolic references to \emph{objects} in the environment,
 such as cylinders, cylinder locations, and grasping poses.
@@ -67,15 +74,13 @@ true or false in the state.
 \item $\I$ is the set of fluents that hold true in the initial state. All others are assumed false.
 \item $\G$ is the set of fluents defining the goal state.
 \item $\C$ is a set of parametrized \emph{high level actions}, defined by \emph{preconditions}, a set
-of fluents characterizing what must hold true in the current state for the action
-to be validly performed, and \emph{effects}, a set of fluents that hold true after
-the action is performed.
+of fluents that must hold true in the current state to be able to perform the action,
+and \emph{effects}, a set of fluents that hold true after the action is performed.
 \end{tightlist}
 A solution to a task planning problem is a valid sequence of actions
 $a_{0}, a_{1}, ..., a_{n} \in \C$ which, when applied to the state of fluents
 successively starting with $\I$, results in a state in which all fluents of
-$\G$ hold true. We refer to this sequence of actions as a \emph{symbolic}, or
-\emph{high level}, plan.
+$\G$ hold true.
 
 % As a simple example, we consider a pick domain where the robot is capable of
 % performing only two actions: moving to a location and grasping an object. We can
@@ -135,42 +140,34 @@ $\G$ hold true. We refer to this sequence of actions as a \emph{symbolic}, or
 % obstructed by, say, $obj_{3}$ in the environment, a possible high level plan would involve
 % grasping first $obj_{3}$ then $obj_{1}$.
 
-Since task planners operate on a symbolic level,
-they are unable to maintain a geometric interpretation for their continuous variables, such
-as grasping poses for objects. Thus, we use TAMP to provide this interpretation. We adopt the hierarchical method of
-Srivastava et al.~\cite{srivastava2014combined}, a modular approach to TAMP
-that uses a black-box task planner and motion planner. A key step in their approach is the
+Classical task planners operate on discrete, purely logical levels and thus cannot directly
+solve this problem. We adopt the hierarchical method of Srivastava et al.~\cite{srivastava2014combined}
+to account for this discrepancy. A key step in their approach is the
 abstraction of continuous state variables, such as robot grasping poses for objects, into a
-discrete set of symbolic references to potential values.
+discrete set of symbolic references to potential values. A \emph{symbolic}, or \emph{high level}, plan
+refers to the fixed task sequence returned by a task planner and comprised of these symbolic references.
 
-An \emph{interface layer} is then responsible
-for assigning continuous values to instantiate these symbolic references and calling a motion planner to find valid
-linking trajectories for these instantiated values. In the process, the interface layer may discover
-geometric facts about the environment which cannot be resolved by motion planning (such as finding that an object
-to be grasped is obstructed), upon which it sends symbolic representations of these facts back to
-the task planner to be added into the fluent state. \emph{Plan refinement} refers to this process
-of attempting to assign a feasible set of values to the symbolic plan variables. In this context, feasibility
-means that there exists a set of collision-free trajectories for the robot that links all instantiated
-values associated with robot pose.
-
-The system also maintains a \emph{plan refinement graph}, whose nodes each store a symbolic plan and
-its current refinement, the set of instantiated plan variable values. If refinement of a plan $p$ stored in node
-$n$ leads to discovered facts being propagated to the task planner, the newly produced plan $p'$ based on
-the updated fluent state is added as a child node $n'$ of $n$. Thus, each node in the graph corresponds to a
-plan constructed from a fluent state incorporating some distinct subset of all facts
-discovered by the interface layer so far. The search policy through the plan refinement graph
-enforces an ordering over which refinement is attempted for plans. In the existing infrastructure, this policy
-always selects the deepest node for refinement, meaning all propagated errors are incorporated into the plan.
-(Work on this portion of the system is still in progress and will be published in the future.)
+An \emph{interface layer} assigns continuous values to symbolic references, in a process called \emph{plan refinement}.
+These parameters define a sequence of states, and a motion planner is used to find trajectories between these states.
+If no satisfying set of parameters can be found (e.g., because an object is obstructed), the interface layer
+augments the symbolic fluent state to reflect this and obtains a new high level plan from the task planner.
 
 The authors introduce an algorithm for plan refinement
-called \textsc{TryRefine}, an exhaustive backtracking routine over a hand-coded discrete set of candidate
+called \textsc{TryRefine}, an exhaustive backtracking routine over a discrete set of candidate
 plan parameter values. (Interested readers are referred to \cite{srivastava2014combined} for details.)
 This hand-coded discretization is domain-specific and tuned to the geometry of objects in the
 environment; for example, in a pick-and-place domain, end effector grasp poses for a can are
-sampled around the can in each of the 4 cardinal directions, at a fixed distance and height.
+sampled around the can in each of the 8 cardinal and intermediate directions, at a fixed distance and height.
 Such coarse sampling distributions necessitate fine-tuning for each domain and are not robust to
 increased environmental complexity.
+
+An unpublished extension to this system that is currently in progress achieves completeness by
+maintaining a \emph{plan refinement graph}, whose nodes each store a valid symbolic plan and
+its current set of instantiated parameter values. If refinement of a plan $p$ stored in node
+$n$ leads to discovered facts being propagated to the task planner, the newly produced plan $p'$ based on
+the updated fluent state is added as a child node $n'$ of $n$. This makes it possible to interleave
+partial refinement of several high level plans, in an attempt to find a successful complete refinement
+of any one.
 % For example, consider the previous pick domain specification where $obj_{3}$ does obstruct $obj_{1}$.
 % Initially, the task planner returns a high level plan to immediately grasp $obj_{1}$, because
 % it is not yet aware of the obstruction. The interface layer then samples grasp poses
