@@ -35,7 +35,7 @@ In this system, a (classical) task planner produces a symbolic plan containing
 a sequence of actions to reach a goal state. Then, in a process known as \emph{plan refinement},
 candidate values are proposed for the continuous variables in this symbolic plan.
 These values are checked locally for feasibility by calling a motion planner.
-Both the task planner and the motion planner are used as black boxes.
+An advantage of this system is that the task planner and the motion planner are used as black boxes.
 
 The authors propose an \emph{interface layer} for refining the plan into a set
 of collision-free trajectories; it performs an exhaustive backtracking search over a
@@ -51,12 +51,6 @@ the discretizations must be fairly coarse to allow reasonable search speeds, mea
 robustness to increased environmental complexity. In this paper, we present a reinforcement
 learning method to train good continuous proposal distributions for sampling plan parameter values.
 
-Unpublished work that is currently in progress extends this system to achieve completeness by
-maintaining a \emph{plan refinement graph}, whose nodes each store a valid
-symbolic plan (that reaches the goal) and its current parameter values. This makes it possible to interleave
-partial refinement of several plans. In this paper, we also develop a method for making the meta-level decision of
-\emph{which} plan to try refining next.
-
 Other TAMP paradigms use similar hand-coded heuristics to sample continuous values for symbolic variables.
 While our method is specific to this architecture, it can be adapted for these systems.
 
@@ -67,10 +61,16 @@ their approach; we apply RL to plan refinement in a TAMP system. We implement ou
 Zucker et al.~\cite{workspacebias}, who train a configuration space sampler for motion planning
 using features of the discretized workspace.
 
+Unpublished work that is currently in progress extends the system in~\cite{srivastava2014combined} to achieve completeness by
+maintaining a \emph{plan refinement graph}, whose nodes each store a valid
+symbolic plan (that reaches the goal) and its current parameter values. This makes it possible to interleave
+partial refinement of several plans. In this paper, we also develop a method for making the meta-level decision of
+which plan to try refining next.
+
 The four contributions of our work are as follows: 1) we present randomized refinement, a local search
 algorithm for plan refinement that is easily formulable as an MDP; 2) we formulate plan refinement in the
 RL framework and learn a policy for this MDP; 3) we train heuristics to search intelligently
-through a plan refinement graph, allowing us to decide \emph{which} plan to try refining next;
+through a plan refinement graph, allowing us to decide which plan to try refining next;
 and 4) we present experiments to evaluate our approach in a variety of simulated
 domains. Our results demonstrate that our approach yields significantly improved
 performance over that of hand-coded discretization of the plan refinement sample space.
