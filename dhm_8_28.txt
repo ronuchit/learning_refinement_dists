@@ -1,0 +1,27 @@
+Abstract
+--------
+
+"To do so, these systems....domain specificity; however, this
+approach" --> "To account for continuous parameters, many of these
+systems rely on hand-coded discretizations of the domain. Such an
+approach..."
+
+"We formulate plan refinement" --> "Our approach first plans
+abstractly, ignoring continuous values and then performs \emph{plan
+refinement} to determine feasible parameter settings. We formulate this process"
+
+"We also train heuristics...focus refinement" --> "We also present
+intial work that learns which plan, from a set of potential
+candidates, to refine."
+
+Introduction
+------------
+
+"Both the task planner" --> "An advantage of this system is that the task planner"
+
+Move the reinforcement learning paragraph to be before the plan
+refinement graph paragraph. This way the structure is
+
+  1. Explanation of the existing system
+  2. talk about approach to low-level learning
+  3. brief paragraph on high-level learning 
