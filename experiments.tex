@@ -82,19 +82,7 @@ and our full system (F). Results using our system are averaged across 10 indepen
   \label{table:results}
 \end{table}
 
-Our experiments are conducted in Python 2.7 using the OpenRave simulator~\cite{Diankov_2008_6117} with a PR2 robot.
-The motion planner we use is trajopt~\cite{schulman2013finding}, and the task planner is Fast-Forward~\cite{FF}.
-The experiments were carried out in series on an Intel Core i7-4790K machine with 16GB RAM.
-
-We evaluate our approach in two distinct domains: cans distributed on a table (the \emph{can domain})
-and setting up bowls for dinner (the \emph{dinner domain}).
-We compare performance with that of the hand-coded sampling distributions and default plan refinement graph search
-strategy used in Srivastava et al.~\cite{srivastava2014combined}. In both domains, plan refinement samples
-are drawn from continuous distributions trained using the described algorithms. For the can domain, we
-show results both with and without our trained heuristics for searching the plan refinement graph. However,
-for the dinner domain, objects in the environment are never obstructed by others, so the default search policy
-of picking the deepest node in the graph to refine is already optimal.
-
+\subsection{Training Methodology}
 We use the reward function described earlier. Our weight
 vectors are initialized to $\vec{\mathbf{0}}$ for all parameter types -- this
 initialization represents a uniform distribution across the limits of the geometric search space.
@@ -105,42 +93,64 @@ sample. 3 binary features describe the angle made between the vector from the
 robot to the target and the vector from the sample to the target: whether the angle is less than
 $\pi/3$, $\pi/2$, and $3\pi/4$.
 
-For the can domain, the goal across all experiments is for the robot to pick up a particular object with its
+Initial experimentation revealed that training weights for all parameter types jointly is intractable,
+because planning takes a long time. Potential solutions for this would explore alternative RL algorithms,
+but this is not our focus. Instead, we apply curriculum learning by training with a planning problem distribution
+$\Prob$ that gets progressively harder.
+
+We evaluate our approach in two distinct domains: cans distributed on a table (the \emph{can domain})
+and setting up bowls for dinner (the \emph{dinner domain}).
+We compare performance with a baseline that uses the hand-coded sampling distributions
+in Srivastava et al.~\cite{srivastava2014combined} and a depth-first search strategy of the
+plan refinement graph, which always refines the plan that incorporates all error information obtained
+thus far. For the can domain, we report results for 3 systems: 1) this baseline, 2) our refinement policies
+with the depth-first search strategy, and 3) our refinement policies with our trained heuristics for which
+plan to try refining next. For the dinner domain, we report results only for the first 2 systems, because objects
+in this domain are never obstructed, meaning depth-first search already performs well.
+
+For the third system, which trains a refinement and a graph search policy, we employ the following
+algorithm to produce a trained set of weights. We train 3 sets of weights independently, run each
+one with a validation set of 50 environments, and output the best-performing set. We found that this
+reduced variation due to random seeding. For the second system, by contrast, we simply train a single
+set of weights and output it, without any validation.
+
+Our reported results for the second and third systems run the corresponding training process 10 separate times
+and evaluate each final set of weights against a test set of 50 randomly generated environments.
+
+Our experiments are conducted in Python 2.7 using the OpenRave simulator~\cite{Diankov_2008_6117} with a PR2 robot.
+The motion planner we use is trajopt~\cite{schulman2013finding}, and the task planner is Fast-Forward~\cite{FF}.
+The experiments were carried out in series on an Intel Core i7-4790K machine with 16GB RAM.
+Table \ref{table:results} summarizes our quantitative results.
+
+\subsection{Can Domain}
+We run two sets of experiments, using 25 objects and 30 objects on the table.
+The goal across all experiments is for the robot to pick up a particular object with its
 left gripper. We disabled the right gripper, so any obstructions to the target object must be picked up and
 placed elsewhere on the table. This domain has 4 types of continuous parameters: base poses, object grasp
 poses, object putdown poses, and object putdown locations onto the table. The range of allowable values for
-grasp and putdown poses is a cube of side length 30 centimeters around
-the target object or putdown location. For base poses, the range is a
-square of side length 1 meter around the object or location which the robot is approaching. For putdown locations,
-the range is defined by the edges of the table.
+grasp and putdown poses is a cube of side length 30 centimeters around the target object or putdown
+location. For base poses, the range is a square of side length 1 meter around the object or location which
+the robot is approaching. For putdown locations, the range is defined by the edges of the table.
 
-Initial experimentation revealed that training jointly for all these continuous
-parameter types was infeasible due to a dearth of valid plan refinements being produced, so we decided to
-incorporate curriculum learning. Thus, we train $N = 10$ iterations of plans involving just base motion and grasping,
-then $N = 20$ iterations of base motion, grasping, and putdown at a predefined location, then $N = 30$ iterations of
-the full set of parameter types, including a varying putdown location. We fixed $L = 100$ and $\epsilon = 20$.
+Our curriculum learning system first trains base poses and grasp poses for $N = 10$ iterations,
+then base poses, grasp poses, and putdown poses for $N = 20$ iterations, then all parameter types for $N = 30$ iterations.
+We fixed $L = 100$ and $\epsilon = 20$.
 
-For the experiments which only use the trained plan refinement policies (no learned heuristics for searching the plan
-refinement graph), we trained 10 different sets of weights using the described curriculum learning system, varying
-only the random number generator's initial seed. Then, for the experiments which also search the plan refinement graph
-intelligently, we employed an improved training methodology to reduce variation due to seeding. We trained 30 different
-sets of weights, and for every group of 3 sets, we picked the best one based on performance in a validation set and discarded
-the other two. To test performance, we randomly generated 50 environments for both 25 cans and 30 cans on the table,
-and measured success rate, motion planning time, and number of motion planner calls for the baseline system and each
-trained set of weights.
+The results demonstrate significant improvements in performance to the baseline system. However, for the 30 object case,
+there is an increase in average motion planning time when we use trained graph search heuristics. This is likely because of suboptimal graph search
+decisions occasionally being made due to the softmin operation.
 
-For the dinner domain, we run two sets of experiments, in which the robot must move 2 and 4
-bowls from their initial location on one table to target locations on the other. We assign a cost to
+\subsection{Dinner Domain}
+We run two sets of experiments, using 2 and 4 bowls. The robot must move the
+bowls from their initial locations on one table to target locations on the other. We assign a cost to
 base motion in the environment, so the robot is encouraged to use the provided tray, onto which bowls can be stacked.
 This domain has 5 types of continuous parameters: base poses, object grasp poses, object putdown poses, tray pickup
-poses, and tray putdown poses. Our curriculum learning system first trains the tray pickup and putdown poses for
-$N = 20$ iterations, then the object grasp and putdown poses for $N = 20$ iterations. We fixed $L = 100$ and $\epsilon = 10$.
-We trained 10 different sets of weights (varying only the seed) and tested performance across 50 randomly generated
-environments for each number of objects.
+poses, and tray putdown poses.
 
-Table \ref{table:results} summarizes our quantitative results, which demonstrate
-comparable performance to the baseline system for the dinner domain, and significant improvements for
-the can domain. The reason performance does not greatly improve for the dinner domain is that the
-hand-coded discretizations of the sample space are very good in this environment. For example, the optimal
-robot base pose from which to pick up the tray is directly in front of it, which is quickly found through
+Our curriculum learning system first trains the base poses and tray pickup and putdown poses for
+$N = 20$ iterations, then the object grasp and putdown poses for $N = 20$ iterations. We fixed $L = 100$ and $\epsilon = 10$.
+
+The results demonstrate comparable performance to the baseline system. The reason is that
+hand-coded discretizations of the sample space are very good in this domain. For example, the optimal
+robot base pose from which to pick up the tray is directly in front of it, which is quickly sampled through
 the baseline system's discretization for the tray pickup pose parameter.
