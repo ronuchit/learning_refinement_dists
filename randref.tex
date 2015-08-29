@@ -18,50 +18,39 @@ initialized as straight lines.
  \caption{Randomized refinement.} \label{alg-randref}
  \begin{algorithmic}[1]
   \Procedure{RandRef}{$HLP, N$}
-  \State $init \leftarrow$ initRefinement($HLP$)
+  \State $init \leftarrow$ \textsc{InitRefinement}($HLP$)
   \For {iter = 0, 1, ..., $N$}
   \State $failStep, failPred \leftarrow $\textsc{MotionPlan}($HLP$)
   \If {$failStep$ is null}
+  \State \# \emph{Found successful plan refinement.}
   \State \Return success
   \EndIf
   \If {$failPred$ is null}
   \State \# \emph{Motion planning failure.}
   \State $failAction \leftarrow HLP.ops[failStep]$
-  \State resample($failAction.params$)
+  \State \textsc{Resample}($failAction.params$)
   \Else
   \State \# \emph{Action precondition violation.}
-  \State resample($failPred.params$)
+  \State \textsc{Resample}($failPred.params$)
   \EndIf
   \EndFor
   \State Raise failure to task planner, receive new plan.
   \EndProcedure
-
-  \Procedure{MotionPlan}{$HLP$}
-  \For {$op_{i}$ in $HLP.ops$}
-  \State $res \leftarrow op_{i}$.motionPlan()
-  \If {$res.failed$}
-  \State \Return $i$, null
-  \EndIf
-  \State $failPred \leftarrow op_{i}$.checkPreconds()
-  \If {$failPred$ is not null}
-  \State \Return $i$, $failPred$
-  \EndIf
-  \EndFor
-  \State \# \emph{Found successful plan refinement.}
-  \State \Return null, null
-  \EndProcedure
  \end{algorithmic}
 \end{algorithm}
 
-We call the \textsc{MotionPlan} subroutine in line 4, which
-iterates through the sequence of actions that comprise the high level plan (l.20).
-For each action, a call to the motion planner is made (l.22) using the instantiated values
-for the parameters of that action, to attempt to find a trajectory
-linking the sampled poses. If this succeeds, the preconditions of the action
-are tested (l.26); as part of this step, we check if the trajectory returned by the
-motion planner is collision-free.
+We call the \textsc{MotionPlan} subroutine in line 4, which attempts to
+find a collision-free set of trajectories linking all pose instantiations.
+To do so, we iterate through the sequence of actions that comprise the high level plan.
+For each, we first call the motion planner to find a trajectory
+linking the sampled poses. If this succeeds, we test the action preconditions;
+as part of this step, we check if the trajectory is collision-free.
 
-We call the \texttt{resample} routine on the high level parameters
+If \textsc{MotionPlan} is unsuccessful, it returns into $failStep$ the index of the high level action where failure occurred.
+If this was due to a motion planning failure, $failPred$ is null. Otherwise,
+the violated action precondition is stored into $failPred$.
+
+We call the \textsc{Resample} routine on the high level parameters
 associated with a failure; this routine picks one of these high level parameters at random and
 resamples it from its distribution. If we reach the iteration limit (l.18),
 we convert the most recent failure information into a symbolic representation, then raise it
