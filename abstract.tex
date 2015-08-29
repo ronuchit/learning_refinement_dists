@@ -8,13 +8,13 @@ many problems of interest. Recent work has focused on
 challenge. TAMP methods integrate logical search with continuous
 geometric reasoning in order to sequence several short-horizon motion plans that together
 solve a long-horizon task. To account for continuous parameters, many of these
-systems rely on hand-coded discretization of the domain. Such an approach lacks robustness and
+systems rely on hand-coded discretizations of the domain. Such an approach lacks robustness and
 requires substantial design effort. In this paper, we present methods to improve the reliability
 and speed of planning in a TAMP system. The approach we build on first plans
 abstractly, ignoring continuous values, and then performs \emph{plan refinement}
 to determine feasible parameter settings. In this paper, we formulate this process as a
 Markov decision process (MDP) and give a reinforcement learning (RL) algorithm
-to learn a policy for it. We also present intial work that learns which plan,
+to learn a policy for it. We also present initial work that learns which plan,
 from a set of potential candidates, to try to refine.
 Our contributions are as follows: 1) we present a randomized local search algorithm for plan refinement
 that is easily formulable as an MDP; 2) we give an RL algorithm that learns a policy for this MDP;

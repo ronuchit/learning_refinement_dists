@@ -77,8 +77,9 @@
     \bottomrule[1.5pt]
   \end{tabular}}
   \caption{Percent solved and standard deviation, along with time spent motion planning and number of calls to the motion
-planner for the baseline system (B), our system with only learned refinement policies (no graph search heuristics) (L),
-and our full system (F). Results using our system are averaged across 10 independently trained sets of weights. Time limit: 300s.}
+planner for the baseline system (B), our learned refinement policies with depth-first search through the plan refinement graph (L),
+and our learned refinement policies and heuristics for searching the graph (F). Results for L and F
+are averaged across 10 separately trained sets of weights. Time limit: 300s.}
   \label{table:results}
 \end{table}
 
@@ -101,21 +102,21 @@ $\Prob$ that gets progressively harder.
 We evaluate our approach in two distinct domains: cans distributed on a table (the \emph{can domain})
 and setting up bowls for dinner (the \emph{dinner domain}).
 We compare performance with a baseline that uses the hand-coded sampling distributions
-in Srivastava et al.~\cite{srivastava2014combined} and a depth-first search strategy of the
+in Srivastava et al.~\cite{srivastava2014combined} and depth-first search of the
 plan refinement graph, which always refines the plan that incorporates all error information obtained
-thus far. For the can domain, we report results for 3 systems: 1) this baseline, 2) our refinement policies
-with the depth-first search strategy, and 3) our refinement policies with our trained heuristics for which
+thus far. For the can domain, we report results for 3 systems: 1) this baseline, 2) our learned refinement policies
+with the depth-first search, and 3) our learned refinement policies and heuristics for which
 plan to try refining next. For the dinner domain, we report results only for the first 2 systems, because objects
 in this domain are never obstructed, meaning depth-first search already performs well.
 
-For the third system, which trains a refinement and a graph search policy, we employ the following
-algorithm to produce a trained set of weights. We train 3 sets of weights independently, run each
-one with a validation set of 50 environments, and output the best-performing set. We found that this
+For the third system, which trains a refinement policy and graph search heuristics, we employ the following
+algorithm to produce a trained set of weights. We train 3 sets independently, run each
+one with a validation set of 50 environments, and output the best-performing one. We found that this
 reduced variation due to random seeding. For the second system, by contrast, we simply train a single
 set of weights and output it, without any validation.
 
-Our reported results for the second and third systems run the corresponding training process 10 separate times
-and evaluate each final set of weights against a test set of 50 randomly generated environments.
+Our reported results for the second and third systems are averages across running the training process 10 separate times
+and evaluating each final set of weights against a fixed test set of 50 randomly generated environments.
 
 Our experiments are conducted in Python 2.7 using the OpenRave simulator~\cite{Diankov_2008_6117} with a PR2 robot.
 The motion planner we use is trajopt~\cite{schulman2013finding}, and the task planner is Fast-Forward~\cite{FF}.
@@ -133,12 +134,13 @@ location. For base poses, the range is a square of side length 1 meter around th
 the robot is approaching. For putdown locations, the range is defined by the edges of the table.
 
 Our curriculum learning system first trains base poses and grasp poses for $N = 10$ iterations,
-then base poses, grasp poses, and putdown poses for $N = 20$ iterations, then all parameter types for $N = 30$ iterations.
+then base poses, grasp poses, and putdown poses (at fixed location) for $N = 20$ iterations, then all parameter types for $N = 30$ iterations.
 We fixed $L = 100$ and $\epsilon = 20$.
 
-The results demonstrate significant improvements in performance to the baseline system. However, for the 30 object case,
-there is an increase in average motion planning time when we use trained graph search heuristics. This is likely because of suboptimal graph search
-decisions occasionally being made due to the softmin operation.
+The results demonstrate significant improvements in performance to the baseline system for success rate, motion planning
+time, and number of motion planner calls. For the 30 object case,
+there is an increase in average motion planning time when we use trained graph search heuristics. This is likely because of suboptimal
+search decisions occasionally being made due to the softmin operation.
 
 \subsection{Dinner Domain}
 We run two sets of experiments, using 2 and 4 bowls. The robot must move the

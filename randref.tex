@@ -41,12 +41,12 @@ initialized as straight lines.
 
 We call the \textsc{MotionPlan} subroutine in line 4, which attempts to
 find a collision-free set of trajectories linking all pose instantiations.
-To do so, we iterate through the sequence of actions that comprise the high level plan.
-For each, we first call the motion planner to find a trajectory
-linking the sampled poses. If this succeeds, we test the action preconditions;
-as part of this step, we check if the trajectory is collision-free.
+To do so, it iterates through the sequence of actions that comprise the high level plan.
+For each, it first calls the motion planner to find a trajectory
+linking the sampled poses. If this succeeds, it tests the action preconditions;
+as part of this step, it checks that the trajectory is collision-free.
 
-If \textsc{MotionPlan} is unsuccessful, it returns into $failStep$ the index of the high level action where failure occurred.
+If \textsc{MotionPlan} is unsuccessful, it returns into $failStep$ the index of the action where failure occurred.
 If this was due to a motion planning failure, $failPred$ is null. Otherwise,
 the violated action precondition is stored into $failPred$.
 

@@ -67,11 +67,11 @@ planning through obstructed environments. In our work, we adopt their policy gra
 We define task and motion planning (TAMP) as a tuple $\langle \Obj, \T, \F, \I, \G, \C \rangle$:
 \begin{tightlist}
 \item $\Obj$ is a set of symbolic references to \emph{objects} in the environment,
-such as cylinders, cylinder locations, and grasping poses.
+such as cylinders and grasping poses.
 \item $\T$ is the set of object \emph{types}, such as robot manipulators, cylinders, poses, and locations.
-\item $\F$ is a set of fluents, which define relationships among objects and hold either
+\item $\F$ is a set of \emph{fluents}, which define relationships among objects and hold either
 true or false in the state.
-\item $\I$ is the set of fluents that hold true in the initial state. All others are assumed false.
+\item $\I$ is the set of fluents that hold true in the initial state.
 \item $\G$ is the set of fluents defining the goal state.
 \item $\C$ is a set of parametrized \emph{high level actions}, defined by \emph{preconditions}, a set
 of fluents that must hold true in the current state to be able to perform the action,
@@ -146,7 +146,6 @@ to account for this discrepancy. A key step in their approach is the
 abstraction of continuous state variables, such as robot grasping poses for objects, into a
 discrete set of symbolic references to potential values. A \emph{symbolic}, or \emph{high level}, plan
 refers to the fixed task sequence returned by a task planner and comprised of these symbolic references.
-
 An \emph{interface layer} assigns continuous values to symbolic references, in a process called \emph{plan refinement}.
 These parameters define a sequence of states, and a motion planner is used to find trajectories between these states.
 If no satisfying set of parameters can be found (e.g., because an object is obstructed), the interface layer
@@ -156,7 +155,7 @@ The authors introduce an algorithm for plan refinement
 called \textsc{TryRefine}, an exhaustive backtracking routine over a discrete set of candidate
 plan parameter values. (Interested readers are referred to \cite{srivastava2014combined} for details.)
 This hand-coded discretization is domain-specific and tuned to the geometry of objects in the
-environment; for example, in a pick-and-place domain, end effector grasp poses for a can are
+environment. For example, in a pick-and-place task, end effector grasp poses for a can are
 sampled around the can in each of the 8 cardinal and intermediate directions, at a fixed distance and height.
 Such coarse sampling distributions necessitate fine-tuning for each domain and are not robust to
 increased environmental complexity.
