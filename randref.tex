@@ -1,68 +1,56 @@
 \section{Randomized Refinement}
 Before we can apply RL to plan refinement, we must formulate it as an MDP.
-We design our approach to imitate that of Zhang and Dietterich~\cite{JobShopSched}, by
-initializing an infeasible refinement and continually making local improvements.
-We thus present one contribution of our work: randomized refinement, a local search
-algorithm for plan refinement. It maintains at all times a value for each high level plan
-variable; at each iteration, a variable whose current value is leading to a motion planning failure or
-action precondition violation is picked randomly and resampled (locally).
-Algorithm \ref{alg-randref} shows pseudocode for randomized refinement.
+We design our approach to imitate that of Zhang and Dietterich~\cite{JobShopSched}:
+we initialize an infeasible refinement and use a randomized local search to propose
+improvements. We maintain a value for each high level plan
+variable. At each iteration, a variable whose current value is leading to a motion planning failure or
+action precondition violation is picked randomly and resampled.
+Algorithm \ref{alg-randref} shows pseudocode for this randomized refinement.
 
 The procedure takes two arguments, a high level plan and a maximum
 iteration count. In line 2, we initialize all variables in the high level plan by sampling
 from their corresponding distributions. We continue sampling
 until we find bindings for symbolic pose references that satisfy
-inverse kinematics constraints (IK feasibility). Trajectories are then
+inverse kinematics constraints (IK feasibility). Trajectories are
 initialized as straight lines.
 
-\begin{algorithm}
+\begin{algorithm}[t]
  \caption{Randomized refinement.} \label{alg-randref}
  \begin{algorithmic}[1]
   \Procedure{RandRef}{$HLP, N$}
-  \State $init \leftarrow$ initRefinement($HLP$)
+  \State $init \leftarrow$ \textsc{InitRefinement}($HLP$)
   \For {iter = 0, 1, ..., $N$}
   \State $failStep, failPred \leftarrow $\textsc{MotionPlan}($HLP$)
   \If {$failStep$ is null}
+  \State \# \emph{Found successful plan refinement.}
   \State \Return success
   \EndIf
   \If {$failPred$ is null}
   \State \# \emph{Motion planning failure.}
   \State $failAction \leftarrow HLP.ops[failStep]$
-  \State resample($failAction.params$)
+  \State \textsc{Resample}($failAction.params$)
   \Else
   \State \# \emph{Action precondition violation.}
-  \State resample($failPred.params$)
+  \State \textsc{Resample}($failPred.params$)
   \EndIf
   \EndFor
   \State Raise failure to task planner, receive new plan.
   \EndProcedure
-
-  \Procedure{MotionPlan}{$HLP$}
-  \For {$op_{i}$ in $HLP.ops$}
-  \State $res \leftarrow op_{i}$.motionPlan()
-  \If {$res.failed$}
-  \State \Return $i$, null
-  \EndIf
-  \State $failPred \leftarrow op_{i}$.checkPreconds()
-  \If {$failPred$ is not null}
-  \State \Return $i$, $failPred$
-  \EndIf
-  \EndFor
-  \State \# \emph{Found successful plan refinement.}
-  \State \Return null, null
-  \EndProcedure
  \end{algorithmic}
 \end{algorithm}
 
-We call the \textsc{MotionPlan} subroutine in line 4, which
-iterates through the sequence of actions that comprise the high level plan (l.20).
-For each action, a call to the motion planner is made (l.22) using the instantiated values
-for the parameters of that action, to attempt to find a trajectory
-linking the sampled poses. If this succeeds, the preconditions of the action
-are tested (l.26); as part of this step, we check if the trajectory returned by the
-motion planner is collision-free.
+We call the \textsc{MotionPlan} subroutine in line 4, which attempts to
+find a collision-free set of trajectories linking all pose instantiations.
+To do so, we iterate through the sequence of actions that comprise the high level plan.
+For each, we first call the motion planner to find a trajectory
+linking the sampled poses. If this succeeds, we test the action preconditions;
+as part of this step, we check if the trajectory is collision-free.
 
-We call the \texttt{resample} routine on the high level parameters
+If \textsc{MotionPlan} is unsuccessful, it returns into $failStep$ the index of the high level action where failure occurred.
+If this was due to a motion planning failure, $failPred$ is null. Otherwise,
+the violated action precondition is stored into $failPred$.
+
+We call the \textsc{Resample} routine on the high level parameters
 associated with a failure; this routine picks one of these high level parameters at random and
 resamples it from its distribution. If we reach the iteration limit (l.18),
 we convert the most recent failure information into a symbolic representation, then raise it
