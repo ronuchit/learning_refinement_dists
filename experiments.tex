@@ -1,31 +1,30 @@
 \section{Experiments}
-% \begin{figure}
-%   \centering
-%   \begin{subfigure}[b]{0.48\linewidth}
-%     \includegraphics[width=\textwidth]{images/learns.png}
-%     \caption{Initial distribution}
-%   \end{subfigure}
-%   \begin{subfigure}[b]{0.48\linewidth}
-%     \includegraphics[width=\textwidth]{images/learn10.png}
-%     \caption{After 10 iterations.}
-%   \end{subfigure}
-%   \begin{subfigure}[b]{0.48\linewidth}
-%     \includegraphics[width=\textwidth]{images/learn15.png}
-%     \caption{After 15 iterations.}
-%   \end{subfigure}
-%   \begin{subfigure}[b]{0.48\linewidth}
-%     \includegraphics[width=\textwidth]{images/learn20.png}
-%     \caption{Final distribution.}
-%   \end{subfigure}
-%   \caption{Learned left arm grasp (green) and putdown (blue) distributions used to
-% pick up the black can and place it on the central red square, after different training iterations.
-% An iteration refers to a single run of randomized refinement,
-% which terminates after $L$ calls to the \textsc{resample} routine. The
-% initial distributions are uniform because we initialize weights to $\vec{\mathbf{0}}$.
-% The final distributions are after 20 iterations. The convergence and robustness of
-% the distributions demonstrate the soundness of our approach.}
-%   \label{fig:training}
-% \end{figure}
+\begin{figure}
+  \centering
+  \begin{subfigure}[b]{0.48\linewidth}
+    \includegraphics[width=\textwidth]{images/learns.png}
+    \caption{Initial distribution}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.48\linewidth}
+    \includegraphics[width=\textwidth]{images/learn4.png}
+    \caption{After 4 iterations.}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.48\linewidth}
+    \includegraphics[width=\textwidth]{images/learn8.png}
+    \caption{After 8 iterations.}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.48\linewidth}
+    \includegraphics[width=\textwidth]{images/learn12.png}
+    \caption{Final distribution.}
+  \end{subfigure}
+  \caption{Learned base position (blue) and left arm grasp (green) distributions used to
+pick up the black can after different training iterations.
+An iteration refers to a single planning problem,
+which terminates after $L$ calls to the \textsc{resample} routine. The
+initial distributions are uniform because we initialize weights to $\vec{\mathbf{0}}$.
+The final distributions are after 12 iterations.}
+  \label{fig:training}
+\end{figure}
 
 % \begin{figure}
 %   \centering
@@ -121,7 +120,8 @@ and evaluating each final set of weights against a fixed test set of 50 randomly
 Our experiments are conducted in Python 2.7 using the OpenRave simulator~\cite{Diankov_2008_6117} with a PR2 robot.
 The motion planner we use is trajopt~\cite{schulman2013finding}, and the task planner is Fast-Forward~\cite{FF}.
 The experiments were carried out in series on an Intel Core i7-4790K machine with 16GB RAM.
-Table \ref{table:results} summarizes our quantitative results.
+Table \ref{table:results} summarizes our quantitative results, and \figref{fig:cover} and \figref{fig:training}
+show learned refinement policies.
 
 \subsection{Can Domain}
 We run two sets of experiments, using 25 objects and 30 objects on the table.
