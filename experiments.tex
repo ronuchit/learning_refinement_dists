@@ -133,9 +133,9 @@ grasp and putdown poses is a cube of side length 30 centimeters around the targe
 location. For base poses, the range is a square of side length 1 meter around the object or location which
 the robot is approaching. For putdown locations, the range is defined by the edges of the table.
 
-Our curriculum learning system first trains base poses and grasp poses for $N = 10$ iterations,
-then base poses, grasp poses, and putdown poses (at fixed location) for $N = 20$ iterations, then all parameter types for $N = 30$ iterations.
-We fixed $L = 100$ and $\epsilon = 20$.
+Our curriculum learning system first trains base poses and grasp poses for $N = 12$ iterations with $\epsilon = 5$,
+then base poses, grasp poses, and putdown poses (at fixed location) for $N = 18$ iterations with $\epsilon = 20$,
+then all parameter types for $N = 30$ iterations with $\epsilon = 20$. We fixed $L = 100$.
 
 The results demonstrate significant improvements in performance to the baseline system for success rate, motion planning
 time, and number of motion planner calls. For the 30 object case,
@@ -149,8 +149,8 @@ base motion in the environment, so the robot is encouraged to use the provided t
 This domain has 5 types of continuous parameters: base poses, object grasp poses, object putdown poses, tray pickup
 poses, and tray putdown poses.
 
-Our curriculum learning system first trains the base poses and tray pickup and putdown poses for
-$N = 20$ iterations, then the object grasp and putdown poses for $N = 20$ iterations. We fixed $L = 100$ and $\epsilon = 10$.
+Our curriculum learning system first trains base poses and tray pickup and putdown poses for
+$N = 20$ iterations, then object grasp and putdown poses for $N = 20$ iterations. We fixed $L = 100$ and $\epsilon = 10$.
 
 The results demonstrate comparable performance to the baseline system. The reason is that
 hand-coded discretizations of the sample space are very good in this domain. For example, the optimal
