@@ -30,7 +30,8 @@ lagriffoul2014orientation, GarrettWAFR14, dornhege2012semantic}.
   \vspace{-1.5 em}
 \end{figure}
 
-Our methods build on the TAMP system presented by Srivastava et al.~\cite{srivastava2014combined}.
+Our methods build on the TAMP system presented by Srivastava et al.~\cite{srivastava2014combined},
+but they can be adapted for the other TAMP paradigms cited above.
 In this system, a (classical) task planner produces a symbolic plan containing
 a sequence of actions to reach a goal state. Then, in a process known as \emph{plan refinement},
 candidate values are proposed for the continuous variables in this symbolic plan.
@@ -39,25 +40,23 @@ An advantage of this system is that the task planner and the motion planner are 
 
 The authors propose an \emph{interface layer} for refining the plan into a set
 of collision-free trajectories; it performs an exhaustive backtracking search over a
-set of sampled candidate parameter values. If a motion planning feasible
+set of sampled candidate parameter values, which are instantiations of symbolic references in the plan. If a motion planning feasible
 refinement is not found within the resource limit, symbolic error information is
 propagated back to the task planner, and a new symbolic plan is produced.
 
-The system, however, relies on hand-coded discretizations to sample continuous values for these
+The TAMP paradigms referenced above use hand-coded heuristics to instantiate symbols with continuous values.
+The system presented by Srivastava et al.~\cite{srivastava2014combined} relies on hand-coded discretizations to sample continuous values for
 plan parameters. Designing these heuristic sampling distributions requires substantial effort,
 as they are tuned based on geometric attributes of the environment and its objects, meaning they
 must be recalibrated when running the system in a new setting. Further,
 the discretizations must be fairly coarse to allow reasonable search speeds, meaning they inherently lack
-robustness to increased environmental complexity. In this paper, we present a reinforcement
-learning method to train good continuous proposal distributions for sampling plan parameter values.
-
-Other TAMP paradigms use similar hand-coded heuristics to sample continuous values for symbolic variables.
-While our method is specific to this architecture, it can be adapted for these systems.
+robustness to increased environmental complexity.
 
 Reinforcement learning (RL) refers to the process of an agent learning a policy (a mapping from states to actions)
 in its environment that maximizes rewards. Zhang and Dietterich~\cite{JobShopSched} first applied the RL framework
 to planning problems, using a job shop scheduling setting. In this work, we take inspiration from
-their approach; we apply RL to plan refinement in a TAMP system. We implement our approach using methods adapted from
+their approach; we use RL to train continuous proposal distributions for
+plan refinement in a TAMP system. We implement our approach using methods adapted from
 Zucker et al.~\cite{workspacebias}, who train a configuration space sampler for motion planning
 using features of the discretized workspace.
 

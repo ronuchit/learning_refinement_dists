@@ -18,7 +18,7 @@
     \caption{Final distribution.}
   \end{subfigure}
   \caption{\small{Learned base position (blue) and left arm grasp (green) distributions used to
-pick up the black can after different training iterations.
+pick up the black can after different training iterations for learning refinement policies.
 An iteration refers to a single planning problem,
 which terminates after $L$ calls to the \textsc{resample} routine. The
 initial distributions are uniform because we initialize weights to $\vec{\mathbf{0}}$.
@@ -81,15 +81,15 @@ planner for the baseline system (B), our learned refinement policies with depth-
 and our learned refinement policies and heuristics for searching the graph (F). Results for L and F
 are averaged across 10 separately trained sets of weights. Time limit: 300s.}}
   \label{table:results}
-  \vspace{-1.5 em}
+  \vspace{-2 em}
 \end{table}
 
 \subsection{Training Methodology}
 We use the reward function described earlier. Our weight
 vectors are initialized to $\vec{\mathbf{0}}$ for all parameter types -- this
 initialization represents a uniform distribution across the limits of the geometric search space.
-We use 24 features. 9 binary features encode the bucketed distance between the sample
-and target. 9 binary features encode the bucketed sample height. 3 features
+We use 24 features for learning the $\theta_{p}$. 9 binary features encode the bucketed distance between the sample
+and target (the object referenced by the parameter). 9 binary features encode the bucketed sample height. 3 features
 describe the number of other objects within discs of radius 7, 10, and 15 centimeters around the
 sample. 3 binary features describe the angle made between the vector from the
 robot to the target and the vector from the sample to the target: whether the angle is less than
@@ -98,7 +98,8 @@ $\pi/3$, $\pi/2$, and $3\pi/4$.
 Initial experimentation revealed that training weights for all parameter types jointly is intractable,
 because planning takes a long time. Potential solutions for this would explore alternative RL algorithms,
 but this is not our focus. Instead, we apply curriculum learning by training with a planning problem distribution
-$\Prob$ that gets progressively harder.
+$\Prob$ that gets progressively harder. Additionally, we train the refinement policies first, then fix them while
+training the graph search heuristics.
 
 We evaluate our approach in two distinct domains: cans distributed on a table (the \emph{can domain})
 and setting up bowls for dinner (the \emph{dinner domain}).
@@ -107,8 +108,10 @@ in Srivastava et al.~\cite{srivastava2014combined} and depth-first search of the
 plan refinement graph, which always refines the plan that incorporates all error information obtained
 thus far. For the can domain, we report results for 3 systems: 1) this baseline, 2) our learned refinement policies
 with the depth-first search, and 3) our learned refinement policies and graph search heuristics.
-For the dinner domain, we report results only for the first 2 systems, because objects
-in this domain are never obstructed, meaning depth-first search already performs well.
+For the dinner domain, we report results only for the first 2 systems, because the errors propagated in this
+domain relate to the stackability of objects.
+Thus, they are not specific to the current instantiations of symbolic references. This means we want to incorporate
+all available error information in each refinement attempt, so depth-first search performs well.
 
 For the third system, which trains a refinement policy and graph search heuristics, we employ the following
 algorithm to produce a trained set of weights. We train 3 sets independently, run each
@@ -116,8 +119,9 @@ one with a validation set of 50 environments, and output the best-performing one
 reduced variation due to random seeding. For the second system, by contrast, we simply train a single
 set of weights and output it, without any validation.
 
-Our reported results for the second and third systems are averages across running the training process 10 separate times
-and evaluating each final set of weights against a fixed test set of 50 randomly generated environments.
+We report results on a fixed test set of 50 randomly generated environments.
+For the second and third systems, we average across running the training process 10 separate times
+and evaluating each final set of weights.
 
 Our experiments are conducted in Python 2.7 using the OpenRave simulator~\cite{Diankov_2008_6117} with a PR2 robot.
 The motion planner we use is trajopt~\cite{schulman2013finding}, and the task planner is Fast-Forward~\cite{FF}.
@@ -130,10 +134,10 @@ We run two sets of experiments, using 25 objects and 30 objects on the table.
 The goal across all experiments is for the robot to pick up a particular object with its
 left gripper. We disabled the right gripper, so any obstructions to the target object must be picked up and
 placed elsewhere on the table. This domain has 4 types of continuous parameters: base poses, object grasp
-poses, object putdown poses, and object putdown locations onto the table. The range of allowable values for
-grasp and putdown poses is a cube of side length 30 centimeters around the target object or putdown
-location. For base poses, the range is a square of side length 1 meter around the object or location which
-the robot is approaching. For putdown locations, the range is defined by the table.
+poses, object putdown poses, and object putdown locations onto the table.
+% The range of allowable values for grasp and putdown poses is a cube of side length 30 centimeters around the
+% target object or putdown location. For base poses, the range is a square of side length 1 meter around the
+% object or location which the robot is approaching. For putdown locations, the range is defined by the table.
 
 Our curriculum learning system first trains base poses and grasp poses for $N = 12$ iterations with $\epsilon = 5$,
 then base poses, grasp poses, and putdown poses (at fixed location) for $N = 18$ iterations with $\epsilon = 20$,

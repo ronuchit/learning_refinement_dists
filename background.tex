@@ -56,14 +56,13 @@ such as cylinders and grasping poses.
 true or false in the state.
 \item $\I$ is the set of fluents that hold true in the initial state.
 \item $\G$ is the set of fluents defining the goal state.
-\item $\C$ is a set of parametrized \emph{high level actions}, defined by \emph{preconditions}, a set
-of fluents that must hold true in the current state to be able to perform the action,
-and \emph{effects}, a set of fluents that hold true after the action is performed.
+\item $\C$ is a set of parametrized \emph{high-level actions}, defined by \emph{preconditions}, a set
+of fluent literals that must hold true in the current state to be able to perform the action,
+and \emph{effects}, a set of fluent literals that hold true after the action is performed.
 \end{tightlist}
 A solution to a task planning problem is a valid sequence of actions
-$a_{0}, a_{1}, ..., a_{n} \in \C$ which, when applied to the state of fluents
-successively starting with $\I$, results in a state in which all fluents of
-$\G$ hold true.
+$a_{0}, a_{1}, ..., a_{n} \in \C$ which, when applied successively to states
+starting with $\I$, results in a state in which all fluents of $\G$ hold true.
 
 % As a simple example, we consider a pick domain where the robot is capable of
 % performing only two actions: moving to a location and grasping an object. We can
@@ -111,7 +110,7 @@ $\G$ hold true.
 % implicitly checked within the \emph{IsValidTraj} precondition. An important aspect of
 % this formulation is the assumption that grasping an object causes it to no longer
 % obstruct any other object in the environment. If no other object obstructs $obj_{1}$,
-% a possible high level plan with a feasible refinement for achieving $\G$ is
+% a possible high-level plan with a feasible refinement for achieving $\G$ is
 % \begin{tightlist}
 % \item[1.] \emph{MoveTo}$(robot\_init\_pose, rgripper\_bp\_obj_{1})$
 % \item[2.] \emph{Grasp}$(obj_{1}, obj_{1}\_init\_pose, rgripper\_bp\_obj_{1},\\rgripper\_gp\_obj_{1}, rgripper)$
@@ -120,19 +119,23 @@ $\G$ hold true.
 % The $bp$ parameters refer to robot base poses in preparation for grasping an object.
 % The trajectory parameters are not included here because they are based on the interface layer's
 % sampling of the base pose and grasping pose. If $obj_{1}$ is
-% obstructed by, say, $obj_{3}$ in the environment, a possible high level plan would involve
+% obstructed by, say, $obj_{3}$ in the environment, a possible high-level plan would involve
 % grasping first $obj_{3}$ then $obj_{1}$.
 
 Classical task planners operate on discrete, purely logical levels and thus cannot directly
 solve this problem. We adopt the hierarchical method of Srivastava et al.~\cite{srivastava2014combined}
 to account for this discrepancy. A key step in their approach is the
 abstraction of continuous state variables, such as robot grasping poses for objects, into a
-discrete set of symbolic references to potential values. A \emph{symbolic}, or \emph{high level}, plan
+discrete set of symbolic references to potential values. A \emph{symbolic}, or \emph{high-level}, plan
 refers to the fixed task sequence returned by a task planner and comprised of these symbolic references.
 An \emph{interface layer} assigns continuous values to symbolic references, in a process called \emph{plan refinement}.
-These parameters define a sequence of states, and a motion planner is used to find trajectories between these states.
+These plan parameters -- symbolic references in the plan that are instantiated with continuous values --
+define a sequence of states. A motion planner is used to find trajectories between these states.
 If no satisfying set of parameters can be found (e.g., because an object is obstructed), the interface layer
-augments the symbolic fluent state to reflect this and obtains a new high level plan from the task planner.
+augments the symbolic fluent state to reflect this. Using pose references,
+this can be done without adding new discrete pose values to the high-level representation.
+This is essential, because the size of the high-level state space is exponential in the number of discrete
+values represented at the high level. The system then obtains a new high-level plan from the task planner.
 
 The authors introduce an algorithm for plan refinement
 called \textsc{TryRefine}, an exhaustive backtracking routine over a discrete set of candidate
@@ -143,24 +146,24 @@ sampled around the can in each of the 8 cardinal and intermediate directions, at
 Such coarse sampling distributions necessitate fine-tuning for each domain and are not robust to
 increased environmental complexity.
 
-An unpublished extension to this system that is currently in progress achieves completeness by
-maintaining a \emph{plan refinement graph}, whose nodes each store a valid symbolic plan and
+An unpublished extension to this system that is currently in progress develops a complete algorithm and
+maintains a \emph{plan refinement graph}, whose nodes each store a valid symbolic plan and
 its current set of instantiated parameter values. If refinement of a plan $p$ stored in node
 $n$ leads to discovered facts being propagated to the task planner, the newly produced plan $p'$ based on
-the updated fluent state is added as a child node $n'$ of $n$. This makes it possible to interleave
-partial refinement of several high level plans, in an attempt to find a successful complete refinement
-of any one.
+the updated fluent state is added as a child node $n'$ of $n$. This makes it possible to divide computational
+effort between the search for additional high-level plans that resolve specific errors in previous ones,
+and the search for error-free refinements of existing plans.
 % For example, consider the previous pick domain specification where $obj_{3}$ does obstruct $obj_{1}$.
-% Initially, the task planner returns a high level plan to immediately grasp $obj_{1}$, because
+% Initially, the task planner returns a high-level plan to immediately grasp $obj_{1}$, because
 % it is not yet aware of the obstruction. The interface layer then samples grasp poses
 % for $obj_{1}$, but motion planning for each sample fails due to the obstruction. Eventually,
-% this error is propagated back to the task planner. The new high level plan correctly
+% this error is propagated back to the task planner. The new high-level plan correctly
 % grasps $obj_{3}$ before $obj_{1}$, and refining this plan succeeds.
 
 % For example, consider a pick domain with two objects: a target $o_{t}$ to be grasped and an obstruction.
-% Initially, the task planner returns a high level plan to immediately grasp $o_{t}$, because
+% Initially, the task planner returns a high-level plan to immediately grasp $o_{t}$, because
 % it is not yet aware of the obstruction. The interface layer then samples grasp poses
 % for $o_{t}$, but motion planning for each sample fails due to the obstruction. Eventually,
 % this error information about the obstruction is converted into a symbolic representation
-% and propagated back to the task planner. The new high level plan correctly grasps the obstruction
+% and propagated back to the task planner. The new high-level plan correctly grasps the obstruction
 % before grasping $o_{t}$, and refining this plan succeeds.

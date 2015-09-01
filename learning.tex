@@ -27,7 +27,7 @@ We note that randomized refinement provides a fixed policy for selecting $p$ for
 We thus restrict our attention to training policies that suggest $x$.
 
 Our reward function $R$ explicitly encourages successful plan refinement, providing positive reward linearly
-interpolated between 0 and 20 based on the fraction of high level actions whose preconditions are
+interpolated between 0 and 20 based on the fraction of high-level actions whose preconditions are
 satisfied. Additionally, we give $-1$ reward every time we sample an IK infeasible pose,
 to minimize how long the system spends resampling plan variables until obtaining IK feasible samples.
 
@@ -37,8 +37,7 @@ uses a linear combination of features to define a distribution over poses. In ou
 vector $\theta_{p}$ for each parameter \emph{type}, comprised of a pose type and possibly a gripper
 (e.g., ``left gripper grasp pose,'' ``right gripper putdown pose,'' ``base pose'').
 These weight vectors encode the policy for selecting $x$ for actions in $\A$.
-This decouples the learned distributions from any single high level plan and allows us to
-test in more complicated environments than those used in training.
+This decouples the learned distributions from any single high-level plan and allows generalization across problems.
 
 We develop a feature function $f(s, p, x)$ that maps the current
 state $s \in \St$, plan parameter $p$, and sampled value $x$ for $p$ to a

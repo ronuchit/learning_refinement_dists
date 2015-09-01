@@ -1,31 +1,32 @@
 \section{Selecting a Plan to Try Refining}
 The approach presented thus far can be succinctly described as learning \emph{how} to
-refine a single high level plan. In this section, we present a method for learning
+refine a single high-level plan. In this section, we present a method for learning
 \emph{which} plan to try refining. Section III-C describes the plan refinement graph $\Gr = (\V, \E)$,
 which maintains a set of candidate plans and their current refinements. The decision to be made is of the form $(v, b)$,
 where $v \in \V$ denotes which node to visit next, and $b$ is a boolean that indicates the action
 to be performed at $v$. There are two possible actions: 1) attempt to find a valid refinement
 for the plan stored in $v$, or 2) recognize that a valid refinement does not exist for this plan
-and generate a geometric fact to use for replanning. For example, action 2
-is useful if the plan attempts to grasp an object that is surrounded by obstructions,
-so that no valid refinement of the grasping pose exists.
+and generate a geometric fact to use for replanning, by allowing collisions when motion planning
+for the current instantiation of plan parameters.
 
 To select between the potential refinement options, we learn decision tree regressors
 to answer the following questions about a single node $n$ containing plan $p$: 1) how many iterations of randomized refinement
 would be needed to achieve a valid refinement for $p$ ($\infty$ if $p$ has no valid refinement); 2)
 if we quickly generate a child node $n'$ under $n$ by discovering geometric facts and producing a new plan $p'$,
 how many iterations would be needed to refine $p'$? We approach this by learning an estimate of the
-number of motion planning steps needed to refine \emph{each} action. To obtain an estimate for a full plan, we
+number of iterations needed to refine \emph{each} action. To obtain an estimate for a full plan, we
 sum this number across all of the plan's actions. This implicitly assumes that dependencies in plans are, in some way, local;
 it only makes sense if a plan can be split into subportions with independent refinements.
 Addressing this will be an important area of future work.
 
 The features for our regressors are as follows. 3 geometric features encode the closeness of the objects
 of interest in our environment, considering the distance to and placement of nearby obstructions. The other
-feature describes how many times the node has been visited before. To train the regressors, we fix pretrained
-policies for plan refinement and construct datasets for supervised learning as follows.
-For the first regressor, we run refinement on the root
-node of the graph over 500 random environments sampled from $\Prob$, and measure the feature vector and quantities of interest.
+feature describes how many times the node has been visited before.
+
+To train the regressors, we fix pretrained policies for plan refinement and construct datasets
+for supervised learning as follows. For the first regressor, we run refinement on the root
+node of the graph over 500 random environments sampled from $\Prob$, and measure the feature vector and number of iterations
+until valid refinement (arbitrarily large if no valid refinement exists).
 For the second regressor, we do the same but on a single child node spawned from the root node.
 We then fit standard decision tree regressors to our data.
 

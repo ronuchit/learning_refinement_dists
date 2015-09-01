@@ -1,10 +1,8 @@
 \section{Conclusion}
 We presented a novel application of reinforcement learning to task
-and motion planning. We trained policies for refining symbolic plans
-by learning good sampling distributions for plan parameters. The choice
-of which parameter to resample at each iteration was governed by randomized refinement,
-a local search algorithm we presented for plan refinement. We also showed initial work that trains heuristics
+and motion planning. We gave a randomized local search algorithm for plan refinement
+and trained policies for it. We also showed initial work that trains heuristics
 for searching the plan refinement graph, so our full system learns both \emph{which} node to refine
 and \emph{how} to perform this refinement. We evaluated performance against a baseline
-of hand-coded discretizations for several challenging tasks. Our system demonstrated
+of hand-coded discretizations for several challenging tasks; our system demonstrated
 significantly improved performance.
