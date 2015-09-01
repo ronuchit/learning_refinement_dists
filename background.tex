@@ -5,9 +5,9 @@ used throughout the paper.
 \subsection{Markov Decision Processes and Reinforcement Learning}
 Markov decision processes (MDPs) are the standard AI approach for formulating
 interactions between agents and environments. At each step of an MDP,
-the agent knows its current state and selects an action, causing the
-state to transition according to a known transition distribution. Formally,
-an MDP is a tuple $\langle \St, \A, T, R, \gamma, \Prob \rangle$:
+the agent knows its current state and selects an action. This causes the
+state to change according to a known transition distribution. We define
+an MDP as a tuple $\langle \St, \A, T, R, \gamma, \Prob \rangle$, where
 \begin{tightlist}
 \item $\St$ is the state space.
 \item $\A$ is the action space.
@@ -16,12 +16,12 @@ an MDP is a tuple $\langle \St, \A, T, R, \gamma, \Prob \rangle$:
 \item $\gamma \in [0, 1]$ is the discount factor.
 \item $\Prob$ is the initial state distribution.
 \end{tightlist}
-A solution to an MDP is a policy $\pi: \St \rightarrow \A$ that maps states to
-actions. The value $V_{\pi}(s)$ of a state under $\pi$ is the sum of expected
+A solution to an MDP is a policy, $\pi: \St \rightarrow \A$, that maps states to
+actions. The value, $V_{\pi}(s)$, of a state under $\pi$ is the sum of expected
 discounted future rewards from starting in state $s$ and selecting actions according
 to $\pi$:
 $$V_{\pi}(s) = \mathbb{E}[\sum_{t=0}^{\infty}\gamma^{t}R(s_{t}) | \pi, s_{0} = s].$$
-The optimal policy $\pi^{*}$ maximizes this value for all states.
+The optimal policy, $\pi^{*}$, maximizes this value for all states.
 
 In reinforcement learning (RL), an agent must determine $\pi^{*}$
 through interaction with its environment (i.e. without explicit access
@@ -131,11 +131,12 @@ refers to the fixed task sequence returned by a task planner and comprised of th
 An \emph{interface layer} assigns continuous values to symbolic references, in a process called \emph{plan refinement}.
 These plan parameters -- symbolic references in the plan that are instantiated with continuous values --
 define a sequence of states. A motion planner is used to find trajectories between these states.
+
 If no satisfying set of parameters can be found (e.g., because an object is obstructed), the interface layer
 augments the symbolic fluent state to reflect this. Using pose references,
 this can be done without adding new discrete pose values to the high-level representation.
 This is essential, because the size of the high-level state space is exponential in the number of discrete
-values represented at the high level. The system then obtains a new high-level plan from the task planner.
+values represented at the high level. The system then obtains a new plan from the task planner.
 
 The authors introduce an algorithm for plan refinement
 called \textsc{TryRefine}, an exhaustive backtracking routine over a discrete set of candidate

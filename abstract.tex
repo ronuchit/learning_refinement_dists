@@ -11,7 +11,7 @@ systems rely on hand-coded discretizations of the domain. Such an approach lacks
 requires substantial design effort. In this paper, we present methods to improve the reliability
 and speed of planning in a TAMP system. The approach we build on first plans
 abstractly, ignoring continuous values, and then performs \emph{plan refinement}
-to determine feasible parameter settings. In our work, we formulate this as a
+to determine feasible parameter settings. We formulate plan refinement as a
 Markov decision process (MDP) and give a reinforcement learning (RL) algorithm
 to learn a policy for it. We also present initial work that learns which plan,
 from a set of potential candidates, to try to refine.
@@ -19,6 +19,5 @@ Our contributions are as follows: 1) we present a randomized local search algori
 that is easily formulated as an MDP; 2) we give an RL algorithm that learns a policy for this MDP;
 3) we present a method that trains heuristics for selecting which plan to try to refine;
 and 4) we perform experiments to evaluate the performance of our system in a variety of simulated
-domains. We find that our approach yields significantly improved performance over that
-of hand-coded sampling distributions.
+domains. We show improvements in success rate and planning time over a hand-coded baseline.
 \end{abstract}

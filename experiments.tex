@@ -109,14 +109,14 @@ plan refinement graph, which always refines the plan that incorporates all error
 thus far. For the can domain, we report results for 3 systems: 1) this baseline, 2) our learned refinement policies
 with the depth-first search, and 3) our learned refinement policies and graph search heuristics.
 For the dinner domain, we report results only for the first 2 systems, because the errors propagated in this
-domain relate to the stackability of objects.
-Thus, they are not specific to the current instantiations of symbolic references. This means we want to incorporate
-all available error information in each refinement attempt, meaning depth-first search performs well.
+domain relate to the stackability of objects. Since this is independent of continuous parameter instantiations, we want to
+incorporate all available error information when attempting refinement. Thus, depth-first search can be expected to perform well
+in this setting.
 
 For the third system, which trains a refinement policy and graph search heuristics, we employ the following
 algorithm to produce a trained set of weights. We train 3 sets independently, test each
 one on a validation set of 50 environments, and output the best-performing one. We found that this
-reduced variation due to random seeding. For the second system, by contrast, we simply train a single
+reduced variation due to random seeding. For the second system, by contrast, we train a single
 set of weights and output it, without any validation.
 
 We report results on a fixed test set of 50 randomly generated environments.

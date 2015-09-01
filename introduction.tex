@@ -1,16 +1,15 @@
 \section{Introduction}
 A long-term goal of robotics research is the introduction of intelligent household robots.
-To be effective, such robots will need to perform complex tasks (e.g., setting a dinner table, doing laundry)
-over long horizons. Planning for these long-horizon tasks is infeasible
+To be effective, such robots will need to perform complex tasks
+over long horizons (e.g., setting a dinner table, doing laundry). Planning for these long-horizon tasks is infeasible
 for state-of-the-art motion planners, making the need
 for a hierarchical system of reasoning apparent.
 
 One way to approach hierarchical planning is through combined \emph{task and motion planning} (TAMP). In this
 approach, an agent is given a symbolic, logical characterization of actions (e.g., move, grasp,
-putdown), along with a geometric encoding of the environment. The hierarchical separation of high-level, symbolic task planning
-from low-level, geometric motion planning enforces abstraction:
-the task planner maintains no knowledge of the environment geometry, and the
-motion planner has no understanding of the overall goal.
+putdown), along with a geometric encoding of the environment.
+TAMP systems maintain a hierarchical separation of high-level, symbolic task planning
+and low-level, geometric motion planning.
 Efficient integration of these two types of reasoning is challenging, and recent research has
 proposed several methods for it~\cite{srivastava2014combined, kaelbling2011hierarchical,
 lagriffoul2014orientation, GarrettWAFR14, dornhege2012semantic}.
@@ -30,9 +29,9 @@ lagriffoul2014orientation, GarrettWAFR14, dornhege2012semantic}.
   \vspace{-1.5 em}
 \end{figure}
 
-Our methods build on the TAMP system presented by Srivastava et al.~\cite{srivastava2014combined},
-but they can be adapted for the other TAMP paradigms cited above.
-In this system, a (classical) task planner produces a symbolic plan containing
+Our methods build on the TAMP system presented by Srivastava et al.~\cite{srivastava2014combined};
+similar techniques could be applied for the TAMP approaches cited above. In Srivastava et al.,
+a (classical) task planner produces a symbolic plan containing
 a sequence of actions to reach a goal state. Then, in a process known as \emph{plan refinement},
 candidate values are proposed for the continuous variables in this symbolic plan.
 These values are checked locally for feasibility by calling a motion planner.
@@ -45,10 +44,10 @@ refinement is not found within the resource limit, symbolic error information is
 propagated back to the task planner, and a new symbolic plan is produced.
 
 The TAMP paradigms referenced above all use hand-coded heuristics to instantiate symbols with continuous values.
-The system presented by Srivastava et al.~\cite{srivastava2014combined} relies on hand-coded discretizations to sample values for
-plan parameters. Designing these heuristic sampling distributions requires substantial effort,
-as they are tuned based on geometric attributes of the environment and its objects, meaning they
-must be re-calibrated when running the system in a new setting. Further,
+The system presented by Srivastava et al. relies on hand-coded discretizations to sample values for
+plan parameters. Designing these heuristic sampling distributions often requires substantial effort.
+They typically depend on geometric attributes of the environment and its objects and must be
+re-calibrated to run the system in a new setting. Further,
 the discretizations must be fairly coarse to allow reasonable search speeds, meaning they inherently lack
 robustness to increased environmental complexity.
 
