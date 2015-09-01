@@ -44,11 +44,11 @@ set of sampled candidate parameter values, which are instantiations of symbolic 
 refinement is not found within the resource limit, symbolic error information is
 propagated back to the task planner, and a new symbolic plan is produced.
 
-The TAMP paradigms referenced above use hand-coded heuristics to instantiate symbols with continuous values.
-The system presented by Srivastava et al.~\cite{srivastava2014combined} relies on hand-coded discretizations to sample continuous values for
+The TAMP paradigms referenced above all use hand-coded heuristics to instantiate symbols with continuous values.
+The system presented by Srivastava et al.~\cite{srivastava2014combined} relies on hand-coded discretizations to sample values for
 plan parameters. Designing these heuristic sampling distributions requires substantial effort,
 as they are tuned based on geometric attributes of the environment and its objects, meaning they
-must be recalibrated when running the system in a new setting. Further,
+must be re-calibrated when running the system in a new setting. Further,
 the discretizations must be fairly coarse to allow reasonable search speeds, meaning they inherently lack
 robustness to increased environmental complexity.
 
@@ -67,7 +67,7 @@ partial refinement of several plans. In this paper, we also develop a method for
 which plan to try refining next.
 
 The four contributions of our work are as follows: 1) we present randomized refinement, a local search
-algorithm for plan refinement that is easily formulable as an MDP; 2) we formulate plan refinement in the
+algorithm for plan refinement that is easily formulated as an MDP; 2) we formulate plan refinement in the
 RL framework and learn a policy for this MDP; 3) we train heuristics to search intelligently
 through a plan refinement graph, allowing us to decide which plan to try refining next;
 and 4) we present experiments to evaluate our approach in a variety of simulated

@@ -111,17 +111,17 @@ with the depth-first search, and 3) our learned refinement policies and graph se
 For the dinner domain, we report results only for the first 2 systems, because the errors propagated in this
 domain relate to the stackability of objects.
 Thus, they are not specific to the current instantiations of symbolic references. This means we want to incorporate
-all available error information in each refinement attempt, so depth-first search performs well.
+all available error information in each refinement attempt, meaning depth-first search performs well.
 
 For the third system, which trains a refinement policy and graph search heuristics, we employ the following
-algorithm to produce a trained set of weights. We train 3 sets independently, run each
-one with a validation set of 50 environments, and output the best-performing one. We found that this
+algorithm to produce a trained set of weights. We train 3 sets independently, test each
+one on a validation set of 50 environments, and output the best-performing one. We found that this
 reduced variation due to random seeding. For the second system, by contrast, we simply train a single
 set of weights and output it, without any validation.
 
 We report results on a fixed test set of 50 randomly generated environments.
-For the second and third systems, we average across running the training process 10 separate times
-and evaluating each final set of weights.
+For the second and third systems, we average across running the training process 10 times
+and evaluating each final set of weights separately.
 
 Our experiments are conducted in Python 2.7 using the OpenRave simulator~\cite{Diankov_2008_6117} with a PR2 robot.
 The motion planner we use is trajopt~\cite{schulman2013finding}, and the task planner is Fast-Forward~\cite{FF}.
@@ -146,7 +146,7 @@ then all parameter types for $N = 30$ iterations with $\epsilon = 20$. We fixed 
 The results demonstrate significant improvements in performance to the baseline system for success rate, motion planning
 time, and number of motion planner calls. For the 30 object case, though,
 there is an increase in average motion planning time when we use trained graph search heuristics. This is likely because of suboptimal
-search decisions occasionally being made due to the softmin operation.
+search decisions occasionally being made.
 
 \subsection{Dinner Domain}
 We run two sets of experiments, using 2 and 4 bowls. The robot must move the
