@@ -27,10 +27,7 @@ In reinforcement learning (RL), an agent must determine $\pi^{*}$
 through interaction with its environment (i.e. without explicit access
 to $\St$ or $T$). At each timestep, the agent knows the state and what
 actions are available, but initially does not know how taking actions will
-affect the state. Key challenges in RL include determining how to assign
-the credit of received rewards to each undertaken action, balancing the tradeoff between
-exploration of new actions and exploitation of known good actions in the environment, and handling
-potentially limited perception of the current state. There is a large body of research on RL, and
+affect the state. There is a large body of research on RL, and
 standard techniques include value function approximation, which uses methods such as temporal difference
 (TD) learning, and direct policy estimation, which encompasses both gradient-based
 and gradient-free methods~\cite{suttonbarto}.
@@ -40,28 +37,14 @@ Our problem formulation is motivated by Zhang and Dietterich's application of RL
 shop scheduling~\cite{JobShopSched}. Job shop scheduling is a combinatorial optimization problem where the goal is to find
 a minimum-duration schedule of a set of jobs with temporal and resource constraints. An empirically
 successful approach to this problem relies on a randomized local search that proposes changes to an
-existing suboptimal schedule. The authors formulate scheduling as the following MDP:
-\begin{tightlist}
-\item $\St$ is the set of all possible temporal configurations and resource allocations of the jobs.
-\item $\A$ is the set of all possible changes to either the time or the resource allocation of a single job.
-\item $R$ is a measure of schedule goodness based on its length relative to the difficulty of the scheduling problem.
-\end{tightlist}
-They use $TD(\lambda)$~\cite{suttonbarto} with function approximation to learn a value function
-for this MDP, allowing infeasible schedules. Their approach outperforms the previous state of the art for this task;
-it also scales better to larger scheduling problems after having been trained only on smaller ones.
-This application of RL to planning has been built on extensively
-in the literature, applied to domains such as retailer inventory
-management~\cite{van1997neuro}, single-agent manufacturing systems~\cite{Wang200573}, and multi-robot
-task allocation~\cite{dahl2009multi}.
+existing suboptimal schedule. The authors formulate this as an MDP and use $TD(\lambda)$~\cite{suttonbarto} with function
+approximation to learn a value function for it. Their approach outperforms the previous state of the art for this task and
+scales better to larger scheduling problems.
 
 Zucker et al.~\cite{workspacebias} use RL to bias the distribution of a rapidly exploring random tree (RRT)
 for motion planning. Their approach uses features of a discretization of the workspace to train
-a non-uniform configuration space sampler. They use a variant of the \textsc{Reinforce} family
-of stochastic policy gradient algorithms~\cite{reinforce1992} to learn a good weight vector for these features.
-Their experimental results, which focus on biasing sampling distributions for the bidirectional
-RRT algorithm, demonstrate reduced motion planning time for a variety of scenarios involving path
-planning through obstructed environments. In our work, we adopt their policy gradient updates for the TAMP framework
-(Section V-C).
+a non-uniform configuration space sampler using policy gradient algorithms.
+In our work, we adopt their gradient updates for the TAMP framework (Section V-C).
 
 \subsection{Task and Motion Planning}
 We define task and motion planning (TAMP) as a tuple $\langle \Obj, \T, \F, \I, \G, \C \rangle$:

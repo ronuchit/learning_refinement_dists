@@ -57,13 +57,13 @@ we convert the most recent failure information into a symbolic representation, t
 to the task planner, which will update its fluent state and provide a new
 high level plan.
 
-Randomized refinement has two key properties. The first is a very explicit algorithm state.
-We show in the next section that this allows for a straightforward MDP
-formulation. This is also beneficial from an
-engineering perspective, as the simplicity allows for easy debugging. The second is that
-it allows the parameter instantiations for a particular action in
-the plan to be influenced by those for a \emph{future} action. For example, in a
-pick-and-place task, it can make sense for the object's grasp pose to be sampled
-conditionally on the current instantiation of the putdown pose, even though the putdown
-appears after the grasp in the plan sequence. Thus, it is easy for plan refinement to
-respond to long-term dependencies in continuous values of plan variables.
+% Randomized refinement has two key properties. The first is a very explicit algorithm state.
+% We show in the next section that this allows for a straightforward MDP
+% formulation. This is also beneficial from an
+% engineering perspective, as the simplicity allows for easy debugging. The second is that
+% it allows the parameter instantiations for a particular action in
+% the plan to be influenced by those for a \emph{future} action. For example, in a
+% pick-and-place task, it can make sense for the object's grasp pose to be sampled
+% conditionally on the current instantiation of the putdown pose, even though the putdown
+% appears after the grasp in the plan sequence. Thus, it is easy for plan refinement to
+% respond to long-term dependencies in continuous values of plan variables.
