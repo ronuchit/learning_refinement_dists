@@ -1,0 +1,54 @@
+Abstract
+--------------------
+
+"In our work, we formulate this" --> "We formulate plan refinement"
+
+"We find that .... sampling distributions." --> "We show improvements
+in success rate and planning time over a hand-coded baseline."
+
+"complex tasks ... horizons" -- move parens to after "horizons"
+
+"The hierarchical separation of high-level...the overall goal." -- I
+don't think this is true of all task and motion planning solutions,
+just Srivastava et al. Remove or integrate into next paragraph
+
+", but they can be...above. In this system" --> "; similar approaches could be
+applied for TAMP approaches cited above. In Srivastava et al."
+
+"The system presented by Srivastava..." -- I think we can remove this
+
+"requires substantial effort, ... based on" --> "often requires
+substantial effort. They typically depend on"
+
+"its objects, meaning ... when running" --> "its objects and must be
+recalibrated to run"
+
+Background
+-------------
+
+"an action, causing" --> "an action. This causes"
+
+"transition according" --> "change according"
+
+"Formally, an MDP is ...$\rangle$" --> "We define an MDP as ... $\rangle$, where"
+
+Put commas around defintiion: Ex "a policy, $\pi: S\rightarrow A$, that maps"
+
+Paragraph starting "Classical task planners" is too long, split into at least 2 Ps
+
+Learning Refinement Distributions
+------------------------------------
+
+"We note that randomized refinement ... suggest x" -- flip the order
+on these? seems like the logic goes the other way...
+
+Experiments
+-----------
+
+"Thus, they are not .... This means ...performs well" --> "Depth first
+search can be expected to perform well in this setting because error
+information is independent of continuous paramter values."
+
+"we simply train" --> "we train"
+
+
