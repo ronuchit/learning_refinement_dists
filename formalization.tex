@@ -1,52 +1,8 @@
-\section{Background}
+\section{Formalization}
 We provide relevant technical background and introduce notation
 used throughout the paper.
 
-\subsection{Markov Decision Processes and Reinforcement Learning}
-Markov decision processes (MDPs) are the standard AI approach for formulating
-interactions between agents and environments. At each step of an MDP,
-the agent knows its current state and selects an action. This causes the
-state to change according to a known transition distribution. We define
-an MDP as a tuple $\langle \St, \A, T, R, \gamma, \Prob \rangle$, where
-\begin{tightlist}
-\item $\St$ is the state space.
-\item $\A$ is the action space.
-\item $T(s, a, s') = Pr(s' | s, a)$ for $s, s' \in \St, a \in \A$ is the transition distribution.
-\item $R(s, a, s')$ for $s, s' \in \St, a \in \A$ is the reward function.
-\item $\gamma \in [0, 1]$ is the discount factor.
-\item $\Prob$ is the initial state distribution.
-\end{tightlist}
-A solution to an MDP is a policy, $\pi: \St \rightarrow \A$, that maps states to
-actions. The value, $V_{\pi}(s)$, of a state under $\pi$ is the sum of expected
-discounted future rewards from starting in state $s$ and selecting actions according
-to $\pi$:
-$$V_{\pi}(s) = \mathbb{E}[\sum_{t=0}^{\infty}\gamma^{t}R(s_{t}) | \pi, s_{0} = s].$$
-The optimal policy, $\pi^{*}$, maximizes this value for all states.
-
-In reinforcement learning (RL), an agent must determine $\pi^{*}$
-through interaction with its environment (i.e. without explicit access
-to $\St$ or $T$). At each timestep, the agent knows the state and what
-actions are available, but initially does not know how taking actions will
-affect the state. There is a large body of research on RL, and
-standard techniques include value function approximation, which uses methods such as temporal difference
-(TD) learning, and direct policy estimation, which encompasses both gradient-based
-and gradient-free methods~\cite{suttonbarto}.
-
-\subsection{Reinforcement Learning for Planning}
-Our problem formulation is motivated by Zhang and Dietterich's application of RL to job
-shop scheduling~\cite{JobShopSched}. Job shop scheduling is a combinatorial optimization problem where the goal is to find
-a minimum-duration schedule of a set of jobs with temporal and resource constraints. An empirically
-successful approach to this problem relies on a randomized local search that proposes changes to an
-existing suboptimal schedule. The authors formulate this as an MDP and use $TD(\lambda)$~\cite{suttonbarto} with function
-approximation to learn a value function for it. Their approach outperforms the previous state of the art for this task and
-scales better to larger scheduling problems.
-
-Zucker et al.~\cite{workspacebias} use RL to bias the distribution of a rapidly exploring random tree (RRT)
-for motion planning. Their approach uses features of a discretization of the workspace to train
-a non-uniform configuration space sampler using policy gradient algorithms.
-In our work, we adopt their gradient updates for the TAMP framework (Section V-C).
-
-\subsection{Task and Motion Planning}
+\subsection{Task Planning}
 We define task and motion planning (TAMP) as a tuple $\langle \Obj, \T, \F, \I, \G, \C \rangle$:
 \begin{tightlist}
 \item $\Obj$ is a set of symbolic references to \emph{objects} in the environment,
@@ -121,7 +77,7 @@ starting with $\I$, results in a state in which all fluents of $\G$ hold true.
 % sampling of the base pose and grasping pose. If $obj_{1}$ is
 % obstructed by, say, $obj_{3}$ in the environment, a possible high-level plan would involve
 % grasping first $obj_{3}$ then $obj_{1}$.
-
+\subsection{Task and Motion Planning[TO DO SID]}
 Classical task planners operate on discrete, purely logical levels and thus cannot directly
 solve this problem. We adopt the hierarchical method of Srivastava et al.~\cite{srivastava2014combined}
 to account for this discrepancy. A key step in their approach is the
@@ -168,3 +124,47 @@ and the search for error-free refinements of existing plans.
 % this error information about the obstruction is converted into a symbolic representation
 % and propagated back to the task planner. The new high-level plan correctly grasps the obstruction
 % before grasping $o_{t}$, and refining this plan succeeds.
+
+\subsection{Markov Decision Processes and Reinforcement Learning}
+Markov decision processes (MDPs) are the standard AI approach for formulating
+interactions between agents and environments. At each step of an MDP,
+the agent knows its current state and selects an action. This causes the
+state to change according to a known transition distribution. We define
+an MDP as a tuple $\langle \St, \A, T, R, \gamma, \Prob \rangle$, where
+\begin{tightlist}
+\item $\St$ is the state space.
+\item $\A$ is the action space.
+\item $T(s, a, s') = Pr(s' | s, a)$ for $s, s' \in \St, a \in \A$ is the transition distribution.
+\item $R(s, a, s')$ for $s, s' \in \St, a \in \A$ is the reward function.
+\item $\gamma \in [0, 1]$ is the discount factor.
+\item $\Prob$ is the initial state distribution.
+\end{tightlist}
+A solution to an MDP is a policy, $\pi: \St \rightarrow \A$, that maps states to
+actions. The value, $V_{\pi}(s)$, of a state under $\pi$ is the sum of expected
+discounted future rewards from starting in state $s$ and selecting actions according
+to $\pi$:
+$$V_{\pi}(s) = \mathbb{E}[\sum_{t=0}^{\infty}\gamma^{t}R(s_{t}) | \pi, s_{0} = s].$$
+The optimal policy, $\pi^{*}$, maximizes this value for all states.
+
+In reinforcement learning (RL), an agent must determine $\pi^{*}$
+through interaction with its environment (i.e. without explicit access
+to $\St$ or $T$). At each timestep, the agent knows the state and what
+actions are available, but initially does not know how taking actions will
+affect the state. There is a large body of research on RL, and
+standard techniques include value function approximation, which uses methods such as temporal difference
+(TD) learning, and direct policy estimation, which encompasses both gradient-based
+and gradient-free methods~\cite{suttonbarto}.
+
+\subsection{Reinforcement Learning for Planning}
+Our problem formulation is motivated by Zhang and Dietterich's application of RL to job
+shop scheduling~\cite{JobShopSched}. Job shop scheduling is a combinatorial optimization problem where the goal is to find
+a minimum-duration schedule of a set of jobs with temporal and resource constraints. An empirically
+successful approach to this problem relies on a randomized local search that proposes changes to an
+existing suboptimal schedule. The authors formulate this as an MDP and use $TD(\lambda)$~\cite{suttonbarto} with function
+approximation to learn a value function for it. Their approach outperforms the previous state of the art for this task and
+scales better to larger scheduling problems.
+
+Zucker et al.~\cite{workspacebias} use RL to bias the distribution of a rapidly exploring random tree (RRT)
+for motion planning. Their approach uses features of a discretization of the workspace to train
+a non-uniform configuration space sampler using policy gradient algorithms.
+In our work, we adopt their gradient updates for the TAMP framework (Section V-C).
