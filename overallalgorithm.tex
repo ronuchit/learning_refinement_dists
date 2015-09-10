@@ -1,7 +1,140 @@
-\section{Overall Algorithm[TO DO SID]}
+\section{Solving Task and Motion Planning Problems}
+Solving task and motion planning problems requires evaluation of
+possible courses of action comprising of different combinations of
+instantiated action operators. This is particularly challenging
+because the set of possible action instantiations (and thus the
+branching factor of the underlying search problem) is infinite.  We
+adopt the principles of abstraction developed by Srivastava et
+al.~\cite{srivastava2014combined} (henceforth referred to as SFRCRA-14)  to factor the required reasoning and
+search problems into interacting logic-based (``high-level'') and
+geometric (``low-level'') components. In their approach, the
+logic-based layer of abstraction is refined with additional
+information gained from geometric reasoning. We give a brief overview
+of this approach and refer the interested reader to the cited paper
+for further details.
+
+\subsection{Background}
+%%%[[SS: consider moving this entire subsection's text to intro ]]
+Intuitively, SFRCRA-14
+conducts a greedy search by incrementally searching for a high-level
+plan that solve the high-level abstraction of the given TAMP,
+selecting a prefix of the plan that has a feasible motion planning
+refinement; updating the high-level abstraction to reflect the
+reason for infeasibility of the first high-level action for which a
+feasible motion plan could not be found; and searching for a new
+high-level plan suffix from that step onwards.
+
+In general, including geometric properties in the logic-based
+formulation leads to an increase in the number of objects representing
+distinct poses and/or trajectories. For instance, expressing the fact
+that a trajectory for grasping \emph{can$_1$} is obstructed by
+\emph{can$_3$} in the current pose of the robot would require setting
+to true, a fluent of the form \emph{obstructs(can$_3$, pose$_{17877}$,
+  trajectory$_{3219}$, can$_1$)} in the description of the high-level
+state. In turn, this would required the induction of
+\emph{pose$_{17877}$, trajectory$_{3219}$} into the set of objects if
+they were not already included. Unfortunately the size of the
+abstracted, logic-based state space grows exponentially with the
+number of objects and such an approach quickly leads to
+unsolvable high-level planning problems.
+
+SFRCRA-14 addresses this challenge by abstracting the continuous action
+arguments, such as robot grasping poses and trajectories, into a
+\emph{bounded} set of symbolic references to potential values. A
+\emph{symbolic}, or \emph{high-level}, plan refers to the fixed task
+sequence returned by a task planner and comprised of these symbolic
+references.  An \emph{interface layer} searches for instantiations of
+continuous values to symbolic references while ensuring action
+feasibility in a process called \emph{plan refinement}. The resulting
+process is able to utilize off the shelf task planners and motion
+planners while carrying out the necessary exchange of information in a
+scalable manner.
+
+\subsection{A Complete Search Algorithm}
+%%%[[SS: the next two paras can be moved to intro]]
+Although the greedy search proposed in SFRCRA-14 achieves good results
+in a class of domains, it is complete only in certain situations (in
+general, the planner may find solvable problems
+unsolvable). Furthermore, the search for instantiations of pose
+references requires domain-specific insight from the user to reduce
+the space of of possible values.  For example, in a pick-and-place
+task, end effector grasp poses for a can are sampled around the can in
+each of the 8 cardinal and intermediate directions, at a fixed
+distance and height.  Such coarse sampling distributions necessitate
+fine-tuning for each domain and are not robust to increased
+environmental complexity.
+
+We present a new algorithm to address these limitations. Our approach
+daisy-chains the search for pose instantiations with the search for
+high-level plans that address different infeasibilities. Furthermore,
+we show that heuristic functions can be learned automatically to guide
+both the search processes. 
 
 
-\subsection{Plan Refinement Graph[TO DO SID]}
+Our algorithm maintains a \emph{plan refinement graph}, whose
+nodes each store a valid symbolic plan and its current set of
+instantiated parameter values. If the refinement of a plan $p$ stored in
+node $n$ leads to discovered facts being propagated to the task
+planner, the newly produced plan $p'$ based on the updated fluent
+state is added as a child node $n'$ of $n$. This makes it possible to
+divide computational effort between the search for additional
+high-level plans that resolve specific errors in previous ones, and
+the search for error-free refinements of existing plans.
+
+\begin{algorithm}[t]
+\begin{small}
+  \SetAlgoLined
+  \DontPrintSemicolon
+  \SetKwFunction{algo}{algo}\SetKwFunction{proc}{proc}
+  \SetKwProg{myalg}{Algorithm}{}{}
+  \SetKwProg{myproc}{Subroutine}{}{}
+  \myalg{Complete TAMP}{
+    \nl \For{trial in 1 ...}{
+      \nl  \For{j in 1 .. trial}{
+        \tcc{\footnotesize Traverse graph of plans, initially with just one plan:
+          $\epsilon$.}
+        \nl $\pi \leftarrow$ \textsc{GetNextPlanFromGraph}()\;
+        \nl \textsc{ProcessRefs}($\pi$, $j$, ChunkSize)\;
+        \nl \textsc{ReweighPlansInGraph}()        \;}}
+  }
+  \;
+  \setcounter{AlgoLine}{0}
+  \myproc{\textsc{ProcessRefs}($\pi$, $j$, ChunkSize)}{
+    \nl ValueSet = \textsc{GetValueSet}($\pi$, resourceLimit, $j$, ChunkSize)\;
+    \nl \For{$\sigma$ in ValueSet}{
+        \nl  $MP \leftarrow$ \textsc{GetMotionPlan}($\sigma$, $\pi$, resourceLimit)\;
+        \nl \If{MP $\ne$ NULL}{
+            \nl return success
+       	}
+      }
+    \nl \For{$\sigma$ in ValueSet}{
+        \nl LastReachableSt, FailedPrecon $\leftarrow$ \textsc{TryGetMP}($\sigma$, $\pi$)\;
+        \tcc{\footnotesize Make last reachable state unsolvable if FailedPrecon not found.}
+        \nl TrueLRState $\leftarrow$ \textsc{Patch}(LastReachableSt, FailedPrecon)\;
+        \nl \tcc{\footnotesize Disallow all states up to and including LastReachableSt.}
+        \nl Dom2 $\leftarrow$ \textsc{DisallowHistory}(Dom, $\pi$, LastReachableSt)\; 
+        \nl \textsc{ProcessSDH}(TrueLRState, Dom2, $\pi$, $\sigma$)\;
+      }
+  }
+  \;
+  \setcounter{AlgoLine}{0}
+  \myproc{\textsc{ProcessSDH}(State, Domain, PlanHistory, Interp)}{
+    \nl SDHTuple = $\langle$ State, Domain, PlanHistory, Interp $\rangle$\;
+	\nl plan = \textsc{GetClassicalPlan}(SDHTuple)\;
+    \nl \If{plan == NULL}{
+    	        \tcc{\footnotesize Disallow action which led to failure state from
+                  previous state.}
+        	\nl State2, History2 $\leftarrow$ \textsc{GetPredecessors}(SDHTuple)\;
+        	\nl Dom2 $\leftarrow$ \textsc{DisallowActionInState}(Domain, State2, \textsc{LastAction}(History2))\;
+        	\nl \textsc{ProcessSDH}(State2, Dom2, History2)\;}
+	\nl \Else{
+                \tcc{\footnotesize Add plan with edge from parent.}
+                \nl \textsc{AddToPlanGraph}(plan, \textsc{History}(SDHTuple))}
+}
+\end{small}
+\label{alg-completetamp}
+\vspace{-1.5 em}
+\end{algorithm}
 
 
 \subsection{Proof of Completeness[TO DO SID]}

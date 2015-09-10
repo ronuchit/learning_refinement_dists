@@ -1,24 +1,65 @@
-\section{Formalization}
+\section{Background}
 We provide relevant technical background and introduce notation
-used throughout the paper.
+used throughout the paper. 
 
-\subsection{Task Planning}
-We define task and motion planning (TAMP) as a tuple $\langle \Obj, \T, \F, \I, \G, \C \rangle$:
+\subsection{Task and Motion Planning}
+
+A motion planning problem is a tuple $\tuple{\X, f, p_0, p_t}$, where
+$\X$ is the space of possible configurations or poses of a robot, $f$
+is a Boolean function that determines whether or not a pose is in
+collision and $p_0, p_t\in C$ are the initial and final poses. Without
+loss of generality, for brevity we assume that $\X$ includes the poses
+of every movable object. A task and motion planning problem adds to
+this formulation more abstract concepts including \emph{fluents}
+(logical properties that may vary across configurations) and
+\emph{actions} (operations that the agent may choose to execute,
+resulting in changes in the configuration and the set of fluents that
+are true. Each action may require motion planning prior to execution.
+The overall problem is to compute the sequence of actions
+that the agent can execute in order to achieve a desired goal
+condition expressed in terms of fluents.
+
+For example, the action \emph{grasp(Object o, Manipulator p, GraspingPose g,
+  Trajectory m)} indicates the operation of grasping an object
+\emph{o}.  In order to apply an action, the agent must choose
+instatiations for the action arguments. An \emph{instantiated} action,
+e.g., \emph{grasp(can$_1$, left, g$_1$, m$_1$)}, where the variables
+have been replaced by names of specific elements of the corresponding
+type, changes the truth of specific fluent-instantiations (also called fluent
+\emph{literals}), e.g. \emph{empty(gripper$_l$)}.
+
+\begin{defn}
+Formally, we define the task and motion planning (TAMP) problem as a tuple $\langle \Obj,
+ \T, \F, \I, \G, \U \rangle$:
 \begin{tightlist}
-\item $\Obj$ is a set of symbolic references to \emph{objects} in the environment,
-such as cylinders and grasping poses.
-\item $\T$ is the set of object \emph{types}, such as robot manipulators, cylinders, poses, and locations.
-\item $\F$ is a set of \emph{fluents}, which define relationships among objects and hold either
-true or false in the state.
-\item $\I$ is the set of fluents that hold true in the initial state.
-\item $\G$ is the set of fluents defining the goal state.
-\item $\C$ is a set of parametrized \emph{high-level actions}, defined by \emph{preconditions}, a set
-of fluent literals that must hold true in the current state to be able to perform the action,
-and \emph{effects}, a set of fluent literals that hold true after the action is performed.
+\item $\Obj$ is a set of objects denoting elements such as cans,
+  bowls, trajectories, and poses. Note that $\Obj$ includes the
+  configuration space of all movable objects including the robot.
+\item $\T$ is the set of object \emph{types}, such as cylinders, motion plans, poses, and locations.
+\item $\F$ is a set of \emph{fluents}, which define relationships
+  among objects and are Boolean functions defined over the configuration space.
+\item $\I$ is the set of fluent literals that hold true in the initial state.
+\item $\G$ is the set of fluent literals defining the goal condition.
+\item $\U$ is a set of \emph{high-level actions} that are
+  parameterized using objects and defined by \emph{preconditions}, a set
+of fluent literals that must hold true in the current state to be able to perform the action;
+and \emph{effects}, a set of fluent literals that hold true after the
+action is performed. 
 \end{tightlist}
-A solution to a task planning problem is a valid sequence of actions
-$a_{0}, a_{1}, ..., a_{n} \in \C$ which, when applied successively to states
-starting with $\I$, results in a state in which all fluents of $\G$ hold true.
+\end{defn}
+
+An instantiated action is said to be \emph{feasible} in a state iff its
+preconditions hold in that state. Actions that include trajectories as
+arguments have a default precondition that the trajectory must be
+collision-free. Other trajectory constraints, such as dynamic
+feasibility may also be included as action preconditions by expanding
+the set of fluents in the problem definition.
+
+A solution to a task planning problem is a sequence of instantiated
+actions $a_{0}, a_{1}, ..., a_{n} \in \U$ such that every action is
+feasible when it is applied on states starting with $\I$, and the
+state achieved at the end of the execution sequence satisfies the
+goal condition $\G$.
 
 % As a simple example, we consider a pick domain where the robot is capable of
 % performing only two actions: moving to a location and grasping an object. We can
@@ -43,7 +84,7 @@ starting with $\I$, results in a state in which all fluents of $\G$ hold true.
 
 % \item[$\G$:] \emph{InGripper}$(obj_{1}, right\_gripper)$.
 
-% \item[$\C$:]
+% \item[$\U$:]
 % \begin{tightlist}
 % \item[1)] \emph{MoveTo}
 %   \begin{tightlist}
@@ -77,39 +118,10 @@ starting with $\I$, results in a state in which all fluents of $\G$ hold true.
 % sampling of the base pose and grasping pose. If $obj_{1}$ is
 % obstructed by, say, $obj_{3}$ in the environment, a possible high-level plan would involve
 % grasping first $obj_{3}$ then $obj_{1}$.
-\subsection{Task and Motion Planning[TO DO SID]}
-Classical task planners operate on discrete, purely logical levels and thus cannot directly
-solve this problem. We adopt the hierarchical method of Srivastava et al.~\cite{srivastava2014combined}
-to account for this discrepancy. A key step in their approach is the
-abstraction of continuous state variables, such as robot grasping poses for objects, into a
-discrete set of symbolic references to potential values. A \emph{symbolic}, or \emph{high-level}, plan
-refers to the fixed task sequence returned by a task planner and comprised of these symbolic references.
-An \emph{interface layer} assigns continuous values to symbolic references, in a process called \emph{plan refinement}.
-These plan parameters -- symbolic references in the plan that are instantiated with continuous values --
-define a sequence of states. A motion planner is used to find trajectories between these states.
 
-If no satisfying set of parameters can be found (e.g., because an object is obstructed), the interface layer
-augments the symbolic fluent state to reflect this. Using pose references,
-this can be done without adding new discrete pose values to the high-level representation.
-This is essential, because the size of the high-level state space is exponential in the number of discrete
-values represented at the high level. The system then obtains a new plan from the task planner.
 
-The authors introduce an algorithm for plan refinement
-called \textsc{TryRefine}, an exhaustive backtracking routine over a discrete set of candidate
-plan parameter values. (Interested readers are referred to \cite{srivastava2014combined} for details.)
-This hand-coded discretization is domain-specific and tuned to the geometry of objects in the
-environment. For example, in a pick-and-place task, end effector grasp poses for a can are
-sampled around the can in each of the 8 cardinal and intermediate directions, at a fixed distance and height.
-Such coarse sampling distributions necessitate fine-tuning for each domain and are not robust to
-increased environmental complexity.
 
-An unpublished extension to this system that is currently in progress develops a complete algorithm and
-maintains a \emph{plan refinement graph}, whose nodes each store a valid symbolic plan and
-its current set of instantiated parameter values. If refinement of a plan $p$ stored in node
-$n$ leads to discovered facts being propagated to the task planner, the newly produced plan $p'$ based on
-the updated fluent state is added as a child node $n'$ of $n$. This makes it possible to divide computational
-effort between the search for additional high-level plans that resolve specific errors in previous ones,
-and the search for error-free refinements of existing plans.
+
 % For example, consider the previous pick domain specification where $obj_{3}$ does obstruct $obj_{1}$.
 % Initially, the task planner returns a high-level plan to immediately grasp $obj_{1}$, because
 % it is not yet aware of the obstruction. The interface layer then samples grasp poses

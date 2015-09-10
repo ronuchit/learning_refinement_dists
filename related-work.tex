@@ -19,24 +19,24 @@ planning queries, using geometric biases to break ties among states with the sam
 By contrast, we allow RL to shape distributions for motion planning queries, so reachability information
 is naturally incorporated.
 
-% Another line of work has been devoted to using machine learning techniques for
-% training heuristics to guide search algorithms. This general formulation
-% has been applied to many domains other than hierarchical planning for robotics.
+Another line of work has been devoted to using machine learning techniques for
+training heuristics to guide search algorithms. This general formulation
+has been applied to many domains other than hierarchical planning for robotics.
 
-% Boyan et al.~\cite{Boyanlearning} present an application to solving optimization
-% problems using local search routines. They describe an algorithm, \textsc{Stage},
-% for learning a state evaluation function using features of the optimization problem.
-% This function then guides the local search toward better optima.
+Boyan et al.~\cite{Boyanlearning} present an application to solving optimization
+problems using local search routines. They describe an algorithm, \textsc{Stage},
+for learning a state evaluation function using features of the optimization problem.
+This function then guides the local search toward better optima.
 
-% Arbelaez et al.~\cite{hamadisearch} use machine learning to solve constraint
-% satisfaction problems (CSPs). Their approach, Continuous Search, maintains a heuristic
-% model for solving CSPs and alternates between two modes. In the \emph{exploitation} mode,
-% the current heuristic model is used to solve user-inputted CSPs. In the \emph{exploration}
-% mode, this model is refined using supervised learning with a linear SVM.
+Arbelaez et al.~\cite{hamadisearch} use machine learning to solve constraint
+satisfaction problems (CSPs). Their approach, Continuous Search, maintains a heuristic
+model for solving CSPs and alternates between two modes. In the \emph{exploitation} mode,
+the current heuristic model is used to solve user-inputted CSPs. In the \emph{exploration}
+mode, this model is refined using supervised learning with a linear SVM.
 
-% Xu et al.~\cite{Xu07discriminativelearning} apply machine learning for classical task
-% planning, drawing inspiration from recent advances in discriminative learning for
-% structured output classification. Their system trains heuristics for controlling forward
-% state-space beam search in task planners.
+Xu et al.~\cite{Xu07discriminativelearning} apply machine learning for classical task
+planning, drawing inspiration from recent advances in discriminative learning for
+structured output classification. Their system trains heuristics for controlling forward
+state-space beam search in task planners.
 
-% To our knowledge, our work is the first to use RL for plan refinement in a TAMP system.
+To our knowledge, our work is the first to use RL for plan refinement in a TAMP system.
