@@ -1,8 +1,6 @@
 \section{Conclusion}
-We presented a novel application of reinforcement learning to task
-and motion planning. We gave a randomized local search algorithm for plan refinement
-and trained policies for it. We also showed initial work that trains heuristics
-for searching the plan refinement graph, so our full system learns both \emph{which} node to refine
-and \emph{how} to perform this refinement. We evaluated performance against a baseline
-of hand-coded discretizations for several challenging tasks; our system demonstrated
-significantly improved performance.
+We presented a complete algorithm for TAMP. We then applied machine learning to train
+continuous proposal distributions for plan refinement and search intelligently through
+a plan refinement graph. Thus, our full system learns both \emph{which} node to refine
+and \emph{how} to perform the refinement. We evaluated performance against SFRCRA-14 in
+several challenging tasks; our system demonstrated significantly improved performance.

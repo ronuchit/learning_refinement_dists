@@ -1,16 +1,15 @@
 \section{Learning Refinement Distributions}
-In this section, we present our primary contribution: an RL
-approach that learns a policy for plan refinement.
+In this section, we present an RL approach that learns a policy for plan refinement.
 
 \subsection{Formulation as Reinforcement Learning Problem}
 We formulate plan refinement as an MDP as follows:
 \begin{tightlist}
 \item A state $s \in \St$ is a tuple $(P, r_{cur}, E, n)$, consisting of the
-symbolic plan, its current instantiation of values for plan parameters,
+symbolic plan, its current instantiation of values for symbolic references,
 the geometric encoding of the environment, and a counter for
 the number of calls to the sampler.
-\item An action $a \in \A$ is a pair $(p, x)$, where $p$ is the discrete plan
-parameter to resample and $x$ is the continuous value assigned to $p$ in the new refinement.
+\item An action $a \in \A$ is a pair $(p, x)$, where $p$ is the discrete symbolic
+reference to resample and $x$ is the continuous value assigned to $p$ in the new refinement.
 \item The transition function $T(s, a, s')$ is split up into 3 cases. In all cases, $n$ increases by 1. $L$ refers to
 the number of samples for one planning problem.
   \begin{tightlist}
@@ -34,13 +33,12 @@ to minimize how long the system spends resampling plan variables until obtaining
 \subsection{Training Process}
 We learn a policy for this MDP by adapting the method of Zucker et al.~\cite{workspacebias}, which
 uses a linear combination of features to define a distribution over poses. In our setting, we learn a weight
-vector $\theta_{p}$ for each parameter \emph{type}, comprised of a pose type and possibly a gripper
+vector $\theta_{p}$ for each reference \emph{type}, comprised of a pose type and possibly a gripper
 (e.g., ``left gripper grasp pose,'' ``right gripper putdown pose,'' ``base pose'').
-These weight vectors encode the policy for selecting $x$ for actions in $\A$.
 This decouples the learned distributions from any single high-level plan and allows generalization across problems.
 
 We develop a feature function $f(s, p, x)$ that maps the current
-state $s \in \St$, plan parameter $p$, and sampled value $x$ for $p$ to a
+state $s \in \St$, symbolic reference $p$, and sampled value $x$ for $p$ to a
 feature vector; $f$ defines a policy class for the MDP. Additionally, we define
 $N$ as the number of planning problems on which to train, and
 $\epsilon$ as the number of samples comprising a training episode.
@@ -55,7 +53,7 @@ and collect rewards according to $R$. After every $\epsilon$ calls to
 
 \subsection{Distribution and Gradient Updates}
 We adopt the sampling distribution used in Zucker et al.~\cite{workspacebias}
-for a parameter $p$ with sample value $x$, in state $s \in \St$:
+for a symbolic reference $p$ with sample value $x$, in state $s \in \St$:
 $$q(s, p, x) \propto exp(\theta_{p}^{T} f(s, p, x)).$$
 The authors define the expected reward of an episode $\xi$:
 $$\eta(\theta_{p}) = \mathbb{E}_{q}[R(\xi)]$$ and provide an approximation for its gradient:

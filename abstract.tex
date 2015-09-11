@@ -9,15 +9,16 @@ geometric reasoning in order to sequence several short-horizon motion plans that
 solve a long-horizon task. To account for continuous parameters, many of these
 systems rely on hand-coded discretizations of the domain. Such an approach lacks robustness and
 requires substantial design effort. In this paper, we present methods to improve the reliability
-and speed of planning in a TAMP system. The approach we build on first plans
+of planning in a TAMP system. The system we build on first plans
 abstractly, ignoring continuous values, and then performs \emph{plan refinement}
-to determine feasible parameter settings. We formulate plan refinement as a
-Markov decision process (MDP) and give a reinforcement learning (RL) algorithm
-to learn a policy for it. We also present initial work that learns which plan,
-from a set of potential candidates, to try to refine.
-Our contributions are as follows: 1) we present a randomized local search algorithm for plan refinement
-that is easily formulated as an MDP; 2) we give an RL algorithm that learns a policy for this MDP;
-3) we present a method that trains heuristics for selecting which plan to try to refine;
-and 4) we perform experiments to evaluate the performance of our system in a variety of simulated
-domains. We show improvements in success rate and planning time over a hand-coded baseline.
+to determine feasible parameter settings. We first develop a complete algorithm for TAMP
+that daisy-chains plan refinement with a search over which plan to try refining. We then use machine learning
+to train heuristic functions that guide both plan refinement and the meta-level search.
+Our contributions are as follows: 1) we present a complete algorithm for TAMP that enables selection
+of which plan to try refining; 2) we present a randomized local search algorithm for plan refinement
+that is easily formulated as a Markov decision process (MDP); 3) we give a reinforcement
+learning (RL) algorithm that learns a policy for this MDP;
+4) we present a method that trains heuristics for selecting which plan to try to refine;
+and 5) we perform experiments to evaluate the performance of our system in a variety of simulated
+domains. We show significant improvements in success rate over the current system.
 \end{abstract}

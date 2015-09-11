@@ -1,13 +1,13 @@
-\section{Selecting a Plan to Try Refining}
+\section{Learning Which Plan to Try Refining}
 The approach presented thus far can be succinctly described as learning \emph{how} to
 refine a single high-level plan. In this section, we present a method for learning
-\emph{which} plan to try refining. Section III-C describes the plan refinement graph $\Gr = (\V, \E)$,
+\emph{which} plan to try refining. Section IV-B describes the plan refinement graph $\Gr = (\V, \E)$,
 which maintains a set of candidate plans and their current refinements. The decision to be made is of the form $(v, b)$,
 where $v \in \V$ denotes which node to visit next, and $b$ is a Boolean that indicates the action
 to be performed at $v$. There are two possible actions: 1) attempt to find a valid refinement
 for the plan stored in $v$, or 2) recognize that a valid refinement does not exist for this plan
 and generate a geometric fact to use for replanning, by allowing collisions when motion planning
-for the current instantiation of plan parameters.
+for the current instantiation of symbolic references.
 
 To select between the potential refinement options, we learn decision tree regressors
 to answer the following questions about a single node $n$ containing plan $p$: 1) how many iterations of randomized refinement
