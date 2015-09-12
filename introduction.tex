@@ -28,21 +28,23 @@ lagriffoul2014orientation, GarrettWAFR14, dornhege2012semantic}.
   \vspace{-1.5 em}
 \end{figure}
 
-We adopt the principles of abstraction developed by Srivastava et
-al.~\cite{srivastava2014combined} (henceforth referred to as SFRCRA-14) to factor the required reasoning and
-search problems into interacting logic-based and geometric components. In this approach, the
-logic-based layer of abstraction is refined with additional information gained from geometric reasoning.
+We adopt the principles of abstraction in the TAMP system developed by Srivastava et
+al.~\cite{srivastava2014combined} (henceforth referred to as SFRCRA-14) to factor the reasoning and
+search problems into interacting logic-based and geometric components.
 
 SFRCRA-14 uses a (classical) task planner to produce a symbolic plan containing
 a sequence of actions to reach a goal state. Then, in a process known as \emph{plan refinement},
 candidate values are proposed for the continuous variables in this symbolic plan.
 These values are checked locally for feasibility by calling a motion planner.
+On failure, the logic-based layer of abstraction is enriched with the
+information gained from geometric reasoning, and the process is repeated.
+
 The system conducts a greedy search to find a symbolic plan for which
 a motion planning feasible refinement is possible. Although this algorithm achieves good results
 in a class of domains, it is complete only in some situations; in
 general, it may not find solutions to solvable problems.
 
-The TAMP paradigms referenced above all use hand-coded
+The TAMP paradigms cited above use hand-coded
 heuristics to instantiate symbols with continuous values.
 The search for instantiations of symbolic
 references typically uses domain-specific insight from the user to reduce
@@ -53,21 +55,23 @@ distance and height. Such coarse distributions require
 fine-tuning for each domain and lack robustness to increased
 environmental complexity.
 
-We introduce a complete algorithm for TAMP that daisy-chains plan refinement (the search for symbolic
-reference instantiations) with the search for which symbolic plan to try refining, given options that address different
+In this work, we develop a complete algorithm for TAMP by introducing a \emph{plan refinement
+graph}, which allows interleaving plan refinement (the search for symbolic
+reference instantiations) with a search over \emph{which} symbolic plan to try refining, given options that address different
 infeasibilities. Furthermore, we present machine learning techniques to train heuristic
 functions that guide both of these search processes.
 
-Reinforcement learning (RL) refers to the process of an agent learning a policy (a mapping from states to actions)
+We use reinforcement learning (RL) to train continuous proposal distributions for
+plan refinement, thus avoiding the discretization common to TAMP systems.
+Reinforcement learning refers to the process of an agent learning a policy (a mapping from states to actions)
 in its environment that maximizes rewards. Zhang and Dietterich~\cite{JobShopSched} first applied the RL framework
-to planning problems, using a job shop scheduling setting. In this work, we take inspiration from
-their approach; we use RL to train continuous proposal distributions for
-plan refinement, thus avoiding the discretization common to TAMP systems. We implement our approach using methods adapted from
+to planning problems, using a job shop scheduling setting. We take inspiration from
+their approach by applying RL to plan refinement. We implement our approach using methods adapted from
 Zucker et al.~\cite{workspacebias}, who train a configuration space sampler for motion planning
 using features of the discretized workspace.
 
 The five contributions of our work are as follows: 1) we present a complete algorithm for TAMP
-by maintaining a \emph{plan refinement graph} to select which symbolic plan to try refining;
+by maintaining a plan refinement graph;
 2) we present randomized refinement, a local search
 algorithm for plan refinement that is easily formulated as an MDP; 3) we formulate plan refinement in the
 RL framework and learn a policy for this MDP; 4) we train heuristics to search intelligently

@@ -1,11 +1,13 @@
 \section{Learning Refinement Distributions}
-In this section, we present an RL approach that learns a policy for plan refinement.
+In this section, we present an RL approach that learns a policy for plan refinement. We show
+how to train continuous proposal distributions, thus avoiding the lack of robustness from
+hand-coded discretizations in other TAMP systems.
 
 \subsection{Formulation as Reinforcement Learning Problem}
 We formulate plan refinement as an MDP as follows:
 \begin{tightlist}
 \item A state $s \in \St$ is a tuple $(P, r_{cur}, E, n)$, consisting of the
-symbolic plan, its current instantiation of values for symbolic references,
+symbolic plan, its current setting of values for symbolic references,
 the geometric encoding of the environment, and a counter for
 the number of calls to the sampler.
 \item An action $a \in \A$ is a pair $(p, x)$, where $p$ is the discrete symbolic
@@ -55,8 +57,8 @@ and collect rewards according to $R$. After every $\epsilon$ calls to
 We adopt the sampling distribution used in Zucker et al.~\cite{workspacebias}
 for a symbolic reference $p$ with sample value $x$, in state $s \in \St$:
 $$q(s, p, x) \propto exp(\theta_{p}^{T} f(s, p, x)).$$
-The authors define the expected reward of an episode $\xi$:
-$$\eta(\theta_{p}) = \mathbb{E}_{q}[R(\xi)]$$ and provide an approximation for its gradient:
+We define the expected reward of an episode $\xi$:
+$$\eta(\theta_{p}) = \mathbb{E}_{q}[R(\xi)]$$ and approximate its gradient:
 $$\nabla \eta(\theta_{p}) \approx \frac{R(\xi)}{\epsilon} \sum_{i=1}^{\epsilon}(f(s, p, x_{i}) - \mathbb{E}_{q,s}[f]).$$
 $R(\xi)$ is the sum over all rewards obtained throughout $\xi$, and
 $\mathbb{E}_{q,s}[f]$ is the expected feature vector under $q$, in state $s \in \St$. The weight vector update is then:

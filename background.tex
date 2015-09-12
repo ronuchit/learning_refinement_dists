@@ -139,8 +139,9 @@ goal condition $\G$.
 Markov decision processes (MDPs) are the standard AI approach for formulating
 interactions between agents and environments. At each step of an MDP,
 the agent knows its current state and selects an action. This causes the
-state to change according to a known transition distribution. We define
-an MDP as a tuple $\langle \St, \A, T, R, \gamma, \Prob \rangle$, where
+state to change according to a known transition distribution.
+\begin{defn}
+Formally, we define an MDP as a tuple $\langle \St, \A, T, R, \gamma, \Prob \rangle$, where
 \begin{tightlist}
 \item $\St$ is the state space.
 \item $\A$ is the action space.
@@ -149,6 +150,7 @@ an MDP as a tuple $\langle \St, \A, T, R, \gamma, \Prob \rangle$, where
 \item $\gamma \in [0, 1]$ is the discount factor.
 \item $\Prob$ is the initial state distribution.
 \end{tightlist}
+\end{defn}
 A solution to an MDP is a policy, $\pi: \St \rightarrow \A$, that maps states to
 actions. The value, $V_{\pi}(s)$, of a state under $\pi$ is the sum of expected
 discounted future rewards from starting in state $s$ and selecting actions according

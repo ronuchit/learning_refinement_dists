@@ -6,19 +6,24 @@ many problems of interest. Recent work has focused on
 \emph{task and motion planning} (TAMP) as a way to address this
 challenge. TAMP methods integrate logical search with continuous
 geometric reasoning in order to sequence several short-horizon motion plans that together
-solve a long-horizon task. To account for continuous parameters, many of these
-systems rely on hand-coded discretizations of the domain. Such an approach lacks robustness and
-requires substantial design effort. In this paper, we present methods to improve the reliability
-of planning in a TAMP system. The system we build on first plans
-abstractly, ignoring continuous values, and then performs \emph{plan refinement}
-to determine feasible parameter settings. We first develop a complete algorithm for TAMP
-that daisy-chains plan refinement with a search over which plan to try refining. We then use machine learning
-to train heuristic functions that guide both plan refinement and the meta-level search.
-Our contributions are as follows: 1) we present a complete algorithm for TAMP that enables selection
-of which plan to try refining; 2) we present a randomized local search algorithm for plan refinement
-that is easily formulated as a Markov decision process (MDP); 3) we give a reinforcement
-learning (RL) algorithm that learns a policy for this MDP;
-4) we present a method that trains heuristics for selecting which plan to try to refine;
+solve a long-horizon task. In this paper, we present machine learning techniques to improve the reliability
+of planning in TAMP. The system we build on first plans symbolically,
+and then performs \emph{plan refinement}, which determines feasible settings of values for
+symbolic references to continuous parameters. Our methods are adaptable for other systems.
+We present two improvements to current TAMP systems.
+First, to account for continuous parameters, these systems typically
+rely on hand-coded distributions to reduce the sample space. Such an approach lacks robustness and
+requires substantial design effort. We thus use reinforcement learning (RL) to train
+policies for plan refinement. Second, we develop a complete algorithm for TAMP
+by introducing a \emph{plan refinement graph}, which allows
+interleaving plan refinement with a search over \emph{which} plan to try refining,
+given options that address different infeasibilities. We then use machine learning
+to train heuristic functions that guide this search.
+Our contributions are as follows: 1) we present a complete algorithm for TAMP;
+2) we present a randomized local search algorithm for plan refinement
+that is easily formulated as a Markov decision process (MDP); 3) we give an
+RL algorithm that learns a policy for this MDP;
+4) we present a method that trains heuristics for intelligently searching a plan refinement graph;
 and 5) we perform experiments to evaluate the performance of our system in a variety of simulated
-domains. We show significant improvements in success rate over the current system.
+domains. We show significant improvements in success rate over the system we build on.
 \end{abstract}

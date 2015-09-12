@@ -1,11 +1,13 @@
 \section{Randomized Refinement}
-Before we can apply RL to plan refinement, we must formulate it as an MDP.
-We design our approach to imitate that of Zhang and Dietterich~\cite{JobShopSched}:
+As noted in the previous section, we can use a variety of algorithms to implement
+plan refinement. Since we want to apply RL to learn policies for refinement,
+we seek an algorithm that allows for easy formulation as an MDP. We thus present
+randomized refinement. Our approach imitates that of Zhang and Dietterich~\cite{JobShopSched}:
 we initialize an infeasible refinement and use a randomized local search to propose
-improvements. We maintain a value for each high-level symbolic reference.
+improvements. We maintain a value for each symbolic reference.
 At each iteration, a reference whose current value is leading to a motion planning failure or
 action precondition violation is picked randomly and resampled.
-Algorithm \ref{alg-randref} shows pseudocode for this randomized refinement.
+Algorithm \ref{alg-randref} shows pseudocode for randomized refinement.
 
 The procedure takes two arguments, a high-level plan and a maximum
 iteration count. In line 1, we initialize all references in the high-level plan by sampling

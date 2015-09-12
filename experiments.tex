@@ -110,11 +110,11 @@ training the graph search heuristics.
 We evaluate our approach in two distinct domains: cans distributed on a table (the \emph{can domain})
 and setting up bowls for dinner (the \emph{dinner domain}).
 We compare performance with two baselines, both of which use the hand-coded sampling discretizations for
-plan refinement used in SFRCRA-14. Baseline 1 uses the exhaustive backtracking refinement
-from SFRCRA-14 with depth-first search of the plan refinement graph, which always tries to refine
+plan refinement used in SFRCRA-14. Baseline 1 is SFRCRA-14: it uses exhaustive backtracking search for refinement
+and greedy depth-first search of the plan refinement graph, which always tries to refine
 the plan that incorporates all error information obtained thus far.
 Baseline 2 uses randomized refinement with the following fixed graph search policy: try 3 times to refine the deepest
-node in the graph, then generate a geometric fact from it and replan (generating a child node).
+node in the graph; if unsuccessful, generate a geometric fact from it, replan (which creates a child node), and repeat.
 
 For the can domain, we report results for 4 systems: 1) baseline 1; 2) baseline 2; 3) our learned refinement policies
 with the graph search used in baseline 2; and 4) our full system, with learned refinement policies and graph search heuristics.
@@ -137,7 +137,7 @@ Our experiments are conducted in Python 2.7 using the OpenRave simulator~\cite{D
 The motion planner we use is trajopt~\cite{schulman2013finding}, and the task planner is Fast-Forward~\cite{FF}.
 The experiments were carried out in series on an Intel Core i7-4790K machine with 16GB RAM.
 Table \ref{table:results} summarizes our quantitative results. \figref{fig:cover} and \figref{fig:training}
-show learned refinement policies for the can domain. \figref{fig:dinner} shows a learned tray pickup policy
+show learned refinement policies for the can domain. \figref{fig:dinner} shows learned tray pickup poses
 for the dinner domain.
 
 \subsection{Can Domain}
@@ -155,7 +155,7 @@ then base poses, grasp poses, and putdown poses (at fixed location) for $N = 18$
 then all reference types for $N = 30$ iterations with $\epsilon = 20$. We fixed $L = 100$.
 
 The results demonstrate significant improvements in performance to the baseline systems for success rate.
-However, backtracking refinement provides faster average refinement time. This is likely because the
+However, backtracking search provides faster average refinement time. This is likely because the
 refinement times were averaged over the test cases where all 4 systems succeeded. These plans tended
 to be easier to refine, so an exhaustive backtracking search performs well because the total search space is small.
 
