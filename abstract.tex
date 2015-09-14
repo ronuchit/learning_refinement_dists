@@ -1,29 +1,27 @@
 \begin{abstract}
-In mobile manipulation planning, it is not uncommon for tasks to require thousands of
-individual motions. Planning complexity is exponential in the length
-of the plan, rendering direct motion planning intractable for
-many problems of interest. Recent work has focused on
-\emph{task and motion planning} (TAMP) as a way to address this
-challenge. TAMP methods integrate logical search with continuous
-geometric reasoning in order to sequence several short-horizon motion plans that together
-solve a long-horizon task. In this paper, we present machine learning techniques to improve the reliability
-of planning in TAMP. The system we build on first plans symbolically,
-and then performs \emph{plan refinement}, which determines feasible settings of values for
-symbolic references to continuous parameters. Our methods are adaptable for other systems.
-We present two improvements to current TAMP systems.
-First, to account for continuous parameters, these systems typically
-rely on hand-coded distributions to reduce the sample space. Such an approach lacks robustness and
-requires substantial design effort. We thus use reinforcement learning (RL) to train
-policies for plan refinement. Second, we develop a complete algorithm for TAMP
-by introducing a \emph{plan refinement graph}, which allows
-interleaving plan refinement with a search over \emph{which} plan to try refining,
-given options that address different infeasibilities. We then use machine learning
-to train heuristic functions that guide this search.
-Our contributions are as follows: 1) we present a complete algorithm for TAMP;
-2) we present a randomized local search algorithm for plan refinement
-that is easily formulated as a Markov decision process (MDP); 3) we give an
-RL algorithm that learns a policy for this MDP;
-4) we present a method that trains heuristics for intelligently searching a plan refinement graph;
-and 5) we perform experiments to evaluate the performance of our system in a variety of simulated
-domains. We show significant improvements in success rate over the system we build on.
+We address the problem of autonomously computing the behavior required
+to solve complex mobile manipulation problems. Such problems require
+reasoning about courses of action from the point of view of logical
+objectives as well as the feasibility of individual movements in the
+configuration space. In discrete representations, planning complexity
+is exponential in the length of the plan---in mobile manipulation, the
+set of parameters for an action is often continuous so we must also
+cope with an infinite branching factor. Recent work on \emph{task and
+  motion planning} (TAMP) attempts to address this challenge. TAMP
+methods integrate logical search with continuous geometric reasoning
+in order to sequence several short-horizon motion plans that together
+solve a long-horizon task. In this work, we present an algorithm for
+searching in the space of possible task and motion plans by building
+on prior work for factoring the planning problem into components for
+logical and geometric reasoning. In contrast to prior work in the
+field, we develop novel techniques for using statistical learning to
+guide the overall search process. Our contributions are as follows: 1)
+we present a complete algorithm for TAMP; 2) we present a randomized
+local search algorithm for plan refinement that is easily formulated
+as a Markov decision process (MDP); 3) we give an RL algorithm that
+learns a policy for this MDP; 4) we present a method that trains
+heuristics for intelligently searching a plan refinement graph; and 5)
+we perform experiments to evaluate the performance of our system in a
+variety of simulated domains. We show significant improvements in
+success rate over the system we build on.
 \end{abstract}

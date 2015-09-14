@@ -4,29 +4,31 @@ used throughout the paper.
 
 \subsection{Task and Motion Planning}
 
-A motion planning problem is a tuple $\tuple{\X, f, p_0, p_t}$, where
-$\X$ is the space of possible configurations or poses of a robot, $f$
-is a Boolean function that determines whether or not a pose is in
-collision and $p_0, p_t\in C$ are the initial and final poses. Without
-loss of generality, for brevity we assume that $\X$ includes the poses
-of every movable object. A TAMP problem adds more abstract concepts
-to this formulation, including \emph{fluents}
-(logical properties that may vary across configurations) and
-\emph{actions} (operations that the agent may choose to execute,
-resulting in changes in the configuration and set of fluents that
-are true). Each action may require motion planning prior to execution.
-The overall problem is to plan the sequence of actions
-that the agent can execute in order to achieve a desired goal
-condition expressed in terms of fluents.
+A motion planning problem is a defined as a tuple $\tuple{\X, f, p_0,
+  p_t}$, where $\X$ is the space of possible configurations or poses
+of a robot, $f$ is a Boolean function that determines whether or not a
+pose is in collision and $p_0, p_t\in C$ are the initial and final
+poses. The solution to a motion planning problem is a trajectory that
+connects $p_0$ and $p_t$ and is collision-free. To allow for object
+manipulation, we let $\X$ include poses for each movable object in the
+environment. 
 
-For example, the action \emph{grasp(Object o, Manipulator p, GraspingPose g,
-  Trajectory m)} indicates the operation of grasping an object
-\emph{o}.  In order to apply an action, the agent must choose
-instatiations for the action arguments. An \emph{instantiated} action,
-such as \emph{grasp(can$_1$, left, g$_1$, m$_1$)}, where the variables
-have been replaced by names of specific elements of the corresponding
-type, changes the truth of specific fluent instantiations (also called fluent
-\emph{literals}), such as \emph{empty(gripper$_l$)}.
+In task and motion planning, we add more abstract concepts to this
+formulation, including \emph{fluents} (logical properties that may
+vary across configurations) and \emph{actions} (operations that the
+agent may choose to execute, resulting in changes in the configuration
+and set of fluents that are true). Each action may require motion
+planning prior to execution.  The overall problem is to plan the
+sequence of actions that the agent can execute in order to achieve a
+desired goal condition expressed in terms of fluents.
+
+For example, we can use the action schema \emph{grasp(Object o,
+  Manipulator p, GraspingPose g, Trajectory m)} to abstractly
+represent grasping an object \emph{o}.  In order to apply this action,
+the agent must select values for each of these parameters (e.g.,
+\emph{grasp(can$_1$, left, g$_1$, m$_1$)}). These \emph{instantiated}
+actions change the value of specific fluent instantiations (also
+called fluent \emph{literals}), such as \emph{empty(gripper$_l$)}.
 
 \begin{defn}
 Formally, we define the task and motion planning (TAMP) problem as a tuple $\langle \Obj,
