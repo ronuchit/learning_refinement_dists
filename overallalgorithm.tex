@@ -11,7 +11,7 @@ the framework of SFRCRA-14.
 
 \subsection{Preliminaries}
 Intuitively, SFRCRA-14 conducts a greedy search by: incrementally
-searching for a symbolic plan that solves the high-level abstraction
+searching for a high-level plan that solves the logical abstraction
 of the given TAMP problem; determining a prefix of the plan that has a
 motion planning feasible refinement; updating the high-level
 abstraction to reflect the reason for infeasibility; and searching for
@@ -35,7 +35,7 @@ unsolvable task planning problems.
 SFRCRA-14 addresses this challenge by abstracting the continuous
 action arguments, such as robot grasping poses and trajectories, into
 a \emph{bounded} set of symbolic references to potential values. A
-\emph{symbolic}, or \emph{high-level}, plan refers to the fixed task
+\emph{high-level}, or \emph{symbolic}, plan refers to the fixed task
 sequence returned by a task planner and comprised of these symbolic
 references. An \emph{interface layer} conducts plan refinement,
 searching for instantiations of continuous values for symbolic
@@ -53,8 +53,6 @@ never reduces the set of possible sampled values, its
 efficiency degrades as the number of values increases.
 
 \subsection{A Complete Algorithm for TAMP}
-%[[SS: using standard notation, replace symbolic plan throughout with
-%high-level plan]]
 We introduce a complete algorithm that maintains a \emph{plan
   refinement graph} (PRGraph). Every node $u$ in the PRGgraph
 represents a high-level plan $\pi_u$ and the current state of the search
