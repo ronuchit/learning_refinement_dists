@@ -10,15 +10,15 @@ Then, we present a complete algorithm for TAMP that we implemented in
 the framework of SFRCRA-14.
 
 \subsection{Preliminaries}
-Intuitively, SFRCRA-14 conducts a greedy search by incrementally
+Intuitively, SFRCRA-14 conducts a greedy search by: incrementally
 searching for a symbolic plan that solves the high-level abstraction
 of the given TAMP problem; determining a prefix of the plan that has a
 motion planning feasible refinement; updating the high-level
 abstraction to reflect the reason for infeasibility; and searching for
 a new plan suffix from the failure step onwards. This search process
 addresses the fundamental TAMP problem: high-level
-domain descriptions are lossy abstractions of the true environment
-dynamics and therefore may not include sufficient information to
+logical descriptions are lossy abstractions of the true environment
+dynamics and thus may not include sufficient information to
 determine the true applicability of a sequence of actions.
 
 In general, including geometric properties in the logic-based formulation leads to an
@@ -38,15 +38,18 @@ a \emph{bounded} set of symbolic references to potential values. A
 \emph{symbolic}, or \emph{high-level}, plan refers to the fixed task
 sequence returned by a task planner and comprised of these symbolic
 references. An \emph{interface layer} conducts plan refinement,
-searching for instantiations of continuous values to symbolic
+searching for instantiations of continuous values for symbolic
 references while ensuring action feasibility.  The resulting process
 is able to utilize off-the-shelf task and motion planners while
 carrying out the necessary exchange of information in a scalable
-manner. However, as noted in the introduction, this algorithm has two
-limitations: the algorithm is not guaranteed to find a solution when
-there exists one, and the set of values from which pose references
-have to be sampled need to be provided as input. Since the algorithm
-never reduces the set of possible values to be sampled from, its
+manner.
+
+However, this algorithm has two
+main limitations: it is not guaranteed to find a solution when
+there exists one, and the set of values from which instantiations
+have to be sampled is a hand-coded discretization that is tuned
+to properties of each particular environmental setting. Since the algorithm
+never reduces the set of possible sampled values, its
 efficiency degrades as the number of values increases.
 
 \subsection{A Complete Algorithm for TAMP}

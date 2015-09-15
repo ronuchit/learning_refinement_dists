@@ -41,11 +41,12 @@ to as SFRCRA-14) to factor the reasoning and search problems into
 interacting logic-based and geometric components.
 
 We propose a method for carrying out guided search in the space of
-high-level (logic-based) plans and their low-level (motion-planning)
-refinements. We show how statistical learning techniques can be used
+high-level (logic-based) plans and their low-level
+\emph{refinements}, or instantiations of continuous values for
+symbolic references in the plan, such as object grasping poses.
+We show how statistical machine learning techniques can be used
 to make this process more efficient than previous hand-coded
-approaches for identifying the space of relevant values for continuous
-action arguments such as grasping poses.
+approaches for producing sampling distributions to search for a valid refinement.
 
 In particular, we develop a complete algorithm for TAMP by introducing
 a \emph{plan refinement graph}, which allows interleaving plan
@@ -55,16 +56,15 @@ that address different infeasibilities. Furthermore, we present
 machine learning techniques to train heuristic functions that guide
 both of these search processes.
 
-To learn how to motion plan low-level actions, we train distributions
-that propose values for continuous parameters that are likely to lead
-to successful trajectories. We train these distributions through an
-application of reinforcement learning (RL) to the meta-level problem
-of refining a fixed high-level plan. Our approach draws inspiration
+To learn efficient plan refinement, we train distributions
+that propose continuous values for symbolic references that are likely to yield
+successful trajectories using a motion planner. We train these distributions through an
+application of reinforcement learning (RL). Our approach draws inspiration
 from Zhang and Dietterich~\cite{JobShopSched}, who applied RL to job
 shop scheduling. In their formulation, states correspond to schedules
 and actions propose changes to the schedule. In our setting, states
 correspond to (potentially infeasible) refinements and actions propose
-new values for parameters. We implement our approach using methods
+new values for symbolic references. We implement our approach using methods
 adapted from Zucker et al.~\cite{workspacebias}, who train a
 configuration space sampler for a randomized motion planner.
 
