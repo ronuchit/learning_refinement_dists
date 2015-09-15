@@ -10,10 +10,16 @@ Then, we present a complete algorithm for TAMP that we implemented in
 the framework of SFRCRA-14.
 
 \subsection{Preliminaries}
-Intuitively, SFRCRA-14 conducts a greedy search by incrementally searching for a symbolic
-plan that solves the high-level abstraction of the given TAMP problem;
-determining a prefix of the plan that has a motion planning feasible refinement; updating the high-level abstraction to reflect the
-reason for infeasibility; and searching for a new plan suffix from the failure step onwards.
+Intuitively, SFRCRA-14 conducts a greedy search by incrementally
+searching for a symbolic plan that solves the high-level abstraction
+of the given TAMP problem; determining a prefix of the plan that has a
+motion planning feasible refinement; updating the high-level
+abstraction to reflect the reason for infeasibility; and searching for
+a new plan suffix from the failure step onwards. This search process
+addresses the fundamental TAMP problem: high-level
+domain descriptions are lossy abstractions of the true environment
+dynamics and therefore may not include sufficient information to
+determine the true applicability of a sequence of actions.
 
 In general, including geometric properties in the logic-based formulation leads to an
 increase in the number of objects representing distinct poses and/or trajectories. For
@@ -26,32 +32,68 @@ not already included. Unfortunately, the size of the abstracted, logic-based sta
 grows exponentially with the number of objects, and such an approach quickly leads to
 unsolvable task planning problems.
 
-SFRCRA-14 addresses this challenge by abstracting the continuous action
-arguments, such as robot grasping poses and trajectories, into a
-\emph{bounded} set of symbolic references to potential values. A
+SFRCRA-14 addresses this challenge by abstracting the continuous
+action arguments, such as robot grasping poses and trajectories, into
+a \emph{bounded} set of symbolic references to potential values. A
 \emph{symbolic}, or \emph{high-level}, plan refers to the fixed task
 sequence returned by a task planner and comprised of these symbolic
-references. An \emph{interface layer} conducts plan refinement, searching for instantiations of
-continuous values to symbolic references while ensuring action
-feasibility. The authors introduce an algorithm called \textsc{TryRefine}, an exhaustive backtracking search over
-the hand-coded, discretized space of instantiations for each symbolic reference.
-The resulting process is able to utilize off-the-shelf task and motion
-planners while carrying out the necessary exchange of information in a
-scalable manner. However, the algorithm is not complete in all situations: it may
-not find a solution to a solvable problem.
+references. An \emph{interface layer} conducts plan refinement,
+searching for instantiations of continuous values to symbolic
+references while ensuring action feasibility.  The resulting process
+is able to utilize off-the-shelf task and motion planners while
+carrying out the necessary exchange of information in a scalable
+manner. However, as noted in the introduction, this algorithm has two
+limitations: the algorithm is not guaranteed to find a solution when
+there exists one, and the set of values from which pose references
+have to be sampled need to be provided as input. Since the algorithm
+never reduces the set of possible values to be sampled from, its
+efficiency degrades as the number of values increases.
 
-\subsection{A Complete Algorithm}
-We introduce a complete algorithm that maintains a \emph{plan refinement graph}, whose
-nodes each store a valid symbolic plan and its current set of
-instantiated symbolic reference values. If the refinement of a plan $p$ stored in
-node $n$ leads to discovered facts being propagated to the task
-planner, the newly produced plan $p'$ based on the updated fluent
-state is added as a child node $n'$ of $n$. This makes it possible to
-divide computational effort between the search for additional
-high-level plans that resolve specific errors in previous ones, and
-the search for error-free refinements of existing plans.
-The greedy search used in SFRCRA-14 can be viewed as depth-first search
-through this graph. (KEEP THIS SENTENCE)
+\subsection{A Complete Algorithm for TAMP}
+%[[SS: using standard notation, replace symbolic plan throughout with
+%high-level plan]]
+We introduce a complete algorithm that maintains a \emph{plan
+  refinement graph} (PRGraph). Every node $u$ in the PRGgraph
+represents a high-level plan $\pi_u$ and the current state of the search
+for a motion plan refining it. An edge $(u,v)$ in the PRGraph
+represents a ``correction'' of $\pi_u$ for a specific instantiation of
+the pose references in $\pi_u$. Let $\pi_{u,k}$ be the plan prefix of
+$\pi_u$ consisting of the first $k$ actions. Formally, each edge
+$e=(u,v)$ is labeled with a tuple $ \sigma, k, \varphi$ denoting an
+instantiation $\sigma$ of references for a prefix $\pi_{u,k}$ of
+$\pi_u$ such that feasible motion plans have been found for all
+actions in $\pi_{u,k-1}$; and a conjunctive formula $\varphi$
+consisting of fluent literals (expressed using symbolic references)
+that were required in the preconditions of the $k^{th}$ action in
+$\pi_u$ but were not true in the true state obtained upon the
+application of $\pi_{u,k-1}$ with the instantiation $\sigma_k$.  The
+plan in node $v$ (if any) retains the prefix $\pi_{u,k-1}$ and solves
+the high-level problem while incorporating the facts $\varphi_{u,v}$
+in the $k^{th}$ state.
+
+The overall search algorithm daisy chains the search for feasible
+instantiations of each high-level plan with the addition in the
+PRGRaph of new edges and plan nodes with the semantics described
+above. This process is described using non-determistic choices
+(denoted using the prefix ``ND'') in
+Alg.\,\ref{alg:complete}. Subroutine \textsc{RefineNode} selects a
+reference instantiation and attempts to solve the motion planning
+problems corresponding to it; subroutine \textsc{AddChild} selects a
+reference instantiation and creates a new node that either
+incorporates the reason of infeasibility (provided by the
+domain-specific subroutine \textsc{GetError}), or makes a random
+change in the high-level plan. The latter can be required in some
+pathological domains that have dead-ends and where changing the
+instantiation of symbolic references for an action has no effect on the
+action outcomes.
+
+Different implementations of the non-deterministic choices in
+Alg.\,\ref{alg:complete} can capture various search algorithms
+with adaptations for handling unbounded branching factors (e.g.,
+iterative-deepening with iterative-broadening best first
+search). Indeed, SFRCRA-14 can be seen as a DFS traversal of the
+PRGraph. We will show that using guided search algorithms with the
+PRGraph can lead to significant performance improvements.
 
 \begin{algorithm}[t]
 \begin{small}
@@ -65,52 +107,58 @@ through this graph. (KEEP THIS SENTENCE)
       \nl  \For{j in 1 .. trial}{
         \tcc{\footnotesize Traverse graph of plans, initially with just one plan:
           $\epsilon$.}
-        \nl $\pi \leftarrow$ \textsc{GetNextPlanFromGraph}()\;
-        \nl \textsc{ProcessRefs}($\pi$, $j$, ChunkSize)\;
-        \nl \textsc{ReweighPlansInGraph}()        \;}}
-  }
+        \nl $u \leftarrow$ \textsc{GetNextNode}(PRGraph)\;
+        \nl mode $\leftarrow$ NDChoice\{refine, add\}\;
+        \nl \eIf{mode == refine}{ \textsc{RefineNode}($u$, $j$)}{
+        \textsc{AddChild}($u$, $j$) }}}
   \;
   \setcounter{AlgoLine}{0}
-  \myproc{\textsc{ProcessRefs}($\pi$, $j$, ChunkSize)}{
-    \nl ValueSet = \textsc{GetValueSet}($\pi$, resourceLimit, $j$, ChunkSize)\;
-    \nl \For{$\sigma$ in ValueSet}{
-        \nl  $MP \leftarrow$ \textsc{GetMotionPlan}($\sigma$, $\pi$, resourceLimit)\;
-        \nl \If{MP $\ne$ NULL}{
-            \nl return success
-       	}
-      }
-    \nl \For{$\sigma$ in ValueSet}{
-        \nl LastReachableSt, FailedPrecon $\leftarrow$ \textsc{TryGetMP}($\sigma$, $\pi$)\;
-        \tcc{\footnotesize Make last reachable state unsolvable if FailedPrecon not found.}
-        \nl TrueLRState $\leftarrow$ \textsc{Patch}(LastReachableSt, FailedPrecon)\;
-        \nl \tcc{\footnotesize Disallow all states up to and including LastReachableSt.}
-        \nl Dom2 $\leftarrow$ \textsc{DisallowHistory}(Dom, $\pi$, LastReachableSt)\; 
-        \nl \textsc{ProcessSDH}(TrueLRState, Dom2, $\pi$, $\sigma$)\;
-      }
-  }
-  \;
+  \myproc{\textsc{RefineNode}($u$, $j$)}{
+    \nl $\pi \leftarrow$ HLPlan($u$)\;
+    \nl $\sigma \leftarrow$ \textsc{NDGetInstantiation}($\pi$, $j$) 
+    \tcc{\footnotesize resourceLimit($j$) is a  monotonically increasing function of $j$}
+    \nl  $MP \leftarrow$ GetMotionPlan($\sigma$, $\pi$, resourceLimit($j$))\;
+    \nl \If{MP $\ne$ NULL}{
+      \nl return success\;
+    }
+    }\;
+    \;
   \setcounter{AlgoLine}{0}
-  \myproc{\textsc{ProcessSDH}(State, Domain, PlanHistory, Interp)}{
-    \nl SDHTuple = $\langle$ State, Domain, PlanHistory, Interp $\rangle$\;
-	\nl plan = \textsc{GetClassicalPlan}(SDHTuple)\;
-    \nl \If{plan == NULL}{
-    	        \tcc{\footnotesize Disallow action which led to failure state from
-                  previous state.}
-        	\nl State2, History2 $\leftarrow$ \textsc{GetPredecessors}(SDHTuple)\;
-        	\nl Dom2 $\leftarrow$ \textsc{DisallowActionInState}(Domain, State2, \textsc{LastAction}(History2))\;
-        	\nl \textsc{ProcessSDH}(State2, Dom2, History2)\;}
-	\nl \Else{
-                \tcc{\footnotesize Add plan with edge from parent.}
-                \nl \textsc{AddToPlanGraph}(plan, \textsc{History}(SDHTuple))}
-}
+  \myproc{\textsc{AddChild}($u$, $j$)}{
+    \nl $\pi \leftarrow$ HLPlan($u$)\;
+    \nl $\sigma \leftarrow$ \textsc{NDGetInstantiation}($\pi$, $j$) \;
+    \nl StepNum, FailedPrecon $\leftarrow$ \textsc{GetError}($\sigma$, $\pi$)\;
+    \nl mode $\leftarrow$ NDChoice\{random, error\}\;
+    \nl \eIf{mode == error} {
+      \nl newState $\leftarrow$ \textsc{Patch}(getStateAt(StepNum,
+      $\pi$), FailedPrecon)\;
+    }{
+      \nl $\pi\leftarrow$ $\pi$, with an action
+      before StepNum replaced $~~~~~~~~~~~$by a random applicable action\;
+      \nl newState $\leftarrow$ getStateAt(stepNum, $\pi$)\;}
+    }
+    \nl $\pi'\leftarrow$ getClassicalPlan(newState)\;
+    \nl AddNodeToPRGraph($\sigma$, stepNum, $\pi'$)\;
+  }
 \end{small}
-\label{alg-completetamp}
-\vspace{-1.5 em}
+\caption{Algorithm for task and motion planning}
+\label{alg:complete}
 \end{algorithm}
 
-TODO Sid: explain algorithm, simplify algorithm
+It is easy to see that the resulting algorithm is complete.
 
-\subsection{Proof of Completeness[TODO Sid]}
+\begin{thm}
+If there exists a high-level sequence of actions that 
+(a) does not revisit symbolic states when using the high-level domain
+definition and (b) has a low level motion plan refinement within the scope
+of symbol interpretations, then Alg.\,\ref{alg:complete} will find it. 
+\end{thm}
 
-\subsection{Guided Search Techniques[TODO Sid]}
-You can use any guided search technique to explore the PRgraph
+The proof follows easily because if there was a solution, then
+the non-deterministic calls can be selected appropriately to find
+it. In the following sections we show specific instantations of this
+algorithm using subroutines that use randomized processes and learned
+heuristics to in place of the non-deterministic choices.
+
+
+
