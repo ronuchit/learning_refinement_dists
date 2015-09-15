@@ -46,35 +46,35 @@ manner.
 
 However, this algorithm has two
 main limitations: it is not guaranteed to find a solution when
-there exists one, and the set of values from which instantiations
-have to be sampled is a hand-coded discretization that is tuned
-to properties of each particular environmental setting. Since the algorithm
+there exists one, and the sets of values from which instantiations
+get sampled are object-specific, hand-coded distributions. Since the algorithm
 never reduces the set of possible sampled values, its
-efficiency degrades as the number of values increases.
+efficiency degrades as the number of values increases. In the next subsection,
+we address the first limitation; in the following sections, we address the second.
 
 \subsection{A Complete Algorithm for TAMP}
 We introduce a complete algorithm that maintains a \emph{plan
-  refinement graph} (PRGraph). Every node $u$ in the PRGgraph
+  refinement graph} (PRGraph). Every node $u$ in the PRGraph
 represents a high-level plan $\pi_u$ and the current state of the search
-for a motion plan refining it. An edge $(u,v)$ in the PRGraph
+for a refinement. An edge $(u,v)$ in the PRGraph
 represents a ``correction'' of $\pi_u$ for a specific instantiation of
-the pose references in $\pi_u$. Let $\pi_{u,k}$ be the plan prefix of
+the symbolic references in $\pi_u$. Let $\pi_{u,k}$ be the plan prefix of
 $\pi_u$ consisting of the first $k$ actions. Formally, each edge
-$e=(u,v)$ is labeled with a tuple $ \sigma, k, \varphi$ denoting an
-instantiation $\sigma$ of references for a prefix $\pi_{u,k}$ of
+$e=(u,v)$ is labeled with a tuple $\langle \sigma, k, \varphi \rangle$.
+$\sigma$ denotes an instantiation of references for a prefix $\pi_{u,k}$ of
 $\pi_u$ such that feasible motion plans have been found for all
-actions in $\pi_{u,k-1}$; and a conjunctive formula $\varphi$
-consisting of fluent literals (expressed using symbolic references)
+previous actions $\pi_{u,k-1}$. $\varphi$ denotes a conjunctive formula
+consisting of fluent literals
 that were required in the preconditions of the $k^{th}$ action in
-$\pi_u$ but were not true in the true state obtained upon the
+$\pi_u$ but were not true in the state obtained upon
 application of $\pi_{u,k-1}$ with the instantiation $\sigma_k$.  The
 plan in node $v$ (if any) retains the prefix $\pi_{u,k-1}$ and solves
-the high-level problem while incorporating the facts $\varphi_{u,v}$
+the new high-level problem which incorporates the discovered facts $\varphi_{u,v}$
 in the $k^{th}$ state.
 
 The overall search algorithm daisy chains the search for feasible
-instantiations of each high-level plan with the addition in the
-PRGRaph of new edges and plan nodes with the semantics described
+refinements of each high-level plan with the addition into the
+PRGraph of new edges and plan nodes using the semantics described
 above. This process is described using non-determistic choices
 (denoted using the prefix ``ND'') in
 Alg.\,\ref{alg:complete}. Subroutine \textsc{RefineNode} selects a
@@ -92,9 +92,9 @@ Different implementations of the non-deterministic choices in
 Alg.\,\ref{alg:complete} can capture various search algorithms
 with adaptations for handling unbounded branching factors (e.g.,
 iterative-deepening with iterative-broadening best first
-search). Indeed, SFRCRA-14 can be seen as a DFS traversal of the
-PRGraph. We will show that using guided search algorithms with the
-PRGraph can lead to significant performance improvements.
+search). Indeed, SFRCRA-14 can be seen as a depth-first traversal of the
+PRGraph. We will show that using trained guided search heuristics with the
+PRGraph can lead to performance improvements.
 
 \begin{algorithm}[t]
 \begin{small}
@@ -108,8 +108,8 @@ PRGraph can lead to significant performance improvements.
       \nl  \For{j in 1 .. trial}{
         \tcc{\footnotesize Traverse graph of plans, initially with just one plan:
           $\epsilon$.}
-        \nl $u \leftarrow$ \textsc{GetNextNode}(PRGraph)\;
-        \nl mode $\leftarrow$ NDChoice\{refine, add\}\;
+        \nl $u \leftarrow$ \textsc{NDGetNextNode}(PRGraph)\;
+        \nl mode $\leftarrow$ NDChoice\{refine, add child\}\;
         \nl \eIf{mode == refine}{ \textsc{RefineNode}($u$, $j$)}{
         \textsc{AddChild}($u$, $j$) }}}
   \;
@@ -117,8 +117,8 @@ PRGraph can lead to significant performance improvements.
   \myproc{\textsc{RefineNode}($u$, $j$)}{
     \nl $\pi \leftarrow$ HLPlan($u$)\;
     \nl $\sigma \leftarrow$ \textsc{NDGetInstantiation}($\pi$, $j$) 
-    \tcc{\footnotesize resourceLimit($j$) is a  monotonically increasing function of $j$}
-    \nl  $MP \leftarrow$ GetMotionPlan($\sigma$, $\pi$, resourceLimit($j$))\;
+    \tcc{\footnotesize resourceLimit($j$) is monotonically increasing in $j$}
+    \nl  $MP \leftarrow$ \textsc{GetMotionPlan}($\sigma$, $\pi$, resourceLimit($j$))\;
     \nl \If{MP $\ne$ NULL}{
       \nl return success\;
     }
@@ -129,7 +129,7 @@ PRGraph can lead to significant performance improvements.
     \nl $\pi \leftarrow$ HLPlan($u$)\;
     \nl $\sigma \leftarrow$ \textsc{NDGetInstantiation}($\pi$, $j$) \;
     \nl StepNum, FailedPrecon $\leftarrow$ \textsc{GetError}($\sigma$, $\pi$)\;
-    \nl mode $\leftarrow$ NDChoice\{random, error\}\;
+    \nl mode $\leftarrow$ NDChoice\{error, random\}\;
     \nl \eIf{mode == error} {
       \nl newState $\leftarrow$ \textsc{Patch}(getStateAt(StepNum,
       $\pi$), FailedPrecon)\;
@@ -138,11 +138,11 @@ PRGraph can lead to significant performance improvements.
       before StepNum replaced $~~~~~~~~~~~$by a random applicable action\;
       \nl newState $\leftarrow$ getStateAt(stepNum, $\pi$)\;}
     }
-    \nl $\pi'\leftarrow$ getClassicalPlan(newState)\;
-    \nl AddNodeToPRGraph($\sigma$, stepNum, $\pi'$)\;
+    \nl $\pi'\leftarrow$ \textsc{GetClassicalPlan}(newState)\;
+    \nl \textsc{AddNodeToPRGraph}($\sigma$, stepNum, $\pi'$)\;
   }
 \end{small}
-\caption{Algorithm for task and motion planning}
+\caption{Complete algorithm for TAMP.}
 \label{alg:complete}
 \end{algorithm}
 
@@ -150,16 +150,16 @@ It is easy to see that the resulting algorithm is complete.
 
 \begin{thm}
 If there exists a high-level sequence of actions that 
-(a) does not revisit symbolic states when using the high-level domain
-definition and (b) has a low level motion plan refinement within the scope
+a) does not revisit symbolic states when using the high-level domain
+definition and b) has a motion planning feasible refinement within the scope
 of symbol interpretations, then Alg.\,\ref{alg:complete} will find it. 
 \end{thm}
 
-The proof follows easily because if there was a solution, then
+The proof follows easily because if there is a solution, then
 the non-deterministic calls can be selected appropriately to find
-it. In the following sections we show specific instantations of this
-algorithm using subroutines that use randomized processes and learned
-heuristics to in place of the non-deterministic choices.
+it. In the next section, we show a specific implementation of \textsc{NDGetInstantiation}
+based on randomization. Afterward, we show how to train
+heuristics that guide the search processes, replacing the non-deterministic choices.
 
 
 

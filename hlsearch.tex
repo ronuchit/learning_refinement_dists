@@ -7,7 +7,8 @@ where $v \in \V$ denotes which node to visit next, and $b$ is a Boolean that ind
 to be performed at $v$. There are two possible actions: 1) attempt to find a valid refinement
 for the plan stored in $v$, or 2) recognize that a valid refinement does not exist for this plan
 and generate a geometric fact to use for replanning, by allowing collisions when motion planning
-for the current instantiation of symbolic references.
+for the current instantiation of symbolic references. Thus, our learned heuristics implement
+\textsc{NDGetNextNode} and provide a selection for \textsc{NDChoice} in line 4 of the main routine.
 
 To select between the potential refinement options, we learn decision tree regressors
 to answer the following questions about a single node $n$ containing plan $p$: 1) how many iterations of randomized refinement
