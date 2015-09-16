@@ -1,7 +1,8 @@
 \section{Learning Refinement Distributions}
-In this section, we present an RL approach that learns a policy for plan refinement. We show
-how to train continuous proposal distributions, thus avoiding the lack of robustness from
-hand-coded distributions in other TAMP systems.
+Randomized refinement provides us with a framework to learn a policy that implements
+\textsc{NDGetInstantiation} and performs well empirically. Our approach applies RL
+to train continuous proposal distributions for symbolic reference instantiations in this
+routine.
 
 \subsection{Formulation as Reinforcement Learning Problem}
 We formulate plan refinement as an MDP as follows:
@@ -37,7 +38,7 @@ We learn a policy for this MDP by adapting the method of Zucker et al.~\cite{wor
 uses a linear combination of features to define a distribution over poses. In our setting, we learn a weight
 vector $\theta_{p}$ for each reference \emph{type}, comprised of a pose type and possibly a gripper
 (e.g., ``left gripper grasp pose,'' ``right gripper putdown pose,'' ``base pose'').
-This decouples the learned distributions from any single high-level plan and allows generalization across problems.
+This decouples the learned distributions from any single high-level plan and allows generalization across problem instances.
 
 We develop a feature function $f(s, p, x)$ that maps the current
 state $s \in \St$, symbolic reference $p$, and sampled value $x$ for $p$ to a

@@ -16,6 +16,10 @@ planning.  Efficient integration of these two types of reasoning is
 difficult, and recent research has proposed several methods for
 it~\cite{srivastava2014combined, kaelbling2011hierarchical,
   lagriffoul2014orientation, GarrettWAFR14, dornhege2012semantic}.
+We adopt the principles of abstraction in the TAMP system developed by
+Srivastava et al.~\cite{srivastava2014combined} (henceforth referred
+to as SFRCRA-14) to factor the reasoning and search problems into
+interacting logic-based and geometric components.
 
 \begin{figure}[t]
   \centering
@@ -34,11 +38,6 @@ it~\cite{srivastava2014combined, kaelbling2011hierarchical,
   \label{fig:cover}
 \end{figure}
 
-We adopt the principles of abstraction in the TAMP system developed by
-Srivastava et al.~\cite{srivastava2014combined} (henceforth referred
-to as SFRCRA-14) to factor the reasoning and search problems into
-interacting logic-based and geometric components.
-
 In this work, we develop a complete algorithm for TAMP and propose
 methods for carrying out guided search in the space of
 high-level (logic-based) plans and their low-level
@@ -56,8 +55,8 @@ hand-coded approaches. For example, the TAMP systems cited above use hand-coded 
 search for instantiations of symbolic references, relying
 on domain-specific insight from the user to reduce the space of possible values.
 
-To learn efficient plan refinement, we train distributions
-that propose continuous values for symbolic references which are likely to yield
+To learn efficient plan refinement strategies, we train distributions
+to propose continuous values for symbolic references that are likely to yield
 successful trajectories using a motion planner. We train these distributions through an
 application of reinforcement learning (RL). Our approach draws inspiration
 from Zhang and Dietterich~\cite{JobShopSched}, who applied RL to job

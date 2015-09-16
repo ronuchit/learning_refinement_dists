@@ -25,7 +25,7 @@ desired goal condition expressed in terms of fluents.
 
 For example, we can use the action schema \emph{grasp(Object o,
   Manipulator p, GraspingPose g, Trajectory m)} to abstractly
-represent grasping an object \emph{o}.  In order to apply this action,
+represent grasping an object, \emph{o}.  In order to apply this action,
 the agent must select values for each of these parameters (e.g.,
 \emph{grasp(can$_1$, left, g$_1$, m$_1$)}). These \emph{instantiated}
 actions change the value of specific fluent instantiations (also
@@ -39,7 +39,7 @@ Formally, we define the task and motion planning (TAMP) problem as a tuple $\lan
 \item $\Obj$ is a set of objects denoting elements such as cans,
   trajectories, and poses. Note that $\Obj$ includes the
   configuration space of all movable objects, including the robot.
-\item $\T$ is the set of object \emph{types}, such as movable objects, motion plans, poses, and locations.
+\item $\T$ is a set of object \emph{types}, such as movable objects, motion plans, poses, and locations.
 \item $\F$ is a set of \emph{fluents}, which define relationships
   among objects and are Boolean functions defined over the configuration space.
 \item $\I$ is the set of fluent literals that hold true in the initial state.
@@ -156,7 +156,7 @@ Formally, we define an MDP as a tuple $\langle \St, \A, T, R, \gamma, \Prob \ran
 \end{defn}
 A solution to an MDP is a policy, $\pi: \St \rightarrow \A$, that maps states to
 actions. The value, $V_{\pi}(s)$, of a state under $\pi$ is the sum of expected
-discounted future rewards from starting in state $s$ and selecting actions according
+discounted future rewards generated from starting in state $s$ and selecting actions according
 to $\pi$:
 $$V_{\pi}(s) = \mathbb{E}[\sum_{t=0}^{\infty}\gamma^{t}R(s_{t}) | \pi, s_{0} = s].$$
 The optimal policy, $\pi^{*}$, maximizes this value for all states.
@@ -182,4 +182,4 @@ scales better to larger scheduling problems.
 Zucker et al.~\cite{workspacebias} use RL to bias the distribution of a rapidly exploring random tree (RRT)
 for motion planning. Their approach uses features of a discretization of the workspace to train
 a non-uniform configuration space sampler using policy gradient algorithms.
-In our work, we adopt their gradient updates for the TAMP framework (Section V-C).
+In our work, we adapt their gradient updates to the TAMP framework (Section V-C).
