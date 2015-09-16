@@ -116,11 +116,13 @@ PRGraph can lead to performance improvements.
   \setcounter{AlgoLine}{0}
   \myproc{\textsc{RefineNode}($u$, $j$)}{
     \nl $\pi \leftarrow$ HLPlan($u$)\;
+    \nl \For{j in 1 .. $N_{max}$}{
     \nl $\sigma \leftarrow$ \textsc{NDGetInstantiation}($\pi$, $j$) 
     \tcc{\footnotesize resourceLimit($j$) is monotonically increasing in $j$}
-    \nl  $MP \leftarrow$ \textsc{GetMotionPlan}($\sigma$, $\pi$, resourceLimit($j$))\;
+    \nl  $MP, failedAction,failedPred \leftarrow$ \textsc{GetMotionPlan}($\sigma$, $\pi$, resourceLimit($j$))\;
     \nl \If{MP $\ne$ NULL}{
       \nl return success\;
+    }
     }
     }\;
     \;

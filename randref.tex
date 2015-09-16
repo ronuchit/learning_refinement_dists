@@ -1,12 +1,10 @@
-\section{A Randomized Algorithm for Refinement}
-As noted in the previous section, we can use a variety of algorithms to implement
-plan refinement. Since we want to apply RL to learn policies for refinement,
+\subsection{A Randomized Algorithm for Plan Refinement}
+In order to apply thge complete planning algorithm described above we must provide definitions for each of the subroutines mentioned in Algorithm 1. There are many ways to implement these functions. For example, SFCRA-14 uses a backtracking search over a discrete set of instantiations to implement \textsc{RefineNode}. Since we want to apply RL to learn policies for refinement,
 we seek an algorithm that allows for easy formulation as an MDP. Our method
 imitates that of Zhang and Dietterich~\cite{JobShopSched}:
 we initialize an infeasible refinement and use a randomized local search to propose
-improvements. Alg.\,\ref{alg:randref} shows pseudocode for this randomized refinement,
-which implements \textsc{NDGetInstantiation} and \textsc{GetError} in Alg.\,\ref{alg:complete},
- and fixes \textsc{NDChoice} as \emph{error} in line 4 of \textsc{AddChild}.
+improvements. Alg.\,\ref{alg:randref} shows pseudocode for this refinement strategy,
+which implements \textsc{NDGetInstantiation} in Alg.\,\ref{alg:complete}. The main difference between our implementation and the pseudo-code in Alg.\,\ref{alg:complete} is that we use information about previous failed motion planning attempts to guide selecting a next instantiation.
 
 The algorithm takes as input a high-level plan and a maximum iteration count.
 In line 1, we initialize a (potentially invalid) refinement by sampling values for symbolic references
@@ -33,8 +31,8 @@ initialized as straight lines.
   \nl \textsc{Resample}($failAction.params$) }
   \nl \Else {
   \tcc{\footnotesize Action precondition violation.}
-  \nl \textsc{Resample}($failPred.params$) } }
-  \nl Raise failure to task planner, receive new plan. }
+  \nl \textsc{Resample}($failPred.params$) } }}q
+
 \end{small}
 \caption{Randomized local search for plan refinement.}
 \label{alg:randref}
@@ -52,7 +50,7 @@ If this was due to a motion planning failure, $failPred$ is NULL. Otherwise,
 the violated action precondition is stored into $failPred$.
 We then call the \textsc{Resample} routine on the symbolic parameters
 associated with the failure; this routine picks one of these at random and
-resamples its value.
+resamples its value. Between the two of them, \textsc{InitRefinement} and \textsc{Resample} define \textsc{NDGetInstantiation} for our implementation. \textsc{GetError} iterates through the steps of the plan, checks precondition and trajectory feasibility and returns a failed action index and associated predicate. 
 
 Randomized refinement has two key properties. The first is a very explicit algorithm state.
 We show in the next section that this allows for a straightforward MDP
@@ -63,4 +61,4 @@ the plan to be influenced by those for a \emph{future} action. For example, in a
 pick-and-place task, it can make sense for the object's grasp pose to be sampled
 conditionally on the current instantiation of the putdown pose, even though the putdown
 appears after the grasp in the plan sequence. Thus, it is easy for plan refinement to
-respond to long-term dependencies in continuous values of symbolic references.
+respond to long-term dependencies in the instantiation of symbolic references.
