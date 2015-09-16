@@ -1,11 +1,11 @@
 \section{Experiments}
 \begin{figure}[t]
   \centering
-  \begin{subfigure}[b]{0.4\linewidth}
+  \begin{subfigure}[b]{0.35\linewidth}
     \includegraphics[width=\textwidth]{images/learns.png}
     \caption{Initial distributions.}
   \end{subfigure}
-  \begin{subfigure}[b]{0.4\linewidth}
+  \begin{subfigure}[b]{0.35\linewidth}
     \includegraphics[width=\textwidth]{images/learn4.png}
     \caption{After 4 iterations.}
   \end{subfigure}
@@ -41,20 +41,19 @@ for the dinner domain. The green points refer to where the right gripper will be
 placed in a symmetric position on the other side of the tray, as marked by the yellow points.
 Final distributions are after 20 iterations.}}
   \label{fig:dinner}
-  \vspace{-1.5 em}
 \end{figure}
 
 \begin{figure}[t]
   \centering
-  \begin{subfigure}[b]{0.3\linewidth}
+  \begin{subfigure}[b]{0.25\linewidth}
     \includegraphics[width=\textwidth]{images/frying_hand.png}
     \caption{Hand-coded distribution.}
   \end{subfigure}
-  \begin{subfigure}[b]{0.3\linewidth}
+  \begin{subfigure}[b]{0.25\linewidth}
     \includegraphics[width=\textwidth]{images/frying_initial.png}
     \caption{Initial distribution.}
   \end{subfigure}
-  \begin{subfigure}[b]{0.3\linewidth}
+  \begin{subfigure}[b]{0.25\linewidth}
     \includegraphics[width=\textwidth]{images/frying_final.png}
     \caption{Final distribution.}
   \end{subfigure}
@@ -62,7 +61,6 @@ Final distributions are after 20 iterations.}}
 for picking up the frying pan. Our system learned to prefer picking up the pan at its handle to fit it into the
 shelf (not shown). Final distributions are after 20 iterations.}}
   \label{fig:frying}
-  \vspace{-1.5 em}
 \end{figure}
 
 \begin{table}[t]
@@ -119,7 +117,6 @@ planner for baseline 1 (T), baseline 2 (B), our learned refinement policies with
 and our full system: learned refinement policies and graph search heuristics (F). Results for L and F
 are averaged across 5 separately trained sets of weights. As described, we only run F for the can domain. Time limit: 300s.}}
   \label{table:results}
-  \vspace{-2 em}
 \end{table}
 
 \subsection{Training Methodology}
@@ -202,9 +199,9 @@ Our curriculum learning system first trains base poses and tray pickup and putdo
 $N = 20$ iterations, then object grasp and putdown poses for $N = 20$ iterations. We fixed $L = 100$ and $\epsilon = 10$.
 
 The results demonstrate comparable performance to the baseline systems. The reason is that
-hand-coded discretizations of the sample space are very good in this domain. For example, the optimal
-robot base pose from which to pick up the tray is directly in front of it, which is quickly sampled through
-the baseline systems' discretization. Additionally, the lack of long-term dependencies in the plan
+hand-coding the sample space works well in this domain. For example, the optimal
+robot base pose from which to pick up the tray is directly in front of it, which is quickly sampled in
+the baseline systems. Additionally, the lack of long-term dependencies in the plan
 means that backtracking search finds a valid refinement quickly. The fact that our system performs comparably
 with the baselines shows that our algorithm can learn pose instantiations for a variety of objects.
 \figref{fig:dinner} shows learned tray pickup poses.

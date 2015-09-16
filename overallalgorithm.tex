@@ -72,7 +72,7 @@ plan in node $v$ (if any) retains the prefix $\pi_{u,k-1}$ and solves
 the new high-level problem which incorporates the discovered facts $\varphi_{u,v}$
 in the $k^{th}$ state.
 
-The overall search algorithm daisy chains the search for feasible
+The overall search algorithm interleaves the search for feasible
 refinements of each high-level plan with the addition into the
 PRGraph of new edges and plan nodes using the semantics described
 above. This process is described using non-determistic choices
@@ -119,7 +119,7 @@ PRGraph can lead to performance improvements.
     \nl \For{j in 1 .. $N_{max}$}{
     \nl $\sigma \leftarrow$ \textsc{NDGetInstantiation}($\pi$, $j$) 
     \tcc{\footnotesize resourceLimit($j$) is monotonically increasing in $j$}
-    \nl  $MP, failedAction,failedPred \leftarrow$ \textsc{GetMotionPlan}($\sigma$, $\pi$, resourceLimit($j$))\;
+    \nl  $MP$, FailedAction, FailedPred $\leftarrow$ \textsc{GetMotionPlan}($\sigma$, $\pi$, resourceLimit($j$))\;
     \nl \If{MP $\ne$ NULL}{
       \nl return success\;
     }

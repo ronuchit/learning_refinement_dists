@@ -1,14 +1,14 @@
 \subsection{A Randomized Algorithm for Plan Refinement}
-In order to apply thge complete planning algorithm described above we must provide definitions for each of the subroutines mentioned in Algorithm 1. There are many ways to implement these functions. For example, SFCRA-14 uses a backtracking search over a discrete set of instantiations to implement \textsc{RefineNode}. Since we want to apply RL to learn policies for refinement,
+In order to apply the complete planning algorithm described above, we must provide definitions for each of the subroutines mentioned in Alg.\,\ref{alg:complete}. There are many ways to implement these functions. For example, SFCRA-14 uses a backtracking search over a discrete set of instantiations to implement \textsc{RefineNode}. Since we want to apply RL to learn policies for refinement,
 we seek an algorithm that allows for easy formulation as an MDP. Our method
 imitates that of Zhang and Dietterich~\cite{JobShopSched}:
 we initialize an infeasible refinement and use a randomized local search to propose
 improvements. Alg.\,\ref{alg:randref} shows pseudocode for this refinement strategy,
-which implements \textsc{NDGetInstantiation} in Alg.\,\ref{alg:complete}. The main difference between our implementation and the pseudo-code in Alg.\,\ref{alg:complete} is that we use information about previous failed motion planning attempts to guide selecting a next instantiation.
+which implements \textsc{NDGetInstantiation} in Alg.\,\ref{alg:complete}. The main difference between our implementation and the pseudocode in Alg.\,\ref{alg:complete} is that we use information about previous failed motion planning attempts to guide selection of the next instantiation.
 
 The algorithm takes as input a high-level plan and a maximum iteration count.
-In line 1, we initialize a (potentially invalid) refinement by sampling values for symbolic references
-from their corresponding distributions, which can be hand-coded or learned, as described in Section VI. We continue sampling
+In line 1, we initialize a (potentially invalid) refinement by sampling from distributions associated
+with each symbolic reference. We continue sampling
 until we find bindings that satisfy inverse kinematics constraints (IK feasibility). Trajectories are
 initialized as straight lines.
 
@@ -31,7 +31,7 @@ initialized as straight lines.
   \nl \textsc{Resample}($failAction.params$) }
   \nl \Else {
   \tcc{\footnotesize Action precondition violation.}
-  \nl \textsc{Resample}($failPred.params$) } }}q
+  \nl \textsc{Resample}($failPred.params$) } }}
 
 \end{small}
 \caption{Randomized local search for plan refinement.}
@@ -45,12 +45,12 @@ For each, it first calls the motion planner to find a trajectory
 linking the sampled poses. If this succeeds, it tests the action preconditions;
 as part of this step, it checks that the trajectory is collision-free.
 
-If \textsc{MotionPlan} is unsuccessful, it returns into $failStep$ the index of the action where failure occurred.
-If this was due to a motion planning failure, $failPred$ is NULL. Otherwise,
-the violated action precondition is stored into $failPred$.
 We then call the \textsc{Resample} routine on the symbolic parameters
-associated with the failure; this routine picks one of these at random and
-resamples its value. Between the two of them, \textsc{InitRefinement} and \textsc{Resample} define \textsc{NDGetInstantiation} for our implementation. \textsc{GetError} iterates through the steps of the plan, checks precondition and trajectory feasibility and returns a failed action index and associated predicate. 
+associated with the infeasibility; this routine picks one at random and
+resamples its value. \textsc{InitRefinement} and \textsc{Resample} together define
+\textsc{NDGetInstantiation} for our implementation, while \textsc{GetError} iterates
+through the steps of the plan, checks precondition and trajectory feasibility, and returns
+a failed action index and associated predicate. 
 
 Randomized refinement has two key properties. The first is a very explicit algorithm state.
 We show in the next section that this allows for a straightforward MDP
