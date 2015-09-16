@@ -43,26 +43,6 @@ Final distributions are after 20 iterations.}}
   \label{fig:dinner}
 \end{figure}
 
-\begin{figure}[t]
-  \centering
-  \begin{subfigure}[b]{0.25\linewidth}
-    \includegraphics[width=\textwidth]{images/frying_hand.png}
-    \caption{Hand-coded distribution.}
-  \end{subfigure}
-  \begin{subfigure}[b]{0.25\linewidth}
-    \includegraphics[width=\textwidth]{images/frying_initial.png}
-    \caption{Initial distribution.}
-  \end{subfigure}
-  \begin{subfigure}[b]{0.25\linewidth}
-    \includegraphics[width=\textwidth]{images/frying_final.png}
-    \caption{Final distribution.}
-  \end{subfigure}
-  \caption{\small{Hand-coded distribution, along with initial and final distributions using our training methods,
-for picking up the frying pan. The green points refer to where the gripper will be placed. Our system learned to prefer picking up the pan at its handle to fit it into the
-shelf (not shown). Final distributions are after 20 iterations.}}
-  \label{fig:frying}
-\end{figure}
-
 \begin{table}[t]
   \centering
   \vspace{8pt}
@@ -117,7 +97,28 @@ planner for baseline 1 (T), baseline 2 (B), our learned refinement policies with
 and our full system: learned refinement policies and graph search heuristics (F). Results for L and F
 are averaged across 5 separately trained sets of weights. As described, we only run F for the can domain. Time limit: 300s.}}
   \label{table:results}
+  \vspace{-2em}
 \end{table}
+
+\begin{figure}[h!]
+  \centering
+  \begin{subfigure}[b]{0.25\linewidth}
+    \includegraphics[width=\textwidth]{images/frying_hand.png}
+    \caption{Hand-coded distribution.}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.25\linewidth}
+    \includegraphics[width=\textwidth]{images/frying_initial.png}
+    \caption{Initial distribution.}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.25\linewidth}
+    \includegraphics[width=\textwidth]{images/frying_final.png}
+    \caption{Final distribution.}
+  \end{subfigure}
+  \caption{\small{Hand-coded distribution, along with initial and final distributions using our training methods,
+for picking up the frying pan. The green points refer to where the gripper will be placed. Our system learned to prefer picking up the pan at its handle to fit it into the
+shelf (not shown). Final distributions are after 20 iterations.}}
+  \label{fig:frying}
+\end{figure}
 
 \subsection{Training Methodology}
 We use the reward function described earlier. Our weight
@@ -139,7 +140,7 @@ training the graph search heuristics.
 We evaluate our approach in three distinct domains: cans distributed on a table (the \emph{can domain}),
 setting up bowls for dinner (the \emph{dinner domain}), and placing frying pans into a narrow shelf (the \emph{frying domain}).
 We compare performance with two baselines, both of which use the hand-coded sampling distributions for
-plan refinement used in SFRCRA-14.
+refinement used in SFRCRA-14.
 
 Baseline 1 is SFRCRA-14: it uses exhaustive backtracking search for refinement
 and greedy depth-first search of the plan refinement graph, which always tries to refine
@@ -183,9 +184,9 @@ then base poses, grasp poses, and putdown poses (at fixed location) for $N = 18$
 then all reference types for $N = 30$ iterations with $\epsilon = 20$. We fixed $L = 100$.
 
 The results demonstrate significant improvements in performance to the baseline systems for success rate.
-However, backtracking search provides faster average refinement time. This is likely because the
+However, backtracking search provides faster average refinement time. This is likely because
 refinement times were averaged over the test cases where all 4 systems succeeded. These plans tended
-to be easier to refine, so an exhaustive backtracking search performs well because the total search space is small.
+to be easier to refine, so exhaustive backtracking search performs well because the total search space is small.
 \figref{fig:cover} and \figref{fig:training} show learned refinement distributions.
 
 \subsection{Dinner Domain}
@@ -217,5 +218,5 @@ and 4 grasp poses equidistant along the handle.
 
 The results demonstrate significantly higher success rate versus the baseline systems. The backtracking baseline is faster likely because
 the refinement times were averaged over cases where all 3 systems succeeded; backtracking often succeeded only when
-it by chance predominantly picked grasp poses along the handle. \figref{fig:frying} compares the hand-coded
+it by chance picked grasp poses along the handle. \figref{fig:frying} compares the hand-coded
 distribution with one we learned for picking up a frying pan.
