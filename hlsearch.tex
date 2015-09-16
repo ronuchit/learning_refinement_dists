@@ -1,14 +1,15 @@
 \section{Learning to Search Plan Refinement Graph}
 The approach presented thus far can be succinctly described as learning \emph{how} to
 refine a single high-level plan. In this section, we present a method for learning
-\emph{which} plan to try refining, thus constituting a meta-level search. Section IV-B describes the plan refinement graph $\Gr = (\V, \E)$,
+\emph{which} plan to try refining, thus constituting a meta-level search. This method
+provides an implementation for \textsc{NDGetNextNode} and \textsc{NDChoice} in line 4 of the main routine in Alg.\,\ref{alg:complete}.
+Section IV-B describes the plan refinement graph $\Gr = (\V, \E)$,
 which maintains a set of candidate plans and their current refinements. The decision to be made is of the form $(v, b)$,
 where $v \in \V$ denotes which node to visit next, and $b$ is a Boolean that indicates the action
 to be performed at $v$. There are two possible actions: 1) attempt to find a valid refinement
 for the plan stored in $v$, or 2) recognize that a valid refinement does not exist for this plan
 and generate a geometric fact to use for replanning, by allowing collisions when motion planning
-for the current instantiation of symbolic references. Thus, our learned heuristics implement
-\textsc{NDGetNextNode} and provide a selection for \textsc{NDChoice} in line 4 of the main routine.
+for the current instantiation of symbolic references.
 
 To select between the potential refinement options, we learn decision tree regressors
 to answer the following questions about a single node $n$ containing plan $p$: 1) how many iterations of randomized refinement
@@ -34,4 +35,4 @@ feature describes how many times the node has been visited before.
 At test time, we make the decision $(v, b)$ as follows. We select $v$ according to a softmin (with decreasing temperature) over the values
 predicted by the first regressor. Then, we select $b$ using a softmin comparison between the two regressors'
 predicted values for $v$. For example, if refining a child node would reduce the number of steps to a valid refinement,
-we bias toward selecting action 2.
+we bias toward generating a child node.

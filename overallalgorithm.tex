@@ -10,7 +10,7 @@ Then, we present a complete algorithm for TAMP that we implemented in
 the framework of SFRCRA-14.
 
 \subsection{Preliminaries}
-Intuitively, SFRCRA-14 conducts a greedy search by: incrementally
+SFRCRA-14 solves TAMP problems by: incrementally
 searching for a high-level plan that solves the logical abstraction
 of the given TAMP problem; determining a prefix of the plan that has a
 motion planning feasible refinement; updating the high-level
@@ -49,7 +49,7 @@ main limitations: it is not guaranteed to find a solution when
 there exists one, and the sets of values from which instantiations
 get sampled are object-specific, hand-coded distributions. Since the algorithm
 never reduces the set of possible sampled values, its
-efficiency degrades as the number of values increases. In the next subsection,
+efficiency degrades as the number of values that get sampled increases. In the next subsection,
 we address the first limitation; in the following sections, we address the second.
 
 \subsection{A Complete Algorithm for TAMP}
@@ -92,7 +92,7 @@ Different implementations of the non-deterministic choices in
 Alg.\,\ref{alg:complete} can capture various search algorithms
 with adaptations for handling unbounded branching factors (e.g.,
 iterative-deepening with iterative-broadening best first
-search). Indeed, SFRCRA-14 can be seen as a depth-first traversal of the
+search). Indeed, SFRCRA-14 can be seen as a greedy depth-first traversal of the
 PRGraph. We will show that using trained guided search heuristics with the
 PRGraph can lead to performance improvements.
 
@@ -159,7 +159,7 @@ of symbol interpretations, then Alg.\,\ref{alg:complete} will find it.
 
 The proof follows easily because if there is a solution, then
 the non-deterministic calls can be selected appropriately to find
-it. In the next section, we show a specific implementation of \textsc{NDGetInstantiation}
+it. In the next section, we show a specific implementation of \textsc{RefineNode}
 based on randomization. Afterward, we show how to train
 heuristics that guide the search processes, replacing the non-deterministic choices.
 

@@ -6,22 +6,22 @@ hand-coded distributions in other TAMP systems.
 \subsection{Formulation as Reinforcement Learning Problem}
 We formulate plan refinement as an MDP as follows:
 \begin{tightlist}
-\item A state $s \in \St$ is a tuple $(P, r_{cur}, E, n)$, consisting of the
+\item A state $s \in \St$ is a tuple $(HLP, r_{cur}, E, n)$, consisting of the
 high-level plan, its current setting of values for symbolic references,
-the geometric encoding of the environment, and a counter for
+the geometric environment encoding, and a counter for
 the number of calls to the sampler.
 \item An action $a \in \A$ is a pair $(p, x)$, where $p$ is the discrete symbolic
 reference to resample and $x$ is the continuous value assigned to $p$ in the new refinement.
 \item The transition function $T(s, a, s')$ is split up into 3 cases. In all cases, $n$ increases by 1. $L$ refers to
-the number of samples for one planning problem.
+the number of samples for one planning problem, encompassing both the task planning problem
+and the environment.
   \begin{tightlist}
   \item Case 1: $n > L$. We sample a new state from $\Prob$ and reset $n$ to 0.
   \item Case 2: the proposed value $x$ is IK infeasible. The state remains the same.
   \item Case 3: Otherwise, the value of $p$ is set to $x$ and the motion planner is called.
   \end{tightlist}
 \item The reward function $R(s, a, s')$ provides rewards based on a measure of closeness to a valid plan refinement.
-\item $\Prob$ is a distribution over planning problems, encompassing both the task planning problem
-and the environment.
+\item $\Prob$ is a distribution over planning problems.
 \end{tightlist}
 
 We restrict our attention to training policies that suggest $x$ for actions in $\A$.
@@ -43,7 +43,7 @@ We develop a feature function $f(s, p, x)$ that maps the current
 state $s \in \St$, symbolic reference $p$, and sampled value $x$ for $p$ to a
 feature vector; $f$ defines a policy class for the MDP. Additionally, we define
 $N$ as the number of planning problems on which to train, and
-$\epsilon$ as the number of samples comprising a training episode.
+$\epsilon$ as the number of samples comprising a training episode, after which we update weights.
 
 The training is a natural extension of randomized
 refinement and progresses as follows. $N$ times, sample from $\Prob$ to obtain

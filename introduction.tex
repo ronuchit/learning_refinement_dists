@@ -39,24 +39,25 @@ Srivastava et al.~\cite{srivastava2014combined} (henceforth referred
 to as SFRCRA-14) to factor the reasoning and search problems into
 interacting logic-based and geometric components.
 
-We propose a method for carrying out guided search in the space of
+In this work, we develop a complete algorithm for TAMP and propose
+methods for carrying out guided search in the space of
 high-level (logic-based) plans and their low-level
 \emph{refinements}, or instantiations of continuous values for
-symbolic references in the plan, such as object grasping poses.
-We show how statistical machine learning techniques can be used
-to make this process more efficient than previous hand-coded
-approaches for producing sampling distributions to search for a valid refinement.
+symbolic references in the plan.
 
-In particular, we develop a complete algorithm for TAMP by introducing
+In particular, we introduce
 a \emph{plan refinement graph}, which allows interleaving plan
 refinement (the search for symbolic reference instantiations of a plan) with a
 search over \emph{which} high-level plan to try refining, given options
 that address different infeasibilities. Furthermore, we present
 machine learning techniques to train heuristic functions that guide
-both of these search processes.
+both of these search processes, making them more efficient than previous
+hand-coded approaches. For example, the TAMP systems cited above use hand-coded heuristics to
+search for instantiations of symbolic references, relying
+on domain-specific insight from the user to reduce the space of possible values.
 
 To learn efficient plan refinement, we train distributions
-that propose continuous values for symbolic references that are likely to yield
+that propose continuous values for symbolic references which are likely to yield
 successful trajectories using a motion planner. We train these distributions through an
 application of reinforcement learning (RL). Our approach draws inspiration
 from Zhang and Dietterich~\cite{JobShopSched}, who applied RL to job

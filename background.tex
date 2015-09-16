@@ -29,7 +29,8 @@ represent grasping an object \emph{o}.  In order to apply this action,
 the agent must select values for each of these parameters (e.g.,
 \emph{grasp(can$_1$, left, g$_1$, m$_1$)}). These \emph{instantiated}
 actions change the value of specific fluent instantiations (also
-called fluent \emph{literals}), such as \emph{empty(gripper$_l$)}.
+called fluent \emph{literals}), such as \emph{in-gripper(can$_1$, gripper$_l$)}
+and \emph{empty(gripper$_l$)}.
 
 \begin{defn}
 Formally, we define the task and motion planning (TAMP) problem as a tuple $\langle \Obj,
@@ -52,9 +53,8 @@ action is performed.
 \end{defn}
 
 An instantiated action is said to be \emph{feasible} in a state if and only if its
-preconditions hold in that state. Actions that include trajectories as
-arguments have a default precondition that the trajectory must be
-collision-free.
+preconditions hold in that state. Implicitly, the trajectories corresponding to actions
+must be collision-free.
 
 A solution to a TAMP problem is a sequence of instantiated
 actions $a_{0}, a_{1}, ..., a_{n} \in \U$ such that every action is
@@ -139,7 +139,7 @@ goal condition $\G$.
 % before grasping $o_{t}$, and refining this plan succeeds.
 
 \subsection{Markov Decision Processes and Reinforcement Learning}
-Markov decision processes (MDPs) are the standard AI approach for formulating
+Markov decision processes (MDPs) provide a way to formalize
 interactions between agents and environments. At each step of an MDP,
 the agent knows its current state and selects an action. This causes the
 state to change according to a known transition distribution.
@@ -182,4 +182,4 @@ scales better to larger scheduling problems.
 Zucker et al.~\cite{workspacebias} use RL to bias the distribution of a rapidly exploring random tree (RRT)
 for motion planning. Their approach uses features of a discretization of the workspace to train
 a non-uniform configuration space sampler using policy gradient algorithms.
-In our work, we adopt their gradient updates for the TAMP framework (Section VI-C).
+In our work, we adopt their gradient updates for the TAMP framework (Section V-C).
