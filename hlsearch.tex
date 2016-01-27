@@ -10,28 +10,6 @@ to train heuristics that implement these routines. The heuristics are trained to
 the difficulty associated with refining a plan, and accordingly decide to generate
 a geometric fact to use for replanning.
 
-To select between the potential refinement options, we learn decision tree regressors
-to answer the following questions about a single node $n$ containing plan $p$: 1) how many iterations of randomized refinement
-would be needed to achieve a valid refinement for $p$ ($\infty$ if $p$ has no valid refinement); 2)
-if we quickly generate a child node $n'$ under $n$ by discovering geometric facts and producing a new plan $p'$,
-how many iterations would be needed to refine $p'$? We approach this by learning an estimate of the
-number of iterations needed to refine \emph{each} action. To obtain an estimate for a full plan, we
-sum this number across all of the plan's actions. This implicitly assumes that dependencies in plans are, in some way, local;
-it only makes sense if a plan can be split into subportions with independent refinements.
-Addressing this will be an important area of future work.
+TODO: describe features
 
-To train the regressors, we fix pre-trained policies for plan refinement and construct datasets
-for supervised learning as follows. For the first regressor, we run refinement on the root
-node of the graph over 500 random environments sampled from $\Prob$, and measure the feature vector and number of iterations
-until valid refinement (arbitrarily large if no valid refinement exists).
-For the second regressor, we do the same, but on a single child node spawned from the root node.
-We then fit standard decision tree regressors to our data.
-
-The features for our regressors are as follows. 3 geometric features encode the closeness of the objects
-of interest in our environment, considering the distance to and placement of nearby obstructions. The other
-feature describes how many times the node has been visited before.
-
-At test time, we make the decision $(v, b)$ as follows. We select $v$ according to a softmin (with decreasing temperature) over the values
-predicted by the first regressor. Then, we select $b$ using a softmin comparison between the two regressors'
-predicted values for $v$. If refining a child node would reduce the number of steps to a valid refinement,
-we bias toward generating a child node.
+TODO: describe test time
