@@ -106,43 +106,39 @@ PRGraph can lead to performance improvements.
   \myalg{Complete TAMP}{
     \nl \For{trial in 1 ...}{
       \nl  \For{j in 1 .. trial}{
-        \tcc{\footnotesize Traverse graph of plans, initially with just one plan:
-          $\epsilon$.}
+        \tcc{\footnotesize Traverse graph of plans, initially with just one plan.}
         \nl $u \leftarrow$ \textsc{NDGetNextNode}(PRGraph)\;
-        \nl mode $\leftarrow$ NDChoice\{refine, add child\}\;
-        \nl \eIf{mode == refine}{ \textsc{RefineNode}($u$, $j$)}{
-        \textsc{AddChild}($u$, $j$) }}}
+        \nl $\pi \leftarrow$ \textsc{HLPlan}($u$)\;
+        \nl mode $\leftarrow$ \textsc{NDChoice}\{refine, add child\}\;
+        \nl \eIf{mode == refine}{ \textsc{RefineNode}($\pi$, $j$)}{
+        \textsc{AddChild}($\pi$, $j$) }}}
   \;
   \setcounter{AlgoLine}{0}
-  \myproc{\textsc{RefineNode}($u$, $j$)}{
-    \nl $\pi \leftarrow$ HLPlan($u$)\;
-    \nl \For{j in 1 .. $N_{max}$}{
-    \nl $\sigma \leftarrow$ \textsc{NDGetInstantiation}($\pi$, $j$) 
+  \myproc{\textsc{RefineNode}($\pi$, $j$)}{
+    \nl $\sigma \leftarrow$ \textsc{NDGetInstantiation}($\pi$, $j$)\;
     \tcc{\footnotesize resourceLimit($j$) is monotonically increasing in $j$}
     \nl  $MP$, FailedAction, FailedPred $\leftarrow$ \textsc{GetMotionPlan}($\sigma$, $\pi$, resourceLimit($j$))\;
     \nl \If{MP $\ne$ NULL}{
       \nl return success\;
     }
-    }
     }\;
     \;
   \setcounter{AlgoLine}{0}
-  \myproc{\textsc{AddChild}($u$, $j$)}{
-    \nl $\pi \leftarrow$ HLPlan($u$)\;
+  \myproc{\textsc{AddChild}($\pi$, $j$)}{
     \nl $\sigma \leftarrow$ \textsc{NDGetInstantiation}($\pi$, $j$) \;
     \nl StepNum, FailedPrecon $\leftarrow$ \textsc{GetError}($\sigma$, $\pi$)\;
-    \nl mode $\leftarrow$ NDChoice\{error, random\}\;
+    \nl mode $\leftarrow$ \textsc{NDChoice}\{error, random\}\;
     \nl \eIf{mode == error} {
-      \nl newState $\leftarrow$ \textsc{Patch}(getStateAt(StepNum,
+      \nl NewState $\leftarrow$ \textsc{Patch}(getStateAt(StepNum,
       $\pi$), FailedPrecon)\;
     }{
       \nl $\pi\leftarrow$ $\pi$, with an action
       before StepNum replaced $~~~~~~~~~~~$by a random applicable action\;
-      \nl newState $\leftarrow$ getStateAt(stepNum, $\pi$)\;}
+      \nl NewState $\leftarrow$ \textsc{GetStateAt}(StepNum, $\pi$)\;
     }
-    \nl $\pi'\leftarrow$ \textsc{GetClassicalPlan}(newState)\;
-    \nl \textsc{AddNodeToPRGraph}($\sigma$, stepNum, $\pi'$)\;
-  }
+    \nl $\pi'\leftarrow$ \textsc{GetClassicalPlan}(NewState)\;
+    \nl \textsc{AddNodeToPRGraph}($\sigma$, StepNum, $\pi'$)\;
+  }}
 \end{small}
 \caption{Complete algorithm for TAMP.}
 \label{alg:complete}
@@ -154,7 +150,8 @@ It is easy to see that the resulting algorithm is complete.
 If there exists a high-level sequence of actions that 
 a) does not revisit symbolic states when using the high-level domain
 definition and b) has a motion planning feasible refinement within the scope
-of symbol interpretations, then Alg.\,\ref{alg:complete} will find it. 
+of symbol interpretations, then Alg.\,\ref{alg:complete} will find it,
+as long as the non-deterministic policies assign non-zero weight to each choice.
 \end{thm}
 
 The proof follows easily because if there is a solution, then

@@ -57,7 +57,7 @@ and collect rewards according to $R$. After every $\epsilon$ calls to
 \subsection{Distribution and Gradient Updates}
 We adopt the sampling distribution used in Zucker et al.~\cite{workspacebias}
 for a symbolic reference $p$ with sample value $x$, in state $s \in \St$:
-$$q(s, p, x) \propto exp(\theta_{p}^{T} f(s, p, x)).$$
+$$q(s, p, x) \propto \exp(\theta_{p}^{T} f(s, p, x)).$$
 We define the expected reward of an episode $\xi$:
 $$\eta(\theta_{p}) = \mathbb{E}_{q}[R(\xi)]$$ and approximate its gradient:
 $$\nabla \eta(\theta_{p}) \approx \frac{R(\xi)}{\epsilon} \sum_{i=1}^{\epsilon}(f(s, p, x_{i}) - \mathbb{E}_{q,s}[f]).$$

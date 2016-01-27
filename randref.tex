@@ -19,9 +19,9 @@ initialized as straight lines.
   \SetKwProg{myalg}{Algorithm}{}{}
   \SetKwProg{myproc}{Subroutine}{}{}
   \myalg{RandRef($\pi, N_{max}$)} {
-  \nl $init \leftarrow$ \textsc{InitRefinement}($\pi$)\;
+  \nl $\sigma \leftarrow$ \textsc{InitRefinement}($\pi$)\;
   \nl \For {iter = 0, 1, ..., $N_{max}$} {
-  \nl $failStep, failPred \leftarrow $\textsc{MotionPlan}($\pi$)\;
+  \nl $failStep, failPred \leftarrow $\textsc{GetMotionPlan}($\pi$)\;
   \nl \If {$failStep$ == NULL} {
   \tcc{\footnotesize Found valid plan refinement.}
   \nl return success }
