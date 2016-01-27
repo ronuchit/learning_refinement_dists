@@ -7,7 +7,7 @@ routine.
 \subsection{Formulation as Reinforcement Learning Problem}
 We formulate plan refinement as an MDP as follows:
 \begin{tightlist}
-\item A state $s \in \St$ is a tuple $(HLP, r_{cur}, E, n)$, consisting of the
+\item A state $s \in \St$ is a tuple $(\pi, \sigma, E, n)$, consisting of the
 high-level plan, its current setting of values for symbolic references,
 the geometric environment encoding, and a counter for
 the number of calls to the sampler.
@@ -22,7 +22,7 @@ and the environment.
   \item Case 3: Otherwise, the value of $p$ is set to $x$ and the motion planner is called.
   \end{tightlist}
 \item The reward function $R(s, a, s')$ provides rewards based on a measure of closeness to a valid plan refinement.
-\item $\Prob$ is a distribution over planning problems.
+\item $\Prob$ is a distribution over planning problems, defining the initial state distribution for this MDP.
 \end{tightlist}
 
 We restrict our attention to training policies that suggest $x$ for actions in $\A$.

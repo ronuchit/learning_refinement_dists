@@ -4,14 +4,10 @@ used throughout the paper.
 
 \subsection{Task and Motion Planning}
 
-A motion planning problem is defined as a tuple $\tuple{\X, f, p_0,
-  p_t}$, where $\X$ is the space of possible configurations or poses
-of a robot, $f$ is a Boolean function that determines whether or not a
-pose is in collision, and $p_0, p_t\in C$ are the initial and final
-poses. The solution to a motion planning problem is a collision-free trajectory that
-connects $p_0$ and $p_t$. To allow for object
-manipulation, we let $\X$ include poses for each movable object in the
-environment. 
+A motion planning problem is defined by a configuration space $C$ for a robot
+and all movable objects in its environment, along with initial and final configurations
+$c_{0}, c_{T} \in C$. The solution to a motion planning problem is a collision-free trajectory for
+the robot that connects $c_{0}$ and $c_{T}$.
 
 In task and motion planning, we add more abstract concepts to this
 formulation, including \emph{fluents} (logical properties that hold either

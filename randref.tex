@@ -18,16 +18,16 @@ initialized as straight lines.
   \DontPrintSemicolon
   \SetKwProg{myalg}{Algorithm}{}{}
   \SetKwProg{myproc}{Subroutine}{}{}
-  \myalg{RandRef($HLP, N_{max}$)} {
-  \nl $init \leftarrow$ \textsc{InitRefinement}($HLP$)\;
+  \myalg{RandRef($\pi, N_{max}$)} {
+  \nl $init \leftarrow$ \textsc{InitRefinement}($\pi$)\;
   \nl \For {iter = 0, 1, ..., $N_{max}$} {
-  \nl $failStep, failPred \leftarrow $\textsc{MotionPlan}($HLP$)\;
+  \nl $failStep, failPred \leftarrow $\textsc{MotionPlan}($\pi$)\;
   \nl \If {$failStep$ == NULL} {
   \tcc{\footnotesize Found valid plan refinement.}
   \nl return success }
   \nl \ElseIf {$failPred$ == NULL} {
   \tcc{\footnotesize Motion planning failure.}
-  \nl $failAction \leftarrow HLP.ops[failStep]$\;
+  \nl $failAction \leftarrow \pi.ops[failStep]$\;
   \nl \textsc{Resample}($failAction.params$) }
   \nl \Else {
   \tcc{\footnotesize Action precondition violation.}
