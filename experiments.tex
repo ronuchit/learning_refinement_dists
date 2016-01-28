@@ -135,8 +135,8 @@ $\pi/3$, $\pi/2$, and $3\pi/4$.
 Initial experimentation revealed that training weights for all reference types jointly is intractable,
 because planning takes a long time. Potential solutions for this would explore alternative RL algorithms,
 but this is not our focus. Instead, we apply curriculum learning by training with a planning problem distribution
-$\Prob$ that gets progressively harder. Additionally, we train the refinement policies first, then fix them while
-training the graph search heuristics.
+$\Prob$ that gets progressively harder. The details of this curriculum are described in each experiment's section.
+Additionally, we train the refinement policies first, then fix them while training the graph search heuristics.
 
 We evaluate our approach in three distinct domains: cans distributed randomly on a table (the \emph{can domain}),
 setting up bowls for dinner (the \emph{dinner domain}), and placing frying pans into a narrow shelf (the \emph{frying domain}).
