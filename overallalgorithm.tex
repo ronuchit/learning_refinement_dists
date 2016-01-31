@@ -52,9 +52,21 @@ never reduces the set of possible sampled values, its
 efficiency degrades as the number of values that get sampled increases. In the next subsection,
 we address the first limitation; in the following sections, we address the second.
 
+\begin{figure}[t]
+  \centering
+    \includegraphics[scale=0.3]{images/ex_prg.png}
+  \caption{\small{A simple plan refinement graph for an environment with 3 objects: A,
+B, and C. The goal is to grasp object A. Each node maintains a high-level
+plan and a set of instantiated continuous values for its symbolic references.
+The edges are labeled with errors discovered by the low-level motion planner; these errors are
+propagated back up to the task planner for replanning.}}
+  \label{fig:prg}
+\end{figure}
+
 \subsection{A Complete Algorithm for TAMP}
 We introduce a complete algorithm that maintains a \emph{plan
-  refinement graph} (PRGraph). Every node $u$ in the PRGraph
+  refinement graph} (PRGraph). \figref{fig:prg} illustrates a simple example.
+Every node $u$ in the PRGraph
 represents a high-level plan $\pi_u$ and the current state of the search
 for a refinement. An edge $(u,v)$ in the PRGraph
 represents a ``correction'' of $\pi_u$ for a specific instantiation of
@@ -108,7 +120,7 @@ PRGraph can lead to performance improvements.
       \nl  \For{j in 1 .. trial}{
         \tcc{\footnotesize Traverse graph of plans, initially with just one plan.}
         \nl $u \leftarrow$ \textsc{NDGetNextNode}(PRGraph)\;
-        \nl $\pi \leftarrow$ \textsc{HLPlan}($u$)\;
+        \nl $\pi \leftarrow$ \textsc{GetHLPlan}($u$)\;
         \nl mode $\leftarrow$ \textsc{NDChoice}\{refine, add child\}\;
         \nl \eIf{mode == refine}{ \textsc{RefineNode}($\pi$, $j$)}{
         \textsc{AddChild}($\pi$, $j$) }}}
@@ -116,8 +128,8 @@ PRGraph can lead to performance improvements.
   \setcounter{AlgoLine}{0}
   \myproc{\textsc{RefineNode}($\pi$, $j$)}{
     \nl $\sigma \leftarrow$ \textsc{NDGetInstantiation}($\pi$, $j$)\;
-    \tcc{\footnotesize resourceLimit($j$) is monotonically increasing in $j$}
-    \nl  $MP$, FailedAction, FailedPred $\leftarrow$ \textsc{GetMotionPlan}($\sigma$, $\pi$, resourceLimit($j$))\;
+    \tcc{\footnotesize resourceLimit($j$) is monotonically increasing in $j$.}
+    \nl  MP, FailedAction, FailedPred $\leftarrow$ \textsc{GetMotionPlan}($\sigma$, $\pi$, resourceLimit($j$))\;
     \nl \If{MP $\ne$ NULL}{
       \nl return success\;
     }
@@ -129,7 +141,7 @@ PRGraph can lead to performance improvements.
     \nl StepNum, FailedPrecon $\leftarrow$ \textsc{GetError}($\sigma$, $\pi$)\;
     \nl mode $\leftarrow$ \textsc{NDChoice}\{error, random\}\;
     \nl \eIf{mode == error} {
-      \nl NewState $\leftarrow$ \textsc{Patch}(getStateAt(StepNum,
+      \nl NewState $\leftarrow$ \textsc{Patch}(\textsc{GetStateAt}(StepNum,
       $\pi$), FailedPrecon)\;
     }{
       \nl $\pi\leftarrow$ $\pi$, with an action

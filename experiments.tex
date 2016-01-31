@@ -121,27 +121,16 @@ effector is oriented downward. Our system learned to prefer picking up the pan a
   \label{fig:frying}
 \end{figure}
 
-\subsection{Training Methodology}
-We use the reward function described earlier. Our weight
-vectors are initialized to $\vec{\mathbf{0}}$ for all plan parameter types -- this
-initialization represents a uniform distribution across the limits of the geometric search space.
-We use 24 features for learning the $\theta_{p}$. 9 binary features encode the bucketed distance between the sample
-and target (the object referenced by the parameter). 9 binary features encode the bucketed sample height. 3 features
-describe the number of other objects within discs of radius 7, 10, and 15 centimeters around the
-sample. 3 binary features describe the angle made between the vector from the
-robot to the target and the vector from the sample to the target: whether the angle is less than
-$\pi/3$, $\pi/2$, and $3\pi/4$.
-
-Initial experimentation revealed that training weights for all reference types jointly is intractable,
+\subsection{Methodology}
+For refinement distributions, initial experimentation revealed that training weights for all reference types jointly is intractable,
 because planning takes a long time. Potential solutions for this would explore alternative RL algorithms,
 but this is not our focus. Instead, we apply curriculum learning by training with a planning problem distribution
 $\Prob$ that gets progressively harder. The details of this curriculum are described in each experiment's section.
-Additionally, we train the refinement policies first, then fix them while training the graph search heuristics.
+Additionally, we train the refinement policies first, then fix them while collecting demonstrations and training the graph search heuristics.
 
 We evaluate our approach in three distinct domains: cans distributed randomly on a table (the \emph{can domain}),
 setting up bowls for dinner (the \emph{dinner domain}), and placing frying pans into a narrow shelf (the \emph{frying domain}).
-We compare performance with two baselines, both of which use the hand-coded sampling distributions for
-refinement used in SFRCRA-14.
+We compare performance with two baselines, both of which use the hand-coded refinement distributions used in SFRCRA-14.
 
 Baseline 1 is SFRCRA-14: it uses exhaustive backtracking search for refinement
 and greedy depth-first search of the plan refinement graph, which always tries to refine
@@ -158,12 +147,14 @@ from baseline 2 can be expected to perform well in these settings.
 
 We employ the following algorithm to produce a trained set of weights $\theta_{p}$ for refinement. We train 3 sets independently,
 test each one on a validation set, and output the best-performing one. We found that this
-reduced variation due to random seeding.
+reduced variation due to random seeding. The step size $\alpha$ was set to 0.1.
 
 We report results on fixed test sets of 50 randomly generated environments for the can and dinner domains,
 and 20 for the frying domain (because the frying domain environments do not have as much variation).
 For the third and fourth systems, we average results across running the training
-process 5 times independently and evaluating each final set of weights.
+process 5 times independently and evaluating each final set of weights. To train the graph search heuristics,
+we collect approximately 300 optimal actions from the human demonstrator, over 3 rounds of DAgger. After these 3 rounds,
+we found that performance plateaued. We used $C = 10^{9}$ and constant margin $d = 1$ in solving the optimization.
 
 Our experiments are conducted in Python 2.7 using the OpenRave simulator~\cite{Diankov_2008_6117} with a PR2 robot.
 The motion planner we use is trajopt~\cite{schulman2013finding}, and the task planner is Fast-Forward~\cite{FF}.

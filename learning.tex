@@ -1,8 +1,8 @@
 \section{Learning Refinement Distributions}
 Randomized refinement provides us with a framework to learn a policy that implements
 \textsc{NDGetInstantiation} and performs well empirically. Our approach applies RL
-to train continuous proposal distributions for symbolic reference instantiations in this
-routine.
+to train continuous proposal distributions for symbolic reference instantiations, in order
+to implement this routine.
 
 \subsection{Formulation as Reinforcement Learning Problem}
 We formulate plan refinement as an MDP as follows:
@@ -22,7 +22,7 @@ and the environment.
   \item Case 3: Otherwise, the value of $p$ is set to $x$ and the motion planner is called.
   \end{tightlist}
 \item The reward function $R(s, a, s')$ provides rewards based on a measure of closeness to a valid plan refinement.
-\item $\Prob$ is a distribution over planning problems, defining the initial state distribution for this MDP.
+\item $\Prob$ is a distribution over planning problems, thus defining the initial state distribution for this MDP.
 \end{tightlist}
 
 We restrict our attention to training policies that suggest $x$ for actions in $\A$.
@@ -30,8 +30,7 @@ We note that randomized refinement already provides a fixed policy for selecting
 
 Our reward function $R$ explicitly encourages successful plan refinement, providing positive reward linearly
 interpolated between 0 and 20 based on the fraction of high-level actions whose preconditions are
-satisfied. Additionally, we give $-1$ reward every time we sample an IK infeasible pose,
-to minimize how long the system spends resampling plan variables until obtaining IK feasible samples.
+satisfied. Additionally, we give $-1$ reward every time we sample an IK infeasible pose.
 
 \subsection{Training Process}
 We learn a policy for this MDP by adapting the method of Zucker et al.~\cite{workspacebias}, which
@@ -40,10 +39,10 @@ vector $\theta_{p}$ for each reference \emph{type}, comprised of a pose type and
 (e.g., ``left gripper grasp pose,'' ``right gripper putdown pose,'' ``base pose'').
 This decouples the learned distributions from any single high-level plan and allows generalization across problem instances.
 
-We develop a feature function $f(s, p, x)$ that maps the current
-state $s \in \St$, symbolic reference $p$, and sampled value $x$ for $p$ to a
+We develop a feature function $f(s, a) = f(s, p, x)$ that maps the current
+state $s \in \St$ and action $a \in \A$ to a
 feature vector; $f$ defines a policy class for the MDP. Additionally, we define
-$N$ as the number of planning problems on which to train, and
+$N$ as the number of planning problems on which to train and
 $\epsilon$ as the number of samples comprising a training episode, after which we update weights.
 
 The training is a natural extension of randomized
@@ -54,6 +53,15 @@ routine to be called $L$ times before termination. Select actions according to t
 and collect rewards according to $R$. After every $\epsilon$ calls to
 \textsc{Resample}, perform a gradient update on the weights.
 
+Our weight vectors are initialized to $\vec{\mathbf{0}}$ for all plan parameter types -- this
+initialization represents a uniform distribution across the limits of the geometric search space.
+We use 24 features for learning the $\theta_{p}$. 9 binary features encode the bucketed distance between the sample
+and target (the object referenced by the parameter). 9 binary features encode the bucketed sample height. 3 features
+describe the number of other objects within discs of radius 7, 10, and 15 centimeters around the
+sample. 3 binary features describe the angle made between the vector from the
+robot to the target and the vector from the sample to the target: whether the angle is less than
+$\pi/3$, $\pi/2$, and $3\pi/4$.
+
 \subsection{Distribution and Gradient Updates}
 We adopt the sampling distribution used in Zucker et al.~\cite{workspacebias}
 for a symbolic reference $p$ with sample value $x$, in state $s \in \St$:
@@ -62,7 +70,7 @@ We define the expected reward of an episode $\xi$:
 $$\eta(\theta_{p}) = \mathbb{E}_{q}[R(\xi)]$$ and approximate its gradient:
 $$\nabla \eta(\theta_{p}) \approx \frac{R(\xi)}{\epsilon} \sum_{i=1}^{\epsilon}(f(s, p, x_{i}) - \mathbb{E}_{q,s}[f]).$$
 $R(\xi)$ is the sum over all rewards obtained throughout $\xi$, and
-$\mathbb{E}_{q,s}[f]$ is the expected feature vector under $q$, in state $s \in \St$. The weight vector update is then:
+$\mathbb{E}_{q,s}[f]$ is the expected feature vector under $q$ in state $s$. The weight vector update is then:
 $$\theta_{p} \leftarrow \theta_{p} + \alpha \nabla \eta(\theta_{p})$$
 for appropriate step size $\alpha$.
 

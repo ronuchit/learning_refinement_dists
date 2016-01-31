@@ -4,7 +4,8 @@ we seek an algorithm that allows for easy formulation as an MDP. Our method
 imitates that of Zhang and Dietterich~\cite{JobShopSched}:
 we initialize an infeasible refinement and use a randomized local search to propose
 improvements. Alg.\,\ref{alg:randref} shows pseudocode for this refinement strategy,
-which implements \textsc{RefineNode} in Alg.\,\ref{alg:complete}. The main difference between our implementation and the pseudocode in Alg.\,\ref{alg:complete} is that we use information about previous failed motion planning attempts to guide selection of the next instantiation.
+which implements \textsc{RefineNode} in Alg.\,\ref{alg:complete} by using failed motion planning
+attempts to guide selection of the next instantiation.
 
 The algorithm takes as input a high-level plan and a maximum iteration count.
 In line 1, we initialize a (potentially invalid) refinement by sampling from distributions associated
@@ -40,7 +41,7 @@ initialized as straight lines.
 
 The \textsc{MotionPlan} subroutine called in line 3 attempts to
 find a collision-free set of trajectories linking all pose instantiations.
-To do so, it iterates through the sequence of actions that comprise the high-level plan.
+To do so, it iterates through the sequence of actions comprising the high-level plan.
 For each, it first calls the motion planner to find a trajectory
 linking the sampled poses. If this succeeds, it tests the action preconditions;
 as part of this step, it checks that the trajectory is collision-free.
@@ -54,8 +55,7 @@ a failed action index and associated predicate.
 
 Randomized refinement has two key properties. The first is a very explicit algorithm state.
 We show in the next section that this allows for a straightforward MDP
-formulation. This is also beneficial from an
-engineering perspective, as the simplicity allows for easy debugging. The second is that
+formulation. The second is that
 it allows the instantiations for a particular action in
 the plan to be influenced by those for a \emph{future} action. For example, in a
 pick-and-place task, it can make sense for the object's grasp pose to be sampled

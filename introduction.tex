@@ -24,26 +24,26 @@ interacting logic-based and geometric components.
 \begin{figure}[t]
   \centering
     \noindent
-    \includegraphics[scale=0.15]{images/move_grasp.png}\hspace{5 mm}
-    \includegraphics[scale=0.15]{images/move_putdown.png}
-  \caption{\small{Screenshots showing distributions learned by our
-      system in a simulated pick-and-place domain. We use
-      reinforcement learning to train good sampling distributions for
-      continuous motion planning parameters in long-horizon tasks. The
-      robot must grasp the black can and put it down on the red
-      square. The left image shows learned base position (blue) and
-      grasping (green) distributions, and the right shows learned base
-      position (blue) and putdown (green) distributions. The grasping
+    \includegraphics[scale=0.15]{images/move_grasp.png}\hspace{6 mm}
+    \includegraphics[scale=0.19]{images/grasp_teaser_bad.png}
+    \includegraphics[scale=0.185]{images/grasp_teaser_good.png}
+  \caption{\small{\textbf{Left}: We use reinforcement learning to train good sampling distributions for
+      continuous motion planning parameters in long-horizon tasks.
+      The image shows learned base position (blue) and
+      grasping (green) distributions for picking up the black can. The grasping
       policy learned to avoid the obstructions. The green points refer
       to the position of the tool center point; the end effector is oriented
-      to point toward the object being grasped.}}
+      to point toward the object being grasped. \textbf{Right}: When trying to grasp the black can, the sampled grasping pose can
+      significantly affect the quality of the obstructions determined. The new plan proposed from the rightmost image only
+      requires moving 2 obstructions out of the way, versus 6 from the other. We integrate inverse reinforcement learning into our task and
+      motion planning system to learn an ordering on plan exploration, causing the system to prefer simpler and more feasible plans.}}
   \label{fig:cover}
 \end{figure}
 
 In this work, we develop a complete algorithm for TAMP and propose
 methods for jointly carrying out guided search in the space of
 high-level (logic-based) plans and their low-level
-\emph{refinements}, instantiations of continuous values for
+\emph{refinements}: instantiations of continuous values for
 symbolic references in the plan. We refer to this search for a valid low-level
 refinement as \emph{plan refinement}.
 
@@ -58,11 +58,13 @@ that address different infeasibilities.
 
 We present machine learning techniques to train heuristic functions that guide
 both of these search processes. At the high level, this amounts to learning
-to predict how difficult it is to refine a given plan. At the low level, this amounts to
-learning to propose continuous values for symbolic references that are likely to result in
+to predict how difficult it is to refine a given plan. We use inverse reinforcement learning
+based on expert demonstrations to estimate this quantitatively, using a max-margin formulation.
+At the low level, training heuristics amounts to
+learning to propose continuous values (for symbolic references) that are likely to result in
 collision-free trajectories. Many TAMP systems rely on hand-coded heuristics to
 account for these continuous parameter settings. This often requires
-domain-specific insight from the user to reduce the space of possible values.
+domain-specific insight from the user to reduce the search space.
 We apply reinforcement learning (RL) to learn domain-specific distributions
 over these values in a domain-independent fashion.
 
@@ -77,8 +79,9 @@ The contributions of our work are as follows: 1) we present a complete
 algorithm for TAMP by maintaining a plan refinement graph; 2) we
 present a local search algorithm for plan refinement that is easily
 formulated as an MDP; 3) we formulate plan refinement in the RL
-framework and learn a policy for this MDP; 4) we train heuristics to
-search intelligently through a plan refinement graph; and 5) we
+framework and learn a policy for this MDP; 4) we use inverse RL with
+expert demonstrations to train heuristics for
+searching intelligently through a plan refinement graph; and 5) we
 present experiments to evaluate our approach in a variety of simulated
 domains. Our results demonstrate that our approach yields
-significantly improved performance over that of SFRCRA-14.
+significantly improved performance over SFRCRA-14.
