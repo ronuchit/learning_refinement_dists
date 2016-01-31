@@ -1,49 +1,4 @@
 \section{Experiments}
-\begin{figure}[t]
-  \vspace*{1em}
-  \centering
-  \begin{subfigure}[b]{0.35\linewidth}
-    \includegraphics[width=\textwidth]{images/learns.png}
-    \caption{Initial distributions.}
-  \end{subfigure}
-  \begin{subfigure}[b]{0.35\linewidth}
-    \includegraphics[width=\textwidth]{images/learn4.png}
-    \caption{After 4 iterations.}
-  \end{subfigure}
-  \begin{subfigure}[b]{0.35\linewidth}
-    \includegraphics[width=\textwidth]{images/learn8.png}
-    \caption{After 8 iterations.}
-  \end{subfigure}
-  \begin{subfigure}[b]{0.35\linewidth}
-    \includegraphics[width=\textwidth]{images/learn12.png}
-    \caption{Final distributions.}
-  \end{subfigure}
-  \caption{\small{Learned base position (blue) and left arm grasp (green) distributions used to
-pick up the black can after different training iterations for learning refinement policies.
-An iteration refers to a single planning problem,
-which terminates after $L$ calls to the \textsc{Resample} routine.
-Initial distributions are uniform because we initialize weights to $\vec{\mathbf{0}}$.
-Final distributions are after 12 iterations.}}
-  \label{fig:training}
-\end{figure}
-
-\begin{figure}[t]
-  \centering
-  \begin{subfigure}[b]{0.45\linewidth}
-    \includegraphics[width=\textwidth]{images/dinner_tray_initial.png}
-    \caption{Initial distributions.}
-  \end{subfigure}
-  \begin{subfigure}[b]{0.45\linewidth}
-    \includegraphics[width=\textwidth]{images/dinner_tray_final.png}
-    \caption{Final distributions.}
-  \end{subfigure}
-  \caption{\small{Initial and learned base position (blue) and tray pickup (green, yellow) distributions
-for the dinner domain. The green points refer to the position of the right tool center point; the gripper
-is oriented toward the tray. The left gripper is placed in a symmetric position on the other side of
-the tray, as marked by the yellow points. Final distributions are after 20 iterations.}}
-  \label{fig:dinner}
-\end{figure}
-
 \begin{table}[t]
   \centering
   \vspace{8pt}
@@ -101,26 +56,6 @@ are averaged across 5 separately trained sets of weights. As described, we only 
   \vspace{-1em}
 \end{table}
 
-\begin{figure}[h!]
-  \centering
-  \begin{subfigure}[b]{0.25\linewidth}
-    \includegraphics[width=\textwidth]{images/frying_hand.png}
-    \caption{Hand-coded distribution.}
-  \end{subfigure}
-  \begin{subfigure}[b]{0.25\linewidth}
-    \includegraphics[width=\textwidth]{images/frying_initial.png}
-    \caption{Initial distribution.}
-  \end{subfigure}
-  \begin{subfigure}[b]{0.25\linewidth}
-    \includegraphics[width=\textwidth]{images/frying_final.png}
-    \caption{Final distribution.}
-  \end{subfigure}
-  \caption{\small{Hand-coded distribution, along with initial and final distributions using our training methods,
-for picking up the frying pan. The green points refer to the position of the tool center point; the end
-effector is oriented downward. Our system learned to prefer picking up the pan at its handle to fit it into the shelf (not shown). Final distributions are after 20 iterations.}}
-  \label{fig:frying}
-\end{figure}
-
 \subsection{Methodology}
 For refinement distributions, initial experimentation revealed that training weights for all reference types jointly is intractable,
 because planning takes a long time. Potential solutions for this would explore alternative RL algorithms,
@@ -161,6 +96,33 @@ The motion planner we use is trajopt~\cite{schulman2013finding}, and the task pl
 The experiments were carried out in series on an Intel Core i7-4770K machine with 16GB RAM.
 Table \ref{table:results} summarizes our quantitative results.
 
+\begin{figure}[t]
+  \centering
+  \begin{subfigure}[b]{0.35\linewidth}
+    \includegraphics[width=\textwidth]{images/learns.png}
+    \caption{Initial distributions.}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.35\linewidth}
+    \includegraphics[width=\textwidth]{images/learn4.png}
+    \caption{After 4 iterations.}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.35\linewidth}
+    \includegraphics[width=\textwidth]{images/learn8.png}
+    \caption{After 8 iterations.}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.35\linewidth}
+    \includegraphics[width=\textwidth]{images/learn12.png}
+    \caption{Final distributions.}
+  \end{subfigure}
+  \caption{\small{Learned base position (blue) and left arm grasp (green) distributions used to
+pick up the black can after different training iterations for learning refinement policies.
+An iteration refers to a single planning problem,
+which terminates after $L$ calls to the \textsc{Resample} routine.
+Initial distributions are uniform because we initialize weights to $\vec{\mathbf{0}}$.
+Final distributions are after 12 iterations.}}
+  \label{fig:training}
+\end{figure}
+
 \subsection{Can Domain}
 We run two sets of experiments, using 25 objects and 30 objects on the table.
 The goal across all experiments is for the robot to pick up a particular object with its
@@ -181,6 +143,23 @@ refinement times were averaged over the test cases where all 4 systems succeeded
 to be easier to refine, so exhaustive backtracking search performs well because the total search space is small.
 \figref{fig:cover} and \figref{fig:training} show learned refinement distributions.
 
+\begin{figure}[t]
+  \centering
+  \begin{subfigure}[b]{0.45\linewidth}
+    \includegraphics[width=\textwidth]{images/dinner_tray_initial.png}
+    \caption{Initial distributions.}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.45\linewidth}
+    \includegraphics[width=\textwidth]{images/dinner_tray_final.png}
+    \caption{Final distributions.}
+  \end{subfigure}
+  \caption{\small{Initial and learned base position (blue) and tray pickup (green, yellow) distributions
+for the dinner domain. The green points refer to the position of the right tool center point; the gripper
+is oriented toward the tray. The left gripper is placed in a symmetric position on the other side of
+the tray, as marked by the yellow points. Final distributions are after 20 iterations.}}
+  \label{fig:dinner}
+\end{figure}
+
 \subsection{Dinner Domain}
 We run two sets of experiments, using 2 and 4 bowls. The robot must move the
 bowls from their initial locations on one table to target locations on the other. We assign a cost to
@@ -198,6 +177,26 @@ the baseline systems. Additionally, the lack of long-term dependencies in the pl
 means that backtracking search finds a valid refinement quickly. The fact that our system performs comparably
 with the baselines shows that our algorithm can learn pose instantiations for a variety of objects.
 \figref{fig:dinner} shows learned tray pickup poses.
+
+\begin{figure}[t]
+  \centering
+  \begin{subfigure}[b]{0.25\linewidth}
+    \includegraphics[width=\textwidth]{images/frying_hand.png}
+    \caption{Hand-coded distribution.}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.25\linewidth}
+    \includegraphics[width=\textwidth]{images/frying_initial.png}
+    \caption{Initial distribution.}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.25\linewidth}
+    \includegraphics[width=\textwidth]{images/frying_final.png}
+    \caption{Final distribution.}
+  \end{subfigure}
+  \caption{\small{Hand-coded distribution, along with initial and final distributions using our training methods,
+for picking up the frying pan. The green points refer to the position of the tool center point; the end
+effector is oriented downward. Our system learned to prefer picking up the pan at its handle to fit it into the shelf (not shown). Final distributions are after 20 iterations.}}
+  \label{fig:frying}
+\end{figure}
 
 \subsection{Frying Domain}
 We run two sets of experiments, using 2 and 4 frying pans. The robot must stack the frying pans in order of decreasing
