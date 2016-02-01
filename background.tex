@@ -19,20 +19,20 @@ planning prior to execution.  The overall problem is to plan the
 sequence of actions that the agent can execute to achieve a
 desired goal condition expressed in terms of fluents.
 
-For example, we can use the action schema \emph{grasp(Object o,
-  Manipulator p, GraspingPose g, Trajectory m)} to abstractly
-represent grasping an object, \emph{o}.  In order to apply this action,
-the agent must select values for each of these parameters (e.g.,
-\emph{grasp(can$_1$, left, g$_1$, m$_1$)}). These \emph{instantiated}
-actions change the value of specific fluent instantiations (also
-called fluent \emph{literals}), such as \emph{in-gripper(can$_1$, gripper$_l$)}
-and \emph{empty(gripper$_l$)}.
+% For example, we can use the action schema \emph{grasp(Object o,
+%   Manipulator p, GraspingPose g, Trajectory m)} to abstractly
+% represent grasping an object, \emph{o}.  In order to apply this action,
+% the agent must select values for each of these parameters (e.g.,
+% \emph{grasp(can$_1$, left, g$_1$, m$_1$)}). These \emph{instantiated}
+% actions change the value of specific fluent instantiations (also
+% called fluent \emph{literals}), such as \emph{in-gripper(can$_1$, gripper$_l$)}
+% and \emph{empty(gripper$_l$)}.
 
 \begin{defn}
 Formally, we define the task and motion planning (TAMP) problem as a tuple $\langle \Obj,
  \T, \F, \I, \G, \U \rangle$:
 \begin{tightlist}
-\item $\Obj$ is a set of objects denoting elements such as cans,
+\item $\Obj$ is a set of \emph{objects} denoting elements such as cans,
   trajectories, and poses. Note that $\Obj$ includes the
   configuration space of all movable objects, including the robot.
 \item $\T$ is a set of object \emph{types}, such as movable objects, motion plans, poses, and locations.
