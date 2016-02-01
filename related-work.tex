@@ -1,6 +1,13 @@
 \section{Related Work}
 Our work uses machine learning techniques to improve planning reliability in a TAMP system.
 
+Dearden and Burbridge~\cite{deardenplanningtamp} use machine learning for TAMP by learning probability
+models for when symbolic predicates hold in a given geometric state. They use these models to perform backtracking search
+over potential geometric state instantiations for the sequence of symbolic states visited by the plan. While
+their work learns the semantics of the symbolic predicates and uses them to sample a refinement for each step
+in the plan, we assume known predicate semantics and use RL to learn a complete plan refinement, after which we
+propose local improvements to it.
+
 Kaelbling et al.~\cite{kaelbling2011hierarchical} use hand-coded ``geometric suggesters'' to propose
 continuous geometric values for the plan parameters. These suggesters are heuristic
 computations which map information about the robot type and geometric operators to a restricted
@@ -23,10 +30,10 @@ Another line of work has been devoted to using machine learning techniques for
 training heuristics to guide search algorithms. This general formulation
 has been applied to many domains other than hierarchical planning for robotics.
 
-Boyan et al.~\cite{Boyanlearning} present an application to solving optimization
-problems using local search routines. They describe an algorithm, \textsc{Stage},
-for learning a state evaluation function using features of the optimization problem.
-This function then guides the local search toward better optima.
+% Boyan et al.~\cite{Boyanlearning} present an application to solving optimization
+% problems using local search routines. They describe an algorithm, \textsc{Stage},
+% for learning a state evaluation function using features of the optimization problem.
+% This function then guides the local search toward better optima.
 
 % Arbelaez et al.~\cite{hamadisearch} use machine learning to solve constraint
 % satisfaction problems (CSPs). Their approach, Continuous Search, maintains a heuristic
@@ -34,9 +41,7 @@ This function then guides the local search toward better optima.
 % the current heuristic model is used to solve user-inputted CSPs. In the \emph{exploration}
 % mode, this model is refined using supervised learning with a linear SVM.
 
-Xu et al.~\cite{Xu07discriminativelearning} apply machine learning for classical task
-planning, drawing inspiration from recent advances in discriminative learning for
+For instance, Xu et al.~\cite{Xu07discriminativelearning} apply machine learning for classical task
+planning, drawing inspiration from advances in discriminative learning for
 structured output classification. Their system trains heuristics for controlling forward
 state-space beam search in task planners.
-
-To our knowledge, our work is the first to use machine learning to guide search in a TAMP system.
