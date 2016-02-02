@@ -91,14 +91,17 @@ above. This process is described using non-deterministic choices
 (denoted using the prefix ``ND'') in
 Alg.\,\ref{alg:complete}. Subroutine \textsc{RefineNode} selects a
 reference instantiation and attempts to solve the motion planning
-problems corresponding to it; subroutine \textsc{AddChild} selects a
-reference instantiation and creates a new node that either
-incorporates the reason of infeasibility (provided by the
-domain-specific subroutine \textsc{GetError}), or makes a random
-change in the high-level plan. The latter can be required in some
+problems corresponding to it. Subroutine \textsc{AddChild} selects a
+reference instantiation and creates a new node that either 1)
+incorporates the reason for infeasibility (provided by the
+subroutine \textsc{GetError}), or 2) holds a nearly identical high-level plan,
+but with a random change at a single step.
+The latter can be required in some
 pathological domains that have dead-ends and where changing the
 instantiation of symbolic references for an action has no effect on the
-action outcomes.
+action outcomes. \textsc{GetError} returns some failed precondition
+for an infeasible refinement; a typical implementation may, for example, run collision
+checking on the current set of trajectories to detect obstruction information.
 
 Different implementations of the non-deterministic choices in
 Alg.\,\ref{alg:complete} can capture various search algorithms
