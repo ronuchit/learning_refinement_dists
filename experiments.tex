@@ -7,21 +7,29 @@
     \toprule[1.5pt]
       \textbf{\# Objects} & \textbf{System} & \textbf{\% Solved (SD)} & \textbf{Avg Ref Time (s)} & \textbf{Avg \# MP Calls}\\
     \midrule[2pt]
-      25 (can) & T & 80 (0) & 5.1 & 9.6\\
+      30 (can) & T & 42 (0) & 6.2 & 8.0\\
     \midrule
-      25 (can) & B & 80 (0) & 12.6 & 10.3\\
+      30 (can) & B & 40 (0) & 20.5 & 10.5\\
     \midrule
-      25 (can) & L & 93 (5.0) & 12.0 & 11.1\\
+      30 (can) & L & 72 (8.2) & 20.4 & 11.3\\
     \midrule
-      25 (can) & F & 95 (1.0) & 10.6 & 10.6\\
+      30 (can) & F & 81 (3.0) & 17.9 & 12.7\\
     \midrule[1.5pt]
-      30 (can) & T & 42 (0) & 7.2 & 8.7\\
+      35 (can) & T & 50 (0) & 9.2 & 8.0\\
     \midrule
-      30 (can) & B & 42 (0) & 19.6 & 11.1\\
+      35 (can) & B & 50 (0) & 17.6 & 9.2\\
     \midrule
-      30 (can) & L & 77 (9.7) & 13.1 & 12.8\\
+      35 (can) & L & 68 (8.3) & 11.6 & 6.6\\
     \midrule
-      30 (can) & F & 86 (2.0) & 11.2 & 12.8\\
+      35 (can) & F & 78 (2.2) & 10.6 & 6.8\\
+    \midrule[1.5pt]
+      40 (can) & T & 34 (0) & 19.7 & 10.3\\
+    \midrule
+      40 (can) & B & 36 (0) & 21.7 & 10.0\\
+    \midrule
+      40 (can) & L & 61 (6.3) & 18.7 & 9.4\\
+    \midrule
+      40 (can) & F & 74 (3.2) & 20.7 & 10.4\\
     \midrule[2pt]
       2 (dinner) & T & 100 (0) & 35.5 & 60.2\\
     \midrule
@@ -134,11 +142,11 @@ by relative robot location.}}
 \end{figure}
 
 \subsection{Can Domain}
-We run two sets of experiments, using 25 objects and 30 objects on the table.
-The goal across all experiments is for the robot to pick up a particular object with its
+We run three sets of experiments, using 30, 35, and 40 cans on the table.
+The goal is always for the robot to pick up a particular can with its
 left gripper. We disabled the right gripper, so any obstructions to the target object must be picked up and
 placed elsewhere on the table. This domain has 4 types of continuous references: base poses, object grasp
-poses, object putdown poses, and object putdown locations onto the table.
+poses, object putdown poses, and object putdown locations.
 % The range of allowable values for grasp and putdown poses is a cube of side length 30 centimeters around the
 % target object or putdown location. For base poses, the range is a square of side length 1 meter around the
 % object or location which the robot is approaching. For putdown locations, the range is defined by the table.
