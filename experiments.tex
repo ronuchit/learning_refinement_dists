@@ -123,6 +123,16 @@ Final distributions are after 12 iterations.}}
   \label{fig:training}
 \end{figure}
 
+\begin{figure}[t]
+  \centering
+    \noindent
+    \includegraphics[scale=0.15]{images/grasp_context_left.png}\hspace{6mm}
+    \includegraphics[scale=0.15]{images/grasp_context_right.png}
+  \caption{\small{The learned left arm grasp (green) distribution is affected slightly
+by relative robot location.}}
+  \label{fig:context}
+\end{figure}
+
 \subsection{Can Domain}
 We run two sets of experiments, using 25 objects and 30 objects on the table.
 The goal across all experiments is for the robot to pick up a particular object with its
@@ -141,7 +151,8 @@ The results demonstrate significant improvements in performance to the baseline 
 However, backtracking search provides faster average refinement time. This is likely because
 refinement times were averaged over the test cases where all 4 systems succeeded. These plans tended
 to be easier to refine, so exhaustive backtracking search performs well because the total search space is small.
-\figref{fig:cover} and \figref{fig:training} show learned refinement distributions.
+\figref{fig:cover} and \figref{fig:training} show learned refinement distributions. \figref{fig:context} shows
+that our system learned to shape distributions based on the ``context'' in which an action is performed.
 
 \begin{figure}[t]
   \centering
