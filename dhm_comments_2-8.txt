@@ -1,0 +1,89 @@
+General comments
+---------------------
+Figures are hard to follow in black/white --- this might be difficult to fix, but we should look into it. 
+
+Whereever we use capital letters for abbreviations (e.g., TAMP,
+SFRCRA-14) we should but them in small caps. For example TAMP -> {\sc
+tamp}.
+
+Abstract Comments 
+------------------------ 
+
+I think we can restructure this to make it tighter/shorter
+
+First sentence: "Tasks in model manipulation planning often require thousands of
+individual motions to complete."
+
+"Such problems require...configuration space." This is nice, but
+likely takes up more room than we need. I think we can cut it
+
+"a logical search with continuous" -> "a logical search over high level actions with continuous"
+
+"for searching in the space" -> "that searches the space"
+
+"We develop techniques for using statistical..." --- Passive voice. "We develop techniques that apply statistical machine learning to"
+
+"3) we apply reinforcement learning to this MDP to learn to
+efficiently refine task plans; 4) we learn from expert demonstrations
+to efficiently search the space of task plans."
+
+Introduction
+----------------------
+
+I think we can cut this first paragraph. And replace it with the following:
+
+"We are interested in designing autonomous systems that can perform
+complex mobile manipulation tasks over long time horizons (e.g.,
+setting a dinner table, doing laundry...etc). We approach this problem
+in the framework of combined \emph{task and motion planning} ({\sc
+tamp}).
+
+In {\sc tamp}, an agent is given..."
+
+"TAMP systems maintain a hierarchical..." --- I don't really like this
+characterization; I don't think that all TAMP work fits into this
+description. How about we drop this sentence and then change the next
+one to "Efficient integration of high-level, symbolic, task planning
+and low-level, geometric, motion planning is difficult..."
+
+"for jointly" passive voice --> "to perform joint search in..."
+"(logic-based)" --- I think we can drop this parenthetical
+
+I think readers will have trouble understanding what we mean by
+refinement here. It would be good to introduce a specific
+example. "For example, in a pick-place domain a task plan consists of
+a sequence of grasp and place actions, while its refinement is a
+sequence of collision free trajectories that implement the plan."
+
+When we talk about the complete algorithm, I think we can do a better
+job of setting it up. Right now it seems like our main contribution is
+the data structure --- really its that we use the error propagation to
+define a graph in the space of task plans. I think a natural way to
+present it is as follows: 1) SFRCRA-14 uses error information to find
+a new plan; 2) We think of this as defining a graph where nodes are
+high level plans and edges are error information; 3) We use this idea
+to develop a complete algorithm that interleaves search in this graph
+with plan refinement.
+
+In the next paragraph we need a little motivation for why we are
+learning heuristics. The reason we do this is that there are a lot of
+refinements/task plans, so we need a heuristic to make search
+efficient. We should cover the approaches in the order that they
+appear in the paper. It's also important to provide some of the
+motivation for why we do IRL and not RL at the high level.
+
+The list of contributions in the intro and the list of contributions
+in the abstract should be essentially the same (only difference I can
+see is that we can't use SFRCRA-14 in the abstract b/c we haven't
+defined it).
+
+Related Work
+------------------
+
+We can drop the standalong sentence "Our work..."
+
+Dearden and Burbridge: highlight two key differences. 1) fast planning
+vs predicate accuracy/semantics; 2) independent vs dependent
+distributions.
+
+

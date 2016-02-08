@@ -19,9 +19,11 @@ which stacks the feature vector for $n$ on itself, then turns off the bottom hal
 top half when $m = 1$. Now that we have defined a feature vector associated with each decision in a given PRGraph,
 we can obtain human-demonstrated trajectories (sequences of actions $(n, m)^{*}$) that intelligently
 navigate the PRGraph. We then solve the following max-margin optimization problem with a structured margin and slack variables:
-$$\min ||w||^{2} + C\sum_{i} \xi_{i}$$
-$$\text{s.t.}\ w^{\top}f((n, m)_{i}^{*}) \geq w^{\top}f((n, m)_{ij}) + $$
-$$d(f((n, m)_{i}^{*}), f((n, m)_{ij})) - \xi_{i}\ \forall i, j;\ \xi_{i} \geq 0\ \forall i$$
+\begin{align*}
+&\min_{w, \xi_i \geq 0} & ||w||^2 + C \sum_i \xi_i\\
+&\text{s.t.} & w^{\top}f^*_i \geq w^{\top}f_{ij} +  d_{ij} - \xi_{i}\ \forall i, j \ ,
+\end{align*}
+
 where the $i$ iterate over the demonstrated trajectories and the $j$ iterate over possible actions. Each
 demonstrated trajectory has an associated slack variable in this formulation.
 We note that the weight vector $w$ encodes a ranking function on the different actions.
