@@ -7,18 +7,18 @@ infeasible for state-of-the-art motion planners, making the need for a
 hierarchical system of reasoning apparent.
 
 One way to approach hierarchical planning is through combined
-\emph{task and motion planning} (TAMP). In this approach, an agent is
+\emph{task and motion planning} ({\sc tamp}). In this approach, an agent is
 given a symbolic, logical characterization of actions (e.g., move,
 grasp, putdown), along with a geometric encoding of the
-environment. TAMP systems maintain a hierarchical separation of
+environment. {\sc tamp} systems maintain a hierarchical separation of
 high-level, symbolic task planning and low-level, geometric motion
 planning.  Efficient integration of these two types of reasoning is
 difficult, and recent research has proposed several methods for
 it~\cite{srivastava2014combined, deardenplanningtamp, kaelbling2011hierarchical,
   lagriffoul2014orientation, GarrettWAFR14, dornhege2012semantic}.
-We adopt the principles of abstraction in the TAMP system developed by
+We adopt the principles of abstraction in the {\sc tamp} system developed by
 Srivastava et al.~\cite{srivastava2014combined} (henceforth referred
-to as SFRCRA-14) to factor the reasoning and search problems into
+to as {\sc sfrcra-14}) to factor the reasoning and search problems into
 interacting logic-based and geometric components.
 
 \begin{figure}[t]
@@ -40,7 +40,7 @@ interacting logic-based and geometric components.
   \label{fig:cover}
 \end{figure}
 
-In this work, we develop a complete algorithm for TAMP and propose
+In this work, we develop a complete algorithm for {\sc tamp} and propose
 methods for jointly carrying out guided search in the space of
 high-level (logic-based) plans and their low-level
 \emph{refinements}: instantiations of continuous values for
@@ -62,26 +62,26 @@ to predict how difficult it is to refine a given plan. We use inverse reinforcem
 based on expert demonstrations to estimate this quantitatively, using a max-margin formulation.
 At the low level, training heuristics amounts to
 learning to propose continuous values (for symbolic references) that are likely to result in
-collision-free trajectories. Many TAMP systems rely on hand-coded heuristics to
+collision-free trajectories. Many {\sc tamp} systems rely on hand-coded heuristics to
 account for these continuous parameter settings. This often requires
 domain-specific insight from the user to reduce the search space.
-We apply reinforcement learning (RL) to learn domain-specific distributions
+We apply reinforcement learning ({\sc rl}) to learn domain-specific distributions
 over these values in a domain-independent fashion.
 
 Our learning approach draws inspiration
-from Zhang and Dietterich~\cite{JobShopSched}, who applied RL to job
+from Zhang and Dietterich~\cite{JobShopSched}, who applied {\sc rl} to job
 shop scheduling. In their formulation, states correspond to schedules
 and actions propose changes to the schedule. In our setting, states
 correspond to (potentially infeasible) refinements and actions propose
 new values for symbolic references.
 
 The contributions of our work are as follows: 1) we present a complete
-algorithm for TAMP by maintaining a plan refinement graph; 2) we
+algorithm for {\sc tamp} by maintaining a plan refinement graph; 2) we
 present a local search algorithm for plan refinement that is easily
-formulated as an MDP; 3) we formulate plan refinement in the RL
-framework and learn a policy for this MDP; 4) we use inverse RL with
+formulated as an {\sc mdp}; 3) we formulate plan refinement in the {\sc rl}
+framework and learn a policy for this {\sc mdp}; 4) we use inverse {\sc rl} with
 expert demonstrations to train heuristics for
 searching intelligently through a plan refinement graph; and 5) we
 present experiments to evaluate our approach in a variety of simulated
 domains. Our results demonstrate that our approach yields
-significantly improved performance over SFRCRA-14.
+significantly improved performance over {\sc sfrcra-14}.

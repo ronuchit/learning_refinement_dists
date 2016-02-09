@@ -1,11 +1,11 @@
 \section{Related Work}
-Our work uses machine learning techniques to improve planning reliability in a TAMP system.
+Our work uses machine learning techniques to improve planning reliability in a {\sc tamp} system.
 
-Dearden and Burbridge~\cite{deardenplanningtamp} use machine learning for TAMP by learning probability
+Dearden and Burbridge~\cite{deardenplanningtamp} use machine learning for {\sc tamp} by learning probability
 models for when symbolic predicates hold in a given geometric state. They use these models to perform backtracking search
 over potential geometric state instantiations for the sequence of symbolic states visited by the plan. While
 their work learns the semantics of the symbolic predicates and uses them to sample a refinement for each step
-in the plan, we assume known predicate semantics and use RL to learn a complete plan refinement, after which we
+in the plan, we assume known predicate semantics and use {\sc rl} to learn a complete plan refinement, after which we
 propose local improvements to it.
 
 Kaelbling et al.~\cite{kaelbling2011hierarchical} use hand-coded ``geometric suggesters'' to propose
@@ -23,7 +23,7 @@ versions of these constraints that apply to various domains.
 Garrett et al.~\cite{GarrettWAFR14} use information about reachability in the robot configuration
 space and symbolic state space to construct a \emph{relaxed plan graph} that guides motion
 planning queries, using geometric biases to break ties among states with the same heuristic value.
-By contrast, we allow RL to shape distributions for motion planning queries, so reachability information
+By contrast, we allow {\sc rl} to shape distributions for motion planning queries, so reachability information
 is naturally incorporated.
 
 Another line of work has been devoted to using machine learning techniques for

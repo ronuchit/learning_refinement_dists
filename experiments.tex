@@ -66,16 +66,16 @@ are averaged across 5 separately trained sets of weights. As described, we only 
 
 \subsection{Methodology}
 For refinement distributions, initial experimentation revealed that training weights for all reference types jointly is intractable,
-because planning takes a long time. Potential solutions for this would explore alternative RL algorithms,
+because planning takes a long time. Potential solutions for this would explore alternative {\sc rl} algorithms,
 but this is not our focus. Instead, we apply curriculum learning by training with a planning problem distribution
 $\Prob$ that gets progressively harder. The details of this curriculum are described in each experiment's section.
 Additionally, we train the refinement policies first, then fix them while collecting demonstrations and training the graph search heuristics.
 
 We evaluate our approach in three distinct domains: cans distributed randomly on a table (the \emph{can domain}),
 setting up bowls for dinner (the \emph{dinner domain}), and placing frying pans into a narrow shelf (the \emph{frying domain}).
-We compare performance with two baselines, both of which use the hand-coded refinement distributions used in SFRCRA-14.
+We compare performance with two baselines, both of which use the hand-coded refinement distributions used in {\sc sfrcra-14}.
 
-Baseline 1 is SFRCRA-14: it uses exhaustive backtracking search for refinement
+Baseline 1 is {\sc sfrcra-14}: it uses exhaustive backtracking search for refinement
 and greedy depth-first search of the plan refinement graph, which always tries to refine
 the plan that incorporates all error information obtained thus far.
 Baseline 2 uses randomized refinement with the following fixed graph search policy: try 3 times to refine the deepest
@@ -96,7 +96,7 @@ We report results on fixed test sets of 50 randomly generated environments for t
 and 20 for the frying domain (because the frying domain environments do not have as much variation).
 For the third and fourth systems, we average results across running the training
 process 5 times independently and evaluating each final set of weights. To train the graph search heuristics,
-we collect approximately 300 optimal actions from the human demonstrator, over 3 rounds of DAgger. After these 3 rounds,
+we collect approximately 300 optimal actions from the human demonstrator, over 3 rounds of {\sc DAgger}. After these 3 rounds,
 we found that performance plateaued. We used $C = 10^{9}$ and constant margin $d = 1$ in solving the optimization.
 
 Our experiments are conducted in Python 2.7 using the OpenRave simulator~\cite{Diankov_2008_6117} with a PR2 robot.
@@ -222,7 +222,7 @@ We run two sets of experiments, using 2 and 4 frying pans. The robot must stack 
 radius into a narrow shelf. To be successful, it must grasp the frying pans at the handle, so that the handle sticks out
 after the pan is placed in the shelf. This domain has 3 types of continuous references: base poses, pan grasp poses, and
 pan putdown poses. We do not use curriculum learning, as weights for all these parameters can be trained jointly.
-We fixed $N = 30$, $L = 100$, and $\epsilon = 5$. SFRCRA-14 did not have a frying domain, so we used the following
+We fixed $N = 30$, $L = 100$, and $\epsilon = 5$. {\sc sfrcra-14} did not have a frying domain, so we used the following
 hand-coded distribution for picking up the pans: 4 grasp poses in the cardinal directions around the lip of the pan,
 and 4 grasp poses equidistant along the handle.
 

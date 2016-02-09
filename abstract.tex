@@ -1,23 +1,22 @@
 \begin{abstract}
-In mobile manipulation planning, it is not uncommon for tasks to require thousands of
-individual motions. Such problems require
-reasoning about courses of action from the viewpoint of logical
-objectives as well as the feasibility of individual movements in the
+Tasks in mobile manipulation planning often require thousands of individual
+motions to complete. Such tasks require
+reasoning about logical
+objectives as well as the feasibility of movements in
 configuration space. In discrete representations, planning complexity
 is exponential in the length of the plan; in mobile manipulation,
 parameters for an action often draw from a continuous space, so we must also
 cope with an infinite branching factor.
-\emph{Task and motion planning} (TAMP)
-methods integrate logical search with continuous geometric reasoning
-to address this challenge. We present an algorithm for
-searching in the space of possible task and motion plans.
-We develop techniques for using statistical machine learning to
+\emph{Task and motion planning} ({\sc tamp})
+methods integrate a logical search over high-level actions with continuous geometric reasoning
+to address this challenge. We present an algorithm that
+searches the space of possible task and motion plans, using statistical machine learning to
 guide the search process. Our contributions are as follows: 1)
-we present a complete algorithm for TAMP; 2) we present a randomized
-local search algorithm for TAMP that is easily formulated
-as a Markov decision process (MDP); 3) we give a reinforcement learning (RL) algorithm that
-learns a policy for this MDP; 4) we present a method based on learning from expert demonstrations that trains
-heuristics for intelligently searching the available space of task plans,
+we present a complete algorithm for {\sc tamp}; 2) we present a randomized
+local search algorithm for {\sc tamp} that is easily formulated
+as a Markov decision process ({\sc mdp}); 3) we apply reinforcement learning ({\sc rl}) to learn
+a policy for this {\sc mdp}; 4) we learn from expert demonstrations to
+efficiently search the space of task plans,
 given options that address different infeasibilities; and 5)
 we run experiments to evaluate the performance of our system in a
 variety of simulated domains. We show significant improvements in

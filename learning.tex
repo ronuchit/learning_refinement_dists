@@ -1,11 +1,11 @@
 \section{Learning Refinement Distributions}
 Randomized refinement provides us with a framework to learn a policy that implements
-\textsc{NDGetInstantiation} and performs well empirically. Our approach applies RL
+\textsc{NDGetInstantiation} and performs well empirically. Our approach applies {\sc rl}
 to train continuous proposal distributions for symbolic reference instantiations, in order
 to implement this routine.
 
 \subsection{Formulation as Reinforcement Learning Problem}
-We formulate plan refinement as an MDP as follows:
+We formulate plan refinement as an {\sc mdp} as follows:
 \begin{tightlist}
 \item A state $s \in \St$ is a tuple $(\pi, \sigma, E, n)$, consisting of the
 high-level plan, its current setting of values for symbolic references,
@@ -18,11 +18,11 @@ the number of samples for one planning problem, encompassing both the task plann
 and the environment.
   \begin{tightlist}
   \item Case 1: $n > L$. We sample a new state from $\Prob$ and reset $n$ to 0.
-  \item Case 2: the proposed value $x$ is IK infeasible. The state remains the same.
+  \item Case 2: the proposed value $x$ is {\sc ik} infeasible. The state remains the same.
   \item Case 3: Otherwise, the value of $p$ is set to $x$ and the motion planner is called.
   \end{tightlist}
 \item The reward function $R(s, a, s')$ provides rewards based on a measure of closeness to a valid plan refinement.
-\item $\Prob$ is a distribution over planning problems, thus defining the initial state distribution for this MDP.
+\item $\Prob$ is a distribution over planning problems, thus defining the initial state distribution for this {\sc mdp}.
 \end{tightlist}
 
 We restrict our attention to training policies that suggest $x$ for actions in $\A$.
@@ -30,7 +30,7 @@ We note that randomized refinement already provides a fixed policy for selecting
 
 Our reward function $R$ explicitly encourages successful plan refinement, providing positive reward linearly
 interpolated between 0 and 20 based on the fraction of high-level actions whose preconditions are
-satisfied. Additionally, we give $-1$ reward every time we sample an IK infeasible pose.
+satisfied. Additionally, we give $-1$ reward every time we sample an {\sc ik} infeasible pose.
 
 \begin{figure}[t]
   \centering
@@ -42,13 +42,13 @@ satisfied. Additionally, we give $-1$ reward every time we sample an IK infeasib
   \caption{\small{\textbf{Top}: When the frying pan is not grasped by the handle, any attempted putdown pose for
 placing it into the narrow shelf fails. \textbf{Bottom}: When the frying pan is grasped by the handle, some putdown
 poses may succeed, as in the right, and some may fail, as in the left. In general, delayed rewards
-are important in the plan refinement MDP; sometimes multiple symbolic references require resampling to
+are important in the plan refinement {\sc mdp}; sometimes multiple symbolic references require resampling to
 change an infeasible refinement into a feasible one.}}
   \label{fig:delayed}
 \end{figure}
 
 \subsection{Training Process}
-We learn a policy for this MDP by adapting the method of Zucker et al.~\cite{workspacebias}, which
+We learn a policy for this {\sc mdp} by adapting the method of Zucker et al.~\cite{workspacebias}, which
 uses a linear combination of features to define a distribution over poses. In our setting, we learn a weight
 vector $\theta_{p}$ for each reference \emph{type}, comprised of a pose type and possibly a gripper
 (e.g., ``left gripper grasp pose,'' ``right gripper putdown pose,'' ``base pose'').
@@ -56,7 +56,7 @@ This decouples the learned distributions from any single high-level plan and all
 
 We develop a feature function $f(s, a) = f(s, p, x)$ that maps the current
 state $s \in \St$ and action $a \in \A$ to a
-feature vector; $f$ defines a policy class for the MDP. Additionally, we define
+feature vector; $f$ defines a policy class for the {\sc mdp}. Additionally, we define
 $N$ as the number of planning problems on which to train and
 $\epsilon$ as the number of samples comprising a training episode, after which we update weights.
 
@@ -78,7 +78,7 @@ robot to the target and the vector from the sample to the target: whether the an
 $\pi/3$, $\pi/2$, and $3\pi/4$.
 
 \figref{fig:delayed} shows that delayed rewards are an important
-aspect of the MDP: if a grasping pose along the lip of the frying pan is sampled, no putdown pose can lead
+aspect of the {\sc mdp}: if a grasping pose along the lip of the frying pan is sampled, no putdown pose can lead
 to it being placed inside the shelf. Typically, an infeasible refinement must undergo
 resampling for several distinct symbolic references in order to reach a feasible refinement.
 

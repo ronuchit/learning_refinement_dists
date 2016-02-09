@@ -1,4 +1,4 @@
-\section{Learning to Search the Plan Refinement Graph}
+\section{Learning What Task Plan to Refine}
 The approach presented thus far can be succinctly described as learning \emph{how} to
 refine a single high-level plan. In this section, we present a method for learning
 \emph{which} plan to try refining. Recall that in Alg.\,\ref{alg:complete}, the high
@@ -6,7 +6,7 @@ level has a two-tiered decision to make: which node in the plan refinement graph
 visit next, and whether to attempt to refine this node or generate failure information
 from it. These decisions are encoded in the routines \textsc{NDGetNextNode}
 and \textsc{NDChoice}. \figref{fig:cover} illustrates why making this decision intelligently is critical
-to good performance. We now explain our inverse RL
+to good performance. We now explain our inverse {\sc rl}
 approach to training heuristics that implement these routines. The heuristics are trained to estimate
 the difficulty associated with refining a plan, and to decide when to quickly generate
 a geometric fact used for replanning with the task planner. In our explanation, $n$ is the selected
@@ -16,9 +16,9 @@ We exploit properties of the environment to hand-design a feature vector $f(n)$ 
 of a single high-level plan. Because the mode $m$ is binary,
 we construct $$f((n, m)) = \begin{bmatrix} f(n) \\ f(n) \end{bmatrix}^\top \begin{bmatrix} 1 - m \\ m \end{bmatrix},$$
 which stacks the feature vector for $n$ on itself, then turns off the bottom half when $m = 0$ and the
-top half when $m = 1$. Now that we have defined a feature vector associated with each decision in a given PRGraph,
+top half when $m = 1$. Now that we have defined a feature vector associated with each decision in a given {\sc PRGraph},
 we can obtain human-demonstrated trajectories (sequences of actions $(n, m)^{*}$) that intelligently
-navigate the PRGraph. We then solve the following max-margin optimization problem with a structured margin and slack variables:
+navigate the {\sc PRGraph}. We then solve the following max-margin optimization problem with a structured margin and slack variables:
 \begin{align*}
 &\min_{w, \xi_i \geq 0} & ||w||^2 + C \sum_i \xi_i\\
 &\text{s.t.} & w^{\top}f^*_i \geq w^{\top}f_{ij} +  d_{ij} - \xi_{i}\ \forall i, j \ ,
@@ -26,8 +26,8 @@ navigate the PRGraph. We then solve the following max-margin optimization proble
 
 where the $i$ iterate over the demonstrated trajectories and the $j$ iterate over possible actions. Each
 demonstrated trajectory has an associated slack variable in this formulation.
-We note that the weight vector $w$ encodes a ranking function on the different actions.
-We then use DAgger~\cite{dagger} to augment our training data. At test time, we follow the policy encoded by
+The weight vector $w$ encodes a ranking function on the different actions.
+We then use {\sc DAgger}~\cite{dagger} to augment our training data. At test time, we follow the policy encoded by
 $w$, picking the highest-scoring action at each step.
 
 \begin{figure}[t]

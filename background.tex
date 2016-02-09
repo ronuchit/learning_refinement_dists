@@ -29,7 +29,7 @@ desired goal condition expressed in terms of fluents.
 % and \emph{empty(gripper$_l$)}.
 
 \begin{defn}
-Formally, we define the task and motion planning (TAMP) problem as a tuple $\langle \Obj,
+Formally, we define the task and motion planning ({\sc tamp}) problem as a tuple $\langle \Obj,
  \T, \F, \I, \G, \U \rangle$:
 \begin{tightlist}
 \item $\Obj$ is a set of \emph{objects} denoting elements such as cans,
@@ -52,7 +52,7 @@ An instantiated action is said to be \emph{feasible} in a state if and only if i
 preconditions hold in that state. Implicitly, the trajectories corresponding to actions
 must be collision-free.
 
-A solution to a TAMP problem is a sequence of instantiated
+A solution to a {\sc tamp} problem is a sequence of instantiated
 actions $a_{0}, a_{1}, ..., a_{n} \in \U$ such that every action is
 feasible when it is applied on states successively starting with $\I$, and the
 state achieved at the end of the execution sequence satisfies the
@@ -135,12 +135,12 @@ goal condition $\G$.
 % before grasping $o_{t}$, and refining this plan succeeds.
 
 \subsection{Markov Decision Processes and Reinforcement Learning}
-Markov decision processes (MDPs) provide a way to formalize
-interactions between agents and environments. At each step of an MDP,
+Markov decision processes ({\sc mdp}s) provide a way to formalize
+interactions between agents and environments. At each step of an {\sc mdp},
 the agent knows its current state and selects an action. This causes the
 state to change according to a known transition distribution.
 \begin{defn}
-Formally, we define an MDP as a tuple $\langle \St, \A, T, R, \gamma, \Prob \rangle$, where
+Formally, we define an {\sc mdp} as a tuple $\langle \St, \A, T, R, \gamma, \Prob \rangle$, where
 \begin{tightlist}
 \item $\St$ is the state space.
 \item $\A$ is the action space.
@@ -150,32 +150,32 @@ Formally, we define an MDP as a tuple $\langle \St, \A, T, R, \gamma, \Prob \ran
 \item $\Prob$ is the initial state distribution.
 \end{tightlist}
 \end{defn}
-A solution to an MDP is a policy, $\pi: \St \rightarrow \A$, that maps states to
+A solution to an {\sc mdp} is a policy, $\pi: \St \rightarrow \A$, that maps states to
 actions. The value, $V_{\pi}(s)$, of a state under $\pi$ is the sum of expected
 discounted future rewards generated from starting in state $s$ and selecting actions according
 to $\pi$:
 $$V_{\pi}(s) = \mathbb{E}[\sum_{t=0}^{\infty}\gamma^{t}R(s_{t}) | \pi, s_{0} = s].$$
 The optimal policy, $\pi^{*}$, maximizes this value for all states.
 
-In reinforcement learning (RL), an agent must determine $\pi^{*}$
+In reinforcement learning ({\sc rl}), an agent must determine $\pi^{*}$
 through interaction with its environment (i.e. without explicit access
 to $\St$ or $T$). At each timestep, the agent knows the state and what
 actions are available, but initially does not know how taking actions will
-affect the state. There is a large body of research on RL, and
+affect the state. There is a large body of research on {\sc rl}, and
 standard techniques include value function approximation, which uses methods such as temporal difference
-(TD) learning, and direct policy estimation, which encompasses both gradient-based
+learning, and direct policy estimation, which encompasses both gradient-based
 and gradient-free methods~\cite{suttonbarto}.
 
 \subsection{Reinforcement Learning for Planning}
-Our problem formulation is motivated by Zhang and Dietterich's application of RL to job
+Our problem formulation is motivated by Zhang and Dietterich's application of {\sc rl} to job
 shop scheduling~\cite{JobShopSched}. Job shop scheduling is a combinatorial optimization problem where the goal is to find
 a minimum-duration schedule of a set of jobs with temporal and resource constraints. An empirically
 successful approach to this problem relies on a randomized local search that proposes changes to an
-existing suboptimal schedule. The authors formulate this as an MDP and use $TD(\lambda)$~\cite{suttonbarto} with function
+existing suboptimal schedule. The authors formulate this as an {\sc mdp} and use {\sc td}($\lambda$)~\cite{suttonbarto} with function
 approximation to learn a value function for it. Their approach outperforms the previous state of the art for this task and
 scales better to larger scheduling problems.
 
-Zucker et al.~\cite{workspacebias} use RL to bias the distribution of a rapidly exploring random tree (RRT)
+Zucker et al.~\cite{workspacebias} use {\sc rl} to bias the distribution of a rapidly exploring random tree ({\sc rrt})
 for motion planning. They use features of a discretization of the workspace to train
 a non-uniform configuration space sampler using policy gradient algorithms.
-In our work, we adapt their gradient updates to the TAMP framework (Section V-C).
+In our work, we adapt their gradient updates to the {\sc tamp} framework (Section V-C).
