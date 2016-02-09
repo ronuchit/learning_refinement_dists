@@ -86,4 +86,227 @@ Dearden and Burbridge: highlight two key differences. 1) fast planning
 vs predicate accuracy/semantics; 2) independent vs dependent
 distributions.
 
+"involving" passive --> "that involve"
+
+"Our approach could be adapted to...." --- I don't really see this as
+what our approach does...we don't learn constraints. They are using a
+representation of the constraints that allows them to reduce the
+backtracking effort. We solve this problem by learning good values to
+propose from experience.
+
+Garrett et al. --- again, I'm not sure I see the contrast you're
+drawing.... Garrett uses a heuristic that incorporates geometric
+information and does a joint search over motions and actions. Garrett
+is still searching over a hand-discretized set of poses or using a
+hand-coded distribution to sample intermediate poses --- we learn that
+information and it would be possible to use learned distributions
+within his search.
+
+"to using" passive
+"for training" passive
+"for controlling" passive
+
+I think we should probably include more than one reference here. I
+think we can just say that there's a good amount of work that uses
+machine learning to discover search heuristics. Then we can list 3 or
+so with 1 sentence description each. None of these are that related,
+so we don't need too much detail.
+
+
+Background
+-------------------
+
+Move subsection C to related work
+Add IRL definitions
+
+Don't need the first sentence leading into the background. 
+
+No math symbols in the definition of motion planning.
+
+I think that this lead in to the TAMP definition can be made
+shorter. The explanations in the bullet points are pretty good, some
+of what we have above is redundant. This should be 2-3 sentences tops.
+
+don't use parentheticals to define terms. For example, if you want to
+define fluents/actions in line you can do: "In task and motion
+planning, we consider abstract fluents and actions. Fluents are
+.... Actions are...."
+
+"Each action may require...execution" --> "Essentially, each action
+defines a parameterized class of motion planning problems to be solved
+prior to execution."  I'm not sure if this change is still relevant
+after the above change. Main thing is I think its useful to describe
+actions as parameterized motion planning problems.
+
+
+"The overall problem ... in terms of fluents" --- I think we can drop
+this sentence, as its just an informal way of saying what the solution
+to a TAMP problem is (and we answer that right after the definition).
+
+"Formally, we define" --> "We define"
+
+"O includes the configuration space" --> this makes it sound like the
+configuration space is an object...really O defines the configuration
+space for the problem.
+
+I don't think we want to say "motion plans" as an example type, could
+be confusing. We can either drop it or say "trajectory"
+
+"are parameterized using" passive
+
+"Implicitly the trajectories..." --- we don't need to say this, and it
+isn't quite true...we include explicit preconditions saying that a
+trajectory is collision free.
+
+Section B's title should be changed after we add the IRL component.
+
+MDP --> {\sc mdp}
+
+"Formally, we define" --> "We define"
+
+Maybe use $P_{s_0}$ instead of $P$ as the initial state distribution
+to make it obvious what it is.
+
+Saying $\gamma \in [0, 1]$ allows MDPs with no well-defined solution
+(i.e., when \gamma=1). Per our discussion, we'll switch to a finite
+horizon formulation with $H$ as the horizon. 
+
+In your expectation, use \left and \right so that the brackets are
+bigger than the sum. E.g., $\mathbb{E}\left[ \sum_0^H ... \right]$.
+
+Solving Task and Motion Planning Problems
+------------------------------------------------------------------
+
+Rework first paragraph to discuss lossy abstraction before going over
+the algorithm. 
+
+PRGraph --> {\sc prg}
+
+"Figure 2..." --- give a little more description of what the example
+illustrates.
+
+"with the addition into the..." --> "with the addition of news edges
+and plan nodes into the {\sc prg}."
+
+"by using failed motion planning attempts..." passive --> we can
+probably just drop that part of the sentence, we describe the
+algorithm below. 
+
+Learning Refinement Distributions
+------------------------------------------------------------------
+
+"in order to implement this routine." --- not clear what you're
+refering to here. Maybe just drop this clause.
+
+"Formulation as" --> "Formulation as a Markov Decision Process"
+
+"We formulate...." --> "We formulation plan refinement as the following MDP:"
+
+"A state ..." --> "States are tuples (...) that consist of the
+high-level plan; its current (potentially infeasible) refinement; the
+geometric environment; a counter for the number of calls to the
+sampler.
+
+"An action..." --> "Actions are pairs (p, x), where ..."
+
+"thus defining the initial" --> "and defines the initial"
+
+"Our weight vectors are initialized..." --- Its good to include this
+information, but this should go in the experiments section as the
+features we use are specific to the PR2 domains we consider.
+
+"we approximate it by averaging together...." --> "we approximate it
+with a monte-carlo estimate."
+
+Learning to Search the Plan Refinement Graph
+------------------------------------------------------------------
+
+Per our discussion, change name to "Learning What Task Plan to Refine"
+
+1) Why is this important
+2) Why use IRL
+3) How do we use IRL (data collection method + max-margin)
+
+Move features to experiments section. 
+
+
+Experiments
+-------------------------------------------------------------------
+
+"For refinement distributions...." --- I don't think we should lead in
+with this, start Methodology with "We evaluate our approach..."
+
+"We employ the following algorithm..." --- not very clear what you're
+referring to here. Additionally, I think its a little misleading, as
+it suggests that we do the cross validation for system 3 (which we
+don't). I think we should modify this paragraph to explain curriculum
+learning and the random seeding. Things to cover: 1) We use curriculum
+learning for low-level; 2) for the full system we do 3 rounds of
+training and choose the weights that perform best on a held-out set of
+problems. 
+
+"this reduced variation due to random seeding" --- this isn't quite
+right...the learning algorithm has variance and this reduces that
+variance. Random seeding isn't really related to it (it would be crazy
+slow, but you could run the learning on a real robot and you might
+still want to do this even though there are no random seeds involved).
+
+$\alpha$ is a learning rate, not a step size (its nitpicky, I know)
+
+"We use constant margin d=1" --- if this is true, then we shouldn't
+introduce the structured margin in the formulation (i.e., don't
+include d in the max-margin formulation).
+
+Shouldn't the description of how we train the high-level go into the
+can world? That's where we have the other constants that we used in
+our experiments.
+
+Should "context" be in quotes?
+
+"The fact that...variety of objects" --- I don't think this is the
+main takeaway. The conclusion I draw from this is that learning
+doesn't hurt; i.e., if there is a good hand-coded solution we recover
+it.
+
+Conclusion
+-----------------------------------------------------------------------
+Change to limitations and future work. 
+
+Limitations:
+  - Hand-coded features
+  - IRL at HL (?)
+  - Variance in low-level learning
+  - Features of logical structure of plan
+
+Suggestions for future work:
+  - better RL algs (e.g., more complex policy classes; more sample efficient)
+    --> learned features
+  - learning higher variance proposal distributions
+  - adapt kernerlized methods that can deal with strings
+
+Figure Comments
+----------------------------------------------------------------------
+
+Look into plotting pdf for sampling dists.
+
+Fig.2
+
+Re-create, watch for margins in the text and use an example from our
+paper (ie not NAMO). Use LaTeX font.
+
+Fig. 3: remove and replace with a 3-4 sentence example of randomized
+refinement with explicit rewards received. 
+
+Remove Figure 4. 
+
+Figs 5, 7, 8 --> switch to subfigure with 2x3. Top row is initial
+dist. bottom row is learned dist. Use as teaser image.
+
+
+Fig. 6 --- swtich to something that illustrates more than a `slight'
+change in the distribution.
+
+Move teaser picture down and refer to it in learning for HL. Remove X,
+check overlayed on the image.
+
 
