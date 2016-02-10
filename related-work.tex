@@ -24,6 +24,19 @@ space and symbolic state space to construct a \emph{relaxed plan graph} that gui
 planning, using geometric biases to break ties. Intermediate poses are sampled from a hand-coded
 distribution, whereas we learn these distributions using {\sc rl} and could use them within their search.
 
+Our problem formulation is motivated by Zhang and Dietterich's application of {\sc rl} to job
+shop scheduling~\cite{JobShopSched}. Job shop scheduling is a combinatorial optimization problem where the goal is to find
+a minimum-duration schedule of a set of jobs with temporal and resource constraints. An empirically
+successful approach to this problem relies on a randomized local search that proposes changes to an
+existing suboptimal schedule. The authors formulate this as an {\sc mdp} and use {\sc td}($\lambda$)~\cite{suttonbarto} with function
+approximation to learn a value function for it. Their approach outperforms the previous state of the art for this task and
+scales better to larger scheduling problems.
+
+Zucker et al.~\cite{workspacebias} use {\sc rl} to bias the distribution of a rapidly exploring random tree ({\sc rrt})
+for motion planning. They use features of a discretization of the workspace to train
+a non-uniform configuration space sampler using policy gradient algorithms.
+In our work, we adapt their gradient updates to the {\sc tamp} framework (Section V-C).
+
 Another line of research has been devoted to machine learning techniques that
 guide search algorithms. This general formulation
 is applied to many domains other than hierarchical planning for robotics.

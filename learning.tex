@@ -1,32 +1,28 @@
 \section{Learning Refinement Distributions}
 Randomized refinement provides us with a framework to learn a policy that implements
-\textsc{NDGetInstantiation} and performs well empirically. Our approach applies {\sc rl}
-to train continuous proposal distributions for symbolic reference instantiations, in order
-to implement this routine.
+\textsc{NDGetInstantiation} and performs well empirically. We apply {\sc rl}
+to train continuous proposal distributions for symbolic reference instantiations.
 
-\subsection{Formulation as Reinforcement Learning Problem}
-We formulate plan refinement as an {\sc mdp} as follows:
+\subsection{Formulation as Markov Decision Process}
+We formulate plan refinement as the following {\sc mdp}:
 \begin{tightlist}
-\item A state $s \in \St$ is a tuple $(\pi, \sigma, E, n)$, consisting of the
-high-level plan, its current setting of values for symbolic references,
-the geometric environment encoding, and a counter for
-the number of calls to the sampler.
-\item An action $a \in \A$ is a pair $(p, x)$, where $p$ is the discrete symbolic
+\item States are tuples $(\pi, \sigma, E)$ that consist of the
+high-level plan, its current (potentially infeasible) refinement, and the
+geometric environment.
+\item Actions are pairs $(p, x)$, where $p$ is the discrete symbolic
 reference to resample and $x$ is the continuous value assigned to $p$ in the new refinement.
-\item The transition function $T(s, a, s')$ is split up into 3 cases. In all cases, $n$ increases by 1. $L$ refers to
-the number of samples for one planning problem, encompassing both the task planning problem
-and the environment.
+\item The transition function $T(s, a, s')$ is split into 2 cases.
   \begin{tightlist}
-  \item Case 1: $n > L$. We sample a new state from $\Prob$ and reset $n$ to 0.
-  \item Case 2: the proposed value $x$ is {\sc ik} infeasible. The state remains the same.
-  \item Case 3: Otherwise, the value of $p$ is set to $x$ and the motion planner is called.
+  \item Case 1: The proposed value $x$ is {\sc ik} infeasible. The state remains the same.
+  \item Case 2: Otherwise, the value of $p$ is set to $x$ and the motion planner is called.
   \end{tightlist}
 \item The reward function $R(s, a, s')$ provides rewards based on a measure of closeness to a valid plan refinement.
-\item $\Prob$ is a distribution over planning problems, thus defining the initial state distribution for this {\sc mdp}.
+\item The process terminates after $H$ timesteps.
+\item $\Prob$ is a distribution over planning problems and defines the initial state distribution for this {\sc mdp}.
 \end{tightlist}
 
-We restrict our attention to training policies that suggest $x$ for actions in $\A$.
-We note that randomized refinement already provides a fixed policy for selecting $p$.
+We restrict our attention to training policies that suggest $x$ for actions in $\A$, since
+randomized refinement already provides a fixed policy for selecting $p$.
 
 Our reward function $R$ explicitly encourages successful plan refinement, providing positive reward linearly
 interpolated between 0 and 20 based on the fraction of high-level actions whose preconditions are
@@ -64,7 +60,7 @@ The training is a natural extension of randomized
 refinement and progresses as follows. $N$ times, sample from $\Prob$ to obtain
 a complete planning problem $\Pi$. For each $\Pi$, run the randomized refinement
 algorithm to attempt to find a valid plan refinement, allowing the \textsc{Resample}
-routine to be called $L$ times before termination. Select actions according to the $\theta_{p}$
+routine to be called $H$ times before termination. Select actions according to the $\theta_{p}$
 and collect rewards according to $R$. After every $\epsilon$ calls to
 \textsc{Resample}, perform a gradient update on the weights.
 
@@ -96,4 +92,4 @@ for appropriate step size $\alpha$.
 
 We sample $x$ from $q$ using the Metropolis algorithm~\cite{chib1995understanding}.
 Since our distributions are continuous, we cannot easily calculate $\mathbb{E}_{q}[f]$,
-so we approximate it by averaging together the feature vectors for several samples from $q$.
+so we approximate it with a Monte Carlo estimate.

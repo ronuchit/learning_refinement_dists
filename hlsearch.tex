@@ -16,9 +16,9 @@ We exploit properties of the environment to hand-design a feature vector $f(n)$ 
 of a single high-level plan. Because the mode $m$ is binary,
 we construct $$f((n, m)) = \begin{bmatrix} f(n) \\ f(n) \end{bmatrix}^\top \begin{bmatrix} 1 - m \\ m \end{bmatrix},$$
 which stacks the feature vector for $n$ on itself, then turns off the bottom half when $m = 0$ and the
-top half when $m = 1$. Now that we have defined a feature vector associated with each decision in a given {\sc PRGraph},
+top half when $m = 1$. Now that we have defined a feature vector associated with each decision in a given {\sc prg},
 we can obtain human-demonstrated trajectories (sequences of actions $(n, m)^{*}$) that intelligently
-navigate the {\sc PRGraph}. We then solve the following max-margin optimization problem with a structured margin and slack variables:
+navigate the {\sc prg}. We then solve the following max-margin optimization problem with a structured margin and slack variables:
 \begin{align*}
 &\min_{w, \xi_i \geq 0} & ||w||^2 + C \sum_i \xi_i\\
 &\text{s.t.} & w^{\top}f^*_i \geq w^{\top}f_{ij} +  d_{ij} - \xi_{i}\ \forall i, j \ ,

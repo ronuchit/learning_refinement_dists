@@ -1,23 +1,12 @@
 \section{Background}
-We provide relevant technical background and introduce notation
-used throughout the paper. 
-
 \subsection{Task and Motion Planning}
 
-A motion planning problem is defined by a configuration space $C$ for a robot
-and all movable objects in its environment, along with initial and final configurations
-$c_{0}, c_{T} \in C$. The solution to a motion planning problem is a collision-free trajectory for
-the robot that connects $c_{0}$ and $c_{T}$.
-
+A motion planning problem is defined by a configuration space for a robot
+and all movable objects in its environment, along with initial and final configurations.
+The solution to a motion planning problem is a collision-free trajectory for
+the robot that connects these configurations.
 In task and motion planning, we add more abstract concepts to this
-formulation, including \emph{fluents} (logical properties that hold either
-true or false and may
-vary across configurations) and \emph{actions} (operations that the
-agent may choose to execute, resulting in changes to the configuration
-and the set of fluents that are true). Each action may require motion
-planning prior to execution.  The overall problem is to plan the
-sequence of actions that the agent can execute to achieve a
-desired goal condition expressed in terms of fluents.
+formulation.
 
 % For example, we can use the action schema \emph{grasp(Object o,
 %   Manipulator p, GraspingPose g, Trajectory m)} to abstractly
@@ -33,24 +22,23 @@ Formally, we define the task and motion planning ({\sc tamp}) problem as a tuple
  \T, \F, \I, \G, \U \rangle$:
 \begin{tightlist}
 \item $\Obj$ is a set of \emph{objects} denoting elements such as cans,
-  trajectories, and poses. Note that $\Obj$ includes the
+  trajectories, and poses. Note that $\Obj$ defines the
   configuration space of all movable objects, including the robot.
-\item $\T$ is a set of object \emph{types}, such as movable objects, motion plans, poses, and locations.
+\item $\T$ is a set of object \emph{types}, such as movable objects, poses, and locations.
 \item $\F$ is a set of \emph{fluents}, which define relationships
   among objects and are Boolean functions defined over the configuration space.
 \item $\I$ is the set of fluent literals that hold true in the initial state.
 \item $\G$ is the set of fluent literals defining the goal condition.
-\item $\U$ is a set of \emph{high-level actions} that are
-  parameterized using objects and defined by \emph{preconditions}, a set
+\item $\U$ is a set of \emph{high-level actions}
+  parameterized by objects and defined by \emph{preconditions}, a set
 of fluent literals that must hold true in the current state to be able to perform the action;
 and \emph{effects}, a set of fluent literals that hold true after the
-action is performed. 
+action is performed.
 \end{tightlist}
 \end{defn}
 
 An instantiated action is said to be \emph{feasible} in a state if and only if its
-preconditions hold in that state. Implicitly, the trajectories corresponding to actions
-must be collision-free.
+preconditions hold in that state.
 
 A solution to a {\sc tamp} problem is a sequence of instantiated
 actions $a_{0}, a_{1}, ..., a_{n} \in \U$ such that every action is
@@ -134,48 +122,37 @@ goal condition $\G$.
 % and propagated back to the task planner. The new high-level plan correctly grasps the obstruction
 % before grasping $o_{t}$, and refining this plan succeeds.
 
-\subsection{Markov Decision Processes and Reinforcement Learning}
+\subsection{Markov Decision Processes}
 Markov decision processes ({\sc mdp}s) provide a way to formalize
 interactions between agents and environments. At each step of an {\sc mdp},
 the agent knows its current state and selects an action. This causes the
 state to change according to a known transition distribution.
 \begin{defn}
-Formally, we define an {\sc mdp} as a tuple $\langle \St, \A, T, R, \gamma, \Prob \rangle$, where
+Formally, we define a finite-horizon {\sc mdp} as a tuple $\langle \St, \A, T, R, H, \Prob \rangle$, where
 \begin{tightlist}
 \item $\St$ is the state space.
 \item $\A$ is the action space.
-\item $T(s, a, s') = Pr(s' | s, a)$ for $s, s' \in \St, a \in \A$ is the transition distribution.
+\item $T(s, a, s') = Pr(s' \mid s, a)$ for $s, s' \in \St, a \in \A$ is the transition distribution.
 \item $R(s, a, s')$ for $s, s' \in \St, a \in \A$ is the reward function.
-\item $\gamma \in [0, 1]$ is the discount factor.
+\item $H$ is the horizon, or total number of timesteps.
 \item $\Prob$ is the initial state distribution.
 \end{tightlist}
 \end{defn}
-A solution to an {\sc mdp} is a policy, $\pi: \St \rightarrow \A$, that maps states to
-actions. The value, $V_{\pi}(s)$, of a state under $\pi$ is the sum of expected
-discounted future rewards generated from starting in state $s$ and selecting actions according
-to $\pi$:
-$$V_{\pi}(s) = \mathbb{E}[\sum_{t=0}^{\infty}\gamma^{t}R(s_{t}) | \pi, s_{0} = s].$$
-The optimal policy, $\pi^{*}$, maximizes this value for all states.
+A solution to an {\sc mdp} is a policy, $\pi: \St \times \mathbb{Z} \rightarrow \A$.
+The value function under $\pi$ is a function of the timestep $k$ and state $s$:
+$$V_{\pi}^{k}(s) = \mathbb{E}\left[\sum_{t=k}^{H}R(s_{t}) \mid \pi, s_{k} = s\right].$$
+The optimal policy, $\pi^{*}$, is time-varying and maximizes $V$.
 
 In reinforcement learning ({\sc rl}), an agent must determine $\pi^{*}$
 through interaction with its environment (i.e. without explicit access
 to $\St$ or $T$). At each timestep, the agent knows the state and what
 actions are available, but initially does not know how taking actions will
-affect the state. There is a large body of research on {\sc rl}, and
+affect the state. There is a large body of research on {\sc rl};
 standard techniques include value function approximation, which uses methods such as temporal difference
-learning, and direct policy estimation, which encompasses both gradient-based
+learning, and direct policy estimation, which encompasses gradient-based
 and gradient-free methods~\cite{suttonbarto}.
 
-\subsection{Reinforcement Learning for Planning}
-Our problem formulation is motivated by Zhang and Dietterich's application of {\sc rl} to job
-shop scheduling~\cite{JobShopSched}. Job shop scheduling is a combinatorial optimization problem where the goal is to find
-a minimum-duration schedule of a set of jobs with temporal and resource constraints. An empirically
-successful approach to this problem relies on a randomized local search that proposes changes to an
-existing suboptimal schedule. The authors formulate this as an {\sc mdp} and use {\sc td}($\lambda$)~\cite{suttonbarto} with function
-approximation to learn a value function for it. Their approach outperforms the previous state of the art for this task and
-scales better to larger scheduling problems.
-
-Zucker et al.~\cite{workspacebias} use {\sc rl} to bias the distribution of a rapidly exploring random tree ({\sc rrt})
-for motion planning. They use features of a discretization of the workspace to train
-a non-uniform configuration space sampler using policy gradient algorithms.
-In our work, we adapt their gradient updates to the {\sc tamp} framework (Section V-C).
+In inverse {\sc rl}~\cite{ng2000algorithms}, an agent must recover $R$ given execution traces of optimal behavior
+according to $\pi^{*}$. This is useful in apprenticeship learning settings where the agent
+must acquire skills from observing an optimal demonstrator. Standard techniques include
+the maximum-margin method~\cite{abbeel2004apprenticeship} and the maximum-entropy method~\cite{maxentirl}.

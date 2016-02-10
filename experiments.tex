@@ -125,7 +125,7 @@ Table \ref{table:results} summarizes our quantitative results.
   \caption{\small{Learned base position (blue) and left arm grasp (green) distributions used to
 pick up the black can after different training iterations for learning refinement policies.
 An iteration refers to a single planning problem,
-which terminates after $L$ calls to the \textsc{Resample} routine.
+which terminates after $H$ calls to the \textsc{Resample} routine.
 Initial distributions are uniform because we initialize weights to $\vec{\mathbf{0}}$.
 Final distributions are after 12 iterations.}}
   \label{fig:training}
@@ -153,7 +153,7 @@ poses, object putdown poses, and object putdown locations.
 
 Our curriculum learning system first trains base poses and grasp poses for $N = 12$ iterations with $\epsilon = 5$,
 then base poses, grasp poses, and putdown poses (at fixed location) for $N = 18$ iterations with $\epsilon = 20$,
-then all reference types for $N = 30$ iterations with $\epsilon = 20$. We fixed $L = 100$.
+then all reference types for $N = 30$ iterations with $\epsilon = 20$. We fixed $H = 100$.
 
 The results demonstrate significant improvements in performance to the baseline systems for success rate.
 However, backtracking search provides faster average refinement time. This is likely because
@@ -187,7 +187,7 @@ This domain has 5 types of continuous references: base poses, object grasp poses
 poses, and tray putdown poses.
 
 Our curriculum learning system first trains base poses and tray pickup and putdown poses for
-$N = 20$ iterations, then object grasp and putdown poses for $N = 20$ iterations. We fixed $L = 100$ and $\epsilon = 10$.
+$N = 20$ iterations, then object grasp and putdown poses for $N = 20$ iterations. We fixed $H = 100$ and $\epsilon = 10$.
 
 The results demonstrate comparable performance to the baseline systems. The reason is that
 hand-coding the sample space works well in this domain. For example, the optimal
@@ -222,7 +222,7 @@ We run two sets of experiments, using 2 and 4 frying pans. The robot must stack 
 radius into a narrow shelf. To be successful, it must grasp the frying pans at the handle, so that the handle sticks out
 after the pan is placed in the shelf. This domain has 3 types of continuous references: base poses, pan grasp poses, and
 pan putdown poses. We do not use curriculum learning, as weights for all these parameters can be trained jointly.
-We fixed $N = 30$, $L = 100$, and $\epsilon = 5$. {\sc sfrcra-14} did not have a frying domain, so we used the following
+We fixed $N = 30$, $H = 100$, and $\epsilon = 5$. {\sc sfrcra-14} did not have a frying domain, so we used the following
 hand-coded distribution for picking up the pans: 4 grasp poses in the cardinal directions around the lip of the pan,
 and 4 grasp poses equidistant along the handle.
 

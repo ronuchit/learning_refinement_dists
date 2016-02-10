@@ -10,16 +10,16 @@ Then, we present a complete algorithm for {\sc tamp} that we implemented in
 the framework of {\sc sfrcra-14}.
 
 \subsection{Preliminaries}
-{\sc sfrcra-14} solves {\sc tamp} problems by: incrementally
+The fundamental {\sc tamp} problem is that high-level
+logical descriptions are lossy abstractions of the true environment
+dynamics. Thus, they may not include sufficient information to
+determine the applicability of a sequence of actions.
+{\sc sfrcra-14} addresses this by: incrementally
 searching for a high-level plan that solves the logical abstraction
 of the given {\sc tamp} problem; determining a prefix of the plan that has a
 motion planning feasible refinement; updating the high-level
 abstraction to reflect the reason for infeasibility; and searching for
-a new plan suffix from the failure step onwards. This search process
-addresses the fundamental {\sc tamp} problem: high-level
-logical descriptions are lossy abstractions of the true environment
-dynamics and thus may not include sufficient information to
-determine the true applicability of a sequence of actions.
+a new plan suffix from the failure step onwards.
 
 In general, including geometric properties in the logic-based formulation leads to an
 increase in the number of objects representing distinct poses and/or trajectories. For
@@ -65,10 +65,10 @@ propagated back up to the task planner for replanning.}}
 
 \subsection{A Complete Algorithm for {\sc tamp}}
 We introduce a complete algorithm that maintains a \emph{plan
-  refinement graph} ({\sc PRGraph}). \figref{fig:prg} illustrates a simple example with 3 high-level plans.
-Every node $u$ in the {\sc PRGraph}
+  refinement graph} ({\sc prg}). \figref{fig:prg} illustrates a simple example with 3 high-level plans.
+Every node $u$ in the {\sc prg}
 represents a high-level plan $\pi_u$ and the current state of the search
-for a refinement. An edge $(u,v)$ in the {\sc PRGraph}
+for a refinement. An edge $(u,v)$ in the {\sc prg}
 represents a ``correction'' of $\pi_u$ for a specific instantiation of
 the symbolic references in $\pi_u$. Let $\pi_{u,k}$ be the plan prefix of
 $\pi_u$ consisting of the first $k$ actions. Formally, each edge
@@ -85,8 +85,8 @@ the new high-level problem which incorporates the discovered facts $\varphi_{u,v
 in the $k^{th}$ state.
 
 The overall search algorithm interleaves the search for feasible
-refinements of each high-level plan with the addition into the
-{\sc PRGraph} of new edges and plan nodes using the semantics described
+refinements of each high-level plan with the addition
+of new edges and plan nodes into the {\sc prg} using the semantics described
 above. This process is described using non-deterministic choices
 (denoted using the prefix ``ND'') in
 Alg.\,\ref{alg:complete}. Subroutine \textsc{RefineNode} selects a
@@ -108,8 +108,8 @@ Alg.\,\ref{alg:complete} can capture various search algorithms
 with adaptations for handling unbounded branching factors (e.g.,
 iterative-deepening with iterative-broadening best first
 search). Indeed, {\sc sfrcra-14} can be seen as a greedy depth-first traversal of the
-{\sc PRGraph}. We will show that using trained guided search heuristics with the
-{\sc PRGraph} can lead to performance improvements.
+{\sc prg}. We will show that using trained guided search heuristics with the
+{\sc prg} can lead to performance improvements.
 
 \begin{algorithm}[t]
 \begin{small}
@@ -122,7 +122,7 @@ search). Indeed, {\sc sfrcra-14} can be seen as a greedy depth-first traversal o
     \nl \For{trial in 1 ...}{
       \nl  \For{j in 1 .. trial}{
         \tcc{\footnotesize Traverse graph of plans, initially with just one plan.}
-        \nl $u \leftarrow$ \textsc{NDGetNextNode}({\sc PRGraph})\;
+        \nl $u \leftarrow$ \textsc{NDGetNextNode}({\sc prg})\;
         \nl $\pi \leftarrow$ \textsc{GetHLPlan}($u$)\;
         \nl mode $\leftarrow$ \textsc{NDChoice}\{refine, add child\}\;
         \nl \eIf{mode == refine}{ \textsc{RefineNode}($\pi$, $j$)}{
@@ -152,7 +152,7 @@ search). Indeed, {\sc sfrcra-14} can be seen as a greedy depth-first traversal o
       \nl NewState $\leftarrow$ \textsc{GetStateAt}(StepNum, $\pi$)\;
     }
     \nl $\pi'\leftarrow$ \textsc{GetClassicalPlan}(NewState)\;
-    \nl \textsc{AddNodeToPRGraph}($\sigma$, StepNum, $\pi'$)\;
+    \nl \textsc{AddNodeToPRG}($\sigma$, StepNum, $\pi'$)\;
   }}
 \end{small}
 \caption{Complete algorithm for {\sc tamp}.}
