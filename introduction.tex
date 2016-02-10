@@ -1,19 +1,15 @@
 \section{Introduction}
-A long-term goal of robotics research is the introduction of
-intelligent household robots.  To be effective, such robots will need
-to perform complex tasks over long horizons (e.g., setting a dinner
-table, doing laundry). Planning for these long-horizon tasks is
-infeasible for state-of-the-art motion planners, making the need for a
-hierarchical system of reasoning apparent.
+We are interested in designing autonomous systems that can perform
+complex mobile manipulation tasks over long time horizons (e.g.,
+setting a dinner table, doing laundry). We approach this problem in
+the framework of combined \emph{task and motion planning} ({\sc tamp}).
 
-One way to approach hierarchical planning is through combined
-\emph{task and motion planning} ({\sc tamp}). In this approach, an agent is
+In {\sc tamp}, an agent is
 given a symbolic, logical characterization of actions (e.g., move,
 grasp, putdown), along with a geometric encoding of the
-environment. {\sc tamp} systems maintain a hierarchical separation of
-high-level, symbolic task planning and low-level, geometric motion
-planning.  Efficient integration of these two types of reasoning is
-difficult, and recent research has proposed several methods for
+environment.  Efficient integration of high-level, symbolic task planning
+and low-level, geometric motion planning is
+difficult; recent research has proposed several methods for
 it~\cite{srivastava2014combined, deardenplanningtamp, kaelbling2011hierarchical,
   lagriffoul2014orientation, GarrettWAFR14, dornhege2012semantic}.
 We adopt the principles of abstraction in the {\sc tamp} system developed by
@@ -40,48 +36,54 @@ interacting logic-based and geometric components.
   \label{fig:cover}
 \end{figure}
 
-In this work, we develop a complete algorithm for {\sc tamp} and propose
-methods for jointly carrying out guided search in the space of
-high-level (logic-based) plans and their low-level
+In this work, we develop a complete algorithm for {\sc tamp} and propose learning
+methods to perform joint guided search in the space of
+high-level, symbolic plans and their low-level
 \emph{refinements}: instantiations of continuous values for
-symbolic references in the plan. We refer to this search for a valid low-level
+symbolic references in the plan. For example, in a pick-place domain, a high-level plan
+consists of a sequence of grasp and putdown actions, while its refinement is a sequence of
+collision-free trajectories that implement the plan. We refer to this search for a valid
 refinement as \emph{plan refinement}.
 
-Our complete algorithm introduces
-a \emph{plan refinement graph}, a data structure that stores a
-set of qualitatively different high-level plans that could solve a task.
-During planning, we repeatedly select one such plan and either try to
-refine it or incorporate geometric information to generate a new high-level
-plan. This allows interleaving plan refinement with a
-search over \emph{which} high-level plan to try refining, given options
-that address different infeasibilities.
+{\sc sfrcra-14} uses error information propagated from the geometric planner
+to update the symbolic state and generate a new high-level plan.
+For example, if motion planning discovers obstruction information in a pick-place domain, the
+new task plan may involve moving the obstruction out of the way.
+In our work, we think of these errors as defining a \emph{plan refinement graph} whose nodes are high-level plans
+and edges are error fluents. We develop a complete algorithm that interleaves
+search over this graph with plan refinement.
 
 We present machine learning techniques to train heuristic functions that guide
-both of these search processes. At the high level, this amounts to learning
-to predict how difficult it is to refine a given plan. We use inverse reinforcement learning
-based on expert demonstrations to estimate this quantitatively, using a max-margin formulation.
-At the low level, training heuristics amounts to
+search over both the high-level plan refinement graph and low-level plan refinement.
+Both search spaces are very large, so we need heuristics to make search efficient.
+At the low level, this amounts to
 learning to propose continuous values (for symbolic references) that are likely to result in
 collision-free trajectories. Many {\sc tamp} systems rely on hand-coded heuristics to
 account for these continuous parameter settings. This often requires
 domain-specific insight from the user to reduce the search space.
 We apply reinforcement learning ({\sc rl}) to learn domain-specific distributions
 over these values in a domain-independent fashion.
+At the high level, training heuristics amounts to learning
+how difficult it is to refine a given plan. Directly applying reinforcement learning
+for this is challenging because taking actions in this space requires attempting to
+refine a plan, which can be time-consuming. Also, for complex tasks, there are often many candidate high-level plans that
+achieve the goal. Instead, we use inverse reinforcement learning
+based on expert demonstrations to train heuristics at this level.
 
-Our learning approach draws inspiration
+Our low-level learning approach draws inspiration
 from Zhang and Dietterich~\cite{JobShopSched}, who applied {\sc rl} to job
 shop scheduling. In their formulation, states correspond to schedules
 and actions propose changes to the schedule. In our setting, states
 correspond to (potentially infeasible) refinements and actions propose
 new values for symbolic references.
 
-The contributions of our work are as follows: 1) we present a complete
-algorithm for {\sc tamp} by maintaining a plan refinement graph; 2) we
-present a local search algorithm for plan refinement that is easily
-formulated as an {\sc mdp}; 3) we formulate plan refinement in the {\sc rl}
-framework and learn a policy for this {\sc mdp}; 4) we use inverse {\sc rl} with
-expert demonstrations to train heuristics for
-searching intelligently through a plan refinement graph; and 5) we
-present experiments to evaluate our approach in a variety of simulated
-domains. Our results demonstrate that our approach yields
+The contributions of our work are as follows: 1)
+we present a complete algorithm for {\sc tamp}; 2) we present a randomized
+local search algorithm for plan refinement that is easily formulated
+as an {\sc mdp}; 3) we apply {\sc rl} to learn
+a policy for this {\sc mdp}; 4) we learn from expert demonstrations to
+efficiently search the space of high-level plans,
+given options that address different infeasibilities; and 5)
+we run experiments to evaluate the performance of our system in a
+variety of simulated domains. Our results demonstrate
 significantly improved performance over {\sc sfrcra-14}.
