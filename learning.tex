@@ -64,15 +64,6 @@ routine to be called $H$ times before termination. Select actions according to t
 and collect rewards according to $R$. After every $\epsilon$ calls to
 \textsc{Resample}, perform a gradient update on the weights.
 
-Our weight vectors are initialized to $\vec{\mathbf{0}}$ for all plan parameter types -- this
-initialization represents a uniform distribution across the limits of the geometric search space.
-We use 24 features for learning the $\theta_{p}$. 9 binary features encode the bucketed distance between the sample
-and target (the object referenced by the parameter). 9 binary features encode the bucketed sample height. 3 features
-describe the number of other objects within discs of radius 7, 10, and 15 centimeters around the
-sample. 3 binary features describe the angle made between the vector from the
-robot to the target and the vector from the sample to the target: whether the angle is less than
-$\pi/3$, $\pi/2$, and $3\pi/4$.
-
 \figref{fig:delayed} shows that delayed rewards are an important
 aspect of the {\sc mdp}: if a grasping pose along the lip of the frying pan is sampled, no putdown pose can lead
 to it being placed inside the shelf. Typically, an infeasible refinement must undergo

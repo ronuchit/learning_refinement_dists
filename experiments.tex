@@ -65,12 +65,6 @@ are averaged across 5 separately trained sets of weights. As described, we only 
 \end{table}
 
 \subsection{Methodology}
-For refinement distributions, initial experimentation revealed that training weights for all reference types jointly is intractable,
-because planning takes a long time. Potential solutions for this would explore alternative {\sc rl} algorithms,
-but this is not our focus. Instead, we apply curriculum learning by training with a planning problem distribution
-$\Prob$ that gets progressively harder. The details of this curriculum are described in each experiment's section.
-Additionally, we train the refinement policies first, then fix them while collecting demonstrations and training the graph search heuristics.
-
 We evaluate our approach in three distinct domains: cans distributed randomly on a table (the \emph{can domain}),
 setting up bowls for dinner (the \emph{dinner domain}), and placing frying pans into a narrow shelf (the \emph{frying domain}).
 We compare performance with two baselines, both of which use the hand-coded refinement distributions used in {\sc sfrcra-14}.
@@ -88,16 +82,37 @@ domains relate to the stackability of objects. Since this is independent of the 
 incorporate all available error information when attempting refinement. Thus, the graph search strategy
 from baseline 2 can be expected to perform well in these settings.
 
-We employ the following algorithm to produce a trained set of weights $\theta_{p}$ for refinement. We train 3 sets independently,
-test each one on a validation set, and output the best-performing one. We found that this
-reduced variation due to random seeding. The step size $\alpha$ was set to 0.1.
+For refinement distributions, initial experimentation revealed that training weights for all reference types jointly is intractable,
+because planning takes a long time. So, we apply curriculum learning by training with a planning problem distribution
+$\Prob$ that gets progressively harder. The details of this curriculum are described in each experiment's section.
+Additionally, we train the refinement policies first, then fix them while collecting demonstrations and training the graph search heuristics.
+For the fourth system, we reduce variance in the learning as follows. We train 3 sets of refinement weights independently,
+test each one on a validation set, and output the best-performing one. We set $\alpha = 0.1$.
 
 We report results on fixed test sets of 50 randomly generated environments for the can and dinner domains,
-and 20 for the frying domain (because the frying domain environments do not have as much variation).
+and 20 for the frying domain (because these environments have less variation).
 For the third and fourth systems, we average results across running the training
-process 5 times independently and evaluating each final set of weights. To train the graph search heuristics,
-we collect approximately 300 optimal actions from the human demonstrator, over 3 rounds of {\sc DAgger}. After these 3 rounds,
-we found that performance plateaued. We used $C = 10^{9}$ and constant margin $d = 1$ in solving the optimization.
+process 5 times independently and evaluating each final set of weights.
+
+For training refinement distributions, our weight vectors $\theta_{p}$ are initialized to $\vec{\mathbf{0}}$ for each symbolic reference type.
+We use 24 features. 9 binary features encode the bucketed distance between the sample
+and target object. 9 binary features encode the bucketed sample height. 3 features
+describe the number of other objects within discs of radius 7, 10, and 15 centimeters around the
+sample. 3 binary features describe the angle made between the vector from the
+robot to the target and the vector from the sample to the target: whether the angle is less than
+$\pi/3$, $\pi/2$, and $3\pi/4$.
+
+For training graph search, we use the following feature vector $f(n)$ associated with a high-level plan. Because the plan is composed
+of a sequence of object grasp and putdown actions, we first consider features of a single grasp action, targeted
+at an object $o$ in the environment. Consider a cone ranging from angles $-\frac{\pi}{3}$ to $\frac{\pi}{3}$
+toward the closest table edge from $o$. The first feature, exists\_obstr, is a binary variable indicating
+whether any other objects lie in this cone. The second, exists\_path, is a binary variable indicating whether there is a linear
+grasp path wide enough for the robot's gripper to fit through within the cone. For the third feature, we approximate the robot's arm and gripper with a cylinder $c$ and sweep it across 10 discretized angles from $-\frac{\pi}{3}$ to
+$\frac{\pi}{3}$. We then store the minimum number of collisions with $c$ as the feature, sweep\_count. This gives us a coarse approximation for the minimum number of object that should be moved before the target object is accessible via a linear path.
+We construct these features for the first five grasp actions in the plan (padding with -1 if there are not enough).
+We then add on the following aggregate features associated with the entire plan: 1) the minimum exists\_obstr across all grasp actions,
+2) the sum of sweep\_count across all grasp actions, 3) the number of times $n$ was picked for refinement,
+and 4) the number of times $n$ was picked for generating an error.
 
 Our experiments are conducted in Python 2.7 using the OpenRave simulator~\cite{Diankov_2008_6117} with a PR2 robot.
 The motion planner we use is trajopt~\cite{schulman2013finding}, and the task planner is Fast-Forward~\cite{FF}.
@@ -155,12 +170,16 @@ Our curriculum learning system first trains base poses and grasp poses for $N = 
 then base poses, grasp poses, and putdown poses (at fixed location) for $N = 18$ iterations with $\epsilon = 20$,
 then all reference types for $N = 30$ iterations with $\epsilon = 20$. We fixed $H = 100$.
 
+To train the graph search heuristics,
+we collect approximately 300 optimal actions from the human demonstrator, over 3 rounds of {\sc DAgger}. After these 3 rounds,
+we found that performance plateaued. We use $C = 10^{9}$ in solving the max-margin optimization problem.
+
 The results demonstrate significant improvements in performance to the baseline systems for success rate.
 However, backtracking search provides faster average refinement time. This is likely because
 refinement times were averaged over the test cases where all 4 systems succeeded. These plans tended
 to be easier to refine, so exhaustive backtracking search performs well because the total search space is small.
 \figref{fig:cover} and \figref{fig:training} show learned refinement distributions. \figref{fig:context} shows
-that our system learned to shape distributions based on the ``context'' in which an action is performed.
+that our system learned to shape distributions based on the context in which an action is performed.
 
 \begin{figure}[t]
   \centering
@@ -194,7 +213,7 @@ hand-coding the sample space works well in this domain. For example, the optimal
 robot base pose from which to pick up the tray is directly in front of it, which is quickly sampled in
 the baseline systems. Additionally, the lack of long-term dependencies in the plan
 means that backtracking search finds a valid refinement quickly. The fact that our system performs comparably
-with the baselines shows that our algorithm can learn pose instantiations for a variety of objects.
+with the baselines shows that our learning algorithm can recover good hand-coded distributions.
 \figref{fig:dinner} shows learned tray pickup poses.
 
 \begin{figure}[t]
