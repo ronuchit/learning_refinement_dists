@@ -1,12 +1,11 @@
 \section{Related Work}
-Our work uses machine learning techniques to improve planning reliability in a {\sc tamp} system.
-
 Dearden and Burbridge~\cite{deardenplanningtamp} use machine learning for {\sc tamp} by learning probability
-models for when symbolic predicates hold in a given geometric state. They use these models to perform backtracking search
-over potential geometric state instantiations for the sequence of symbolic states visited by the plan. While
-their work learns the semantics of the symbolic predicates and uses them to sample a refinement for each step
-in the plan, we assume known predicate semantics and use {\sc rl} to learn a complete plan refinement, after which we
-propose local improvements to it.
+models that map symbolic predicates to geometric states. They use these models in a backtracking search
+over potential geometric state instantiations for the sequence of symbolic states visited by the plan.
+Their work differs from ours in two key ways. First, they focus on learning the semantics of symbolic predicates, whereas
+we assume known semantics and instead optimize for fast planning. Second, they sample geometric states independently
+for each symbolic state in the task sequence, while our distributions are conditioned on the
+entire plan and its current refinement.
 
 Kaelbling et al.~\cite{kaelbling2011hierarchical} use hand-coded ``geometric suggesters'' to propose
 continuous geometric values for the plan parameters. These suggesters are heuristic
@@ -15,20 +14,24 @@ set of values to sample for each plan parameter. Our methods could be adapted he
 suggesters.
 
 Lagriffoul et al.~\cite{lagriffoul2014orientation}
-propose a set of geometric constraints involving the kinematics and sizes of the specific objects of
+propose a set of geometric constraints that involve the kinematics and sizes of the specific objects of
 interest in the environment. These constraints then define a feasible region from which to search
-for geometric instantiations of plan parameters. Our approach could be adapted to learn generalized
-versions of these constraints that apply to various domains.
+for geometric instantiations of plan parameters. By contrast, our approach learns good geometric values
+to propose based on experience.
 
-Garrett et al.~\cite{GarrettWAFR14} use information about reachability in the robot configuration
+Garrett et al.~\cite{GarrettWAFR14} use information about reachability in the configuration
 space and symbolic state space to construct a \emph{relaxed plan graph} that guides motion
-planning queries, using geometric biases to break ties among states with the same heuristic value.
-By contrast, we allow {\sc rl} to shape distributions for motion planning queries, so reachability information
-is naturally incorporated.
+planning, using geometric biases to break ties. Intermediate poses are sampled from a hand-coded
+distribution, whereas we learn these distributions using {\sc rl} and could use them within their search.
 
-Another line of work has been devoted to using machine learning techniques for
-training heuristics to guide search algorithms. This general formulation
-has been applied to many domains other than hierarchical planning for robotics.
+Another line of research has been devoted to machine learning techniques that
+guide search algorithms. This general formulation
+is applied to many domains other than hierarchical planning for robotics.
+Boyan et al.~\cite{Boyanlearning} solve optimization problems by learning a state
+evaluation function that guides local search. Arbelaez et al.~\cite{hamadisearch} solve constraint
+satisfaction problems using a heuristic model that is refined through supervised learning.
+Xu et al.~\cite{Xu07discriminativelearning} train heuristics for controlling forward
+state-space beam search in classical task planners.
 
 % Boyan et al.~\cite{Boyanlearning} present an application to solving optimization
 % problems using local search routines. They describe an algorithm, \textsc{Stage},
@@ -41,7 +44,7 @@ has been applied to many domains other than hierarchical planning for robotics.
 % the current heuristic model is used to solve user-inputted CSPs. In the \emph{exploration}
 % mode, this model is refined using supervised learning with a linear SVM.
 
-For instance, Xu et al.~\cite{Xu07discriminativelearning} apply machine learning for classical task
-planning, drawing inspiration from advances in discriminative learning for
-structured output classification. Their system trains heuristics for controlling forward
-state-space beam search in task planners.
+% For instance, Xu et al.~\cite{Xu07discriminativelearning} apply machine learning for classical task
+% planning, drawing inspiration from advances in discriminative learning for
+% structured output classification. Their system trains heuristics for controlling forward
+% state-space beam search in task planners.
