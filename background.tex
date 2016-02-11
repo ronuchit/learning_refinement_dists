@@ -24,7 +24,7 @@ Formally, we define the task and motion planning ({\sc tamp}) problem as a tuple
 \item $\Obj$ is a set of \emph{objects} denoting elements such as cans,
   trajectories, and poses. Note that $\Obj$ defines the
   configuration space of all movable objects, including the robot.
-\item $\T$ is a set of object \emph{types}, such as movable objects, poses, and locations.
+\item $\T$ is a set of object \emph{types}, such as movable objects, trajectories, poses, and locations.
 \item $\F$ is a set of \emph{fluents}, which define relationships
   among objects and are Boolean functions defined over the configuration space.
 \item $\I$ is the set of fluent literals that hold true in the initial state.
@@ -154,5 +154,5 @@ and gradient-free methods~\cite{suttonbarto}.
 
 In inverse {\sc rl}~\cite{ng2000algorithms}, an agent must recover $R$ given execution traces of optimal behavior
 according to $\pi^{*}$. This is useful in apprenticeship learning settings where the agent
-must acquire skills from observing an optimal demonstrator. Standard techniques include
+must acquire skills from observing a demonstrator. Standard techniques include
 the maximum-margin method~\cite{abbeel2004apprenticeship} and the maximum-entropy method~\cite{maxentirl}.

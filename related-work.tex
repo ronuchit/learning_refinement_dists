@@ -22,7 +22,7 @@ to propose based on experience.
 Garrett et al.~\cite{GarrettWAFR14} use information about reachability in the configuration
 space and symbolic state space to construct a \emph{relaxed plan graph} that guides motion
 planning, using geometric biases to break ties. Intermediate poses are sampled from a hand-coded
-distribution, whereas we learn these distributions using {\sc rl} and could use them within their search.
+distribution, whereas we learn these distributions using {\sc rl} and could use them with this graph.
 
 Our problem formulation is motivated by Zhang and Dietterich's application of {\sc rl} to job
 shop scheduling~\cite{JobShopSched}. Job shop scheduling is a combinatorial optimization problem where the goal is to find
@@ -38,8 +38,7 @@ a non-uniform configuration space sampler using policy gradient algorithms.
 In our work, we adapt their gradient updates to the {\sc tamp} framework (Section V-C).
 
 Another line of research has been devoted to machine learning techniques that
-guide search algorithms. This general formulation
-is applied to many domains other than hierarchical planning for robotics.
+guide search algorithms. This general formulation is applied to many domains other than robotics.
 Boyan et al.~\cite{Boyanlearning} solve optimization problems by learning a state
 evaluation function that guides local search. Arbelaez et al.~\cite{hamadisearch} solve constraint
 satisfaction problems using a heuristic model that is refined through supervised learning.

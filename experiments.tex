@@ -70,10 +70,10 @@ setting up bowls for dinner (the \emph{dinner domain}), and placing frying pans 
 We compare performance with two baselines, both of which use the hand-coded refinement distributions used in {\sc sfrcra-14}.
 
 Baseline 1 is {\sc sfrcra-14}: it uses exhaustive backtracking search for refinement
-and greedy depth-first search of the plan refinement graph, which always tries to refine
+and greedy depth-first search of the {\sc prg}, which always tries to refine
 the plan that incorporates all error information obtained thus far.
 Baseline 2 uses randomized refinement with the following fixed graph search policy: try 3 times to refine the deepest
-node in the graph; if unsuccessful, generate a geometric fact from it, replan with the task planner (which creates a child node), and repeat.
+node in the graph; if unsuccessful, generate a geometric error, replan with the task planner (which creates a child node), and repeat.
 
 For the can domain, we report results for 4 systems: 1) baseline 1; 2) baseline 2; 3) our learned refinement policies
 with the graph search used in baseline 2; and 4) our full system, with learned refinement policies and graph search heuristics.
@@ -102,14 +102,14 @@ sample. 3 binary features describe the angle made between the vector from the
 robot to the target and the vector from the sample to the target: whether the angle is less than
 $\pi/3$, $\pi/2$, and $3\pi/4$.
 
-For training graph search, we use the following feature vector $f(n)$ associated with a high-level plan. Because the plan is composed
-of a sequence of object grasp and putdown actions, we first consider features of a single grasp action, targeted
-at an object $o$ in the environment. Consider a cone ranging from angles $-\frac{\pi}{3}$ to $\frac{\pi}{3}$
+For training graph search, we use the following feature vector $f(n)$ for a {\sc prg} node storing a high-level plan.
+We first consider features of a single grasp action, targeted
+at an object $o$. Consider a cone ranging from angles $-\frac{\pi}{3}$ to $\frac{\pi}{3}$
 toward the closest table edge from $o$. The first feature, exists\_obstr, is a binary variable indicating
 whether any other objects lie in this cone. The second, exists\_path, is a binary variable indicating whether there is a linear
 grasp path wide enough for the robot's gripper to fit through within the cone. For the third feature, we approximate the robot's arm and gripper with a cylinder $c$ and sweep it across 10 discretized angles from $-\frac{\pi}{3}$ to
-$\frac{\pi}{3}$. We then store the minimum number of collisions with $c$ as the feature, sweep\_count. This gives us a coarse approximation for the minimum number of object that should be moved before the target object is accessible via a linear path.
-We construct these features for the first five grasp actions in the plan (padding with -1 if there are not enough).
+$\frac{\pi}{3}$. We then store the minimum number of collisions with $c$ as the feature, sweep\_count. This gives us a coarse approximation for the minimum number of objects that should be moved before the target object is accessible via a linear path.
+We construct these features for the first five grasp actions in the plan, padding with -1.
 We then add on the following aggregate features associated with the entire plan: 1) the minimum exists\_obstr across all grasp actions,
 2) the sum of sweep\_count across all grasp actions, 3) the number of times $n$ was picked for refinement,
 and 4) the number of times $n$ was picked for generating an error.
@@ -159,7 +159,7 @@ by relative robot location.}}
 \subsection{Can Domain}
 We run three sets of experiments, using 30, 35, and 40 cans on the table.
 The goal is always for the robot to pick up a particular can with its
-left gripper. We disabled the right gripper, so any obstructions to the target object must be picked up and
+left gripper. We disable the right gripper, so any obstructions to the target object must be picked up and
 placed elsewhere on the table. This domain has 4 types of continuous references: base poses, object grasp
 poses, object putdown poses, and object putdown locations.
 % The range of allowable values for grasp and putdown poses is a cube of side length 30 centimeters around the
@@ -168,7 +168,7 @@ poses, object putdown poses, and object putdown locations.
 
 Our curriculum learning system first trains base poses and grasp poses for $N = 12$ iterations with $\epsilon = 5$,
 then base poses, grasp poses, and putdown poses (at fixed location) for $N = 18$ iterations with $\epsilon = 20$,
-then all reference types for $N = 30$ iterations with $\epsilon = 20$. We fixed $H = 100$.
+then all reference types for $N = 30$ iterations with $\epsilon = 20$. We fix $H = 100$.
 
 To train the graph search heuristics,
 we collect approximately 300 optimal actions from the human demonstrator, over 3 rounds of {\sc DAgger}. After these 3 rounds,
@@ -206,7 +206,7 @@ This domain has 5 types of continuous references: base poses, object grasp poses
 poses, and tray putdown poses.
 
 Our curriculum learning system first trains base poses and tray pickup and putdown poses for
-$N = 20$ iterations, then object grasp and putdown poses for $N = 20$ iterations. We fixed $H = 100$ and $\epsilon = 10$.
+$N = 20$ iterations, then object grasp and putdown poses for $N = 20$ iterations. We fix $H = 100$ and $\epsilon = 10$.
 
 The results demonstrate comparable performance to the baseline systems. The reason is that
 hand-coding the sample space works well in this domain. For example, the optimal
@@ -241,7 +241,7 @@ We run two sets of experiments, using 2 and 4 frying pans. The robot must stack 
 radius into a narrow shelf. To be successful, it must grasp the frying pans at the handle, so that the handle sticks out
 after the pan is placed in the shelf. This domain has 3 types of continuous references: base poses, pan grasp poses, and
 pan putdown poses. We do not use curriculum learning, as weights for all these parameters can be trained jointly.
-We fixed $N = 30$, $H = 100$, and $\epsilon = 5$. {\sc sfrcra-14} did not have a frying domain, so we used the following
+We fix $N = 30$, $H = 100$, and $\epsilon = 5$. {\sc sfrcra-14} did not have a frying domain, so we use the following
 hand-coded distribution for picking up the pans: 4 grasp poses in the cardinal directions around the lip of the pan,
 and 4 grasp poses equidistant along the handle.
 

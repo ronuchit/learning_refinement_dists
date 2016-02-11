@@ -41,23 +41,23 @@ methods to perform joint guided search in the space of
 high-level, symbolic plans and their low-level
 \emph{refinements}: instantiations of continuous values for
 symbolic references in the plan. For example, in a pick-place domain, a high-level plan
-consists of a sequence of grasp and putdown actions, while its refinement is a sequence of
-collision-free trajectories that implement the plan. We refer to this search for a valid
+consists of a sequence of move, grasp, and putdown actions, while its refinement is a sequence of
+collision-free trajectories that implement the plan. We refer to the search for a valid
 refinement as \emph{plan refinement}.
 
 {\sc sfrcra-14} uses error information propagated from the geometric planner
 to update the symbolic state and generate a new high-level plan.
 For example, if motion planning discovers obstruction information in a pick-place domain, the
-new task plan may involve moving the obstruction out of the way.
+new plan may involve moving the obstruction out of the way.
 In our work, we think of these errors as defining a \emph{plan refinement graph} whose nodes are high-level plans
 and edges are error fluents. We develop a complete algorithm that interleaves
 search over this graph with plan refinement.
 
-We present machine learning techniques to train heuristic functions that guide
-search over both the high-level plan refinement graph and low-level plan refinement.
+We present machine learning techniques that guide
+search over both the low-level plan refinement and high-level plan refinement graph.
 Both search spaces are very large, so we need heuristics to make search efficient.
 At the low level, this amounts to
-learning to propose continuous values (for symbolic references) that are likely to result in
+learning to propose continuous values for symbolic references that are likely to result in
 collision-free trajectories. Many {\sc tamp} systems rely on hand-coded heuristics to
 account for these continuous parameter settings. This often requires
 domain-specific insight from the user to reduce the search space.

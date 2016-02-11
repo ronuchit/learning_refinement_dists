@@ -2,7 +2,7 @@
 The approach presented thus far can be succinctly described as learning \emph{how} to
 refine a single high-level plan. In this section, we present a method for learning
 \emph{which} plan to try refining. Recall that in Alg.\,\ref{alg:complete}, the high
-level has a two-tiered decision to make: which node in the plan refinement graph to
+level has a two-tiered decision to make: which node in the {\sc prg} to
 visit next, and whether to attempt to refine this node or generate failure information
 from it. These decisions are encoded in the routines \textsc{NDGetNextNode}
 and \textsc{NDChoice}. \figref{fig:cover} illustrates why making this decision intelligently is critical

@@ -6,10 +6,10 @@ to train continuous proposal distributions for symbolic reference instantiations
 \subsection{Formulation as Markov Decision Process}
 We formulate plan refinement as the following {\sc mdp}:
 \begin{tightlist}
-\item States are tuples $(\pi, \sigma, E)$ that consist of the
+\item States are tuples $\langle \pi, \sigma, E \rangle$ that consist of the
 high-level plan, its current (potentially infeasible) refinement, and the
 geometric environment.
-\item Actions are pairs $(p, x)$, where $p$ is the discrete symbolic
+\item Actions are pairs $\langle p, x \rangle$, where $p$ is the discrete symbolic
 reference to resample and $x$ is the continuous value assigned to $p$ in the new refinement.
 \item The transition function $T(s, a, s')$ is split into 2 cases.
   \begin{tightlist}
@@ -73,8 +73,8 @@ resampling for several distinct symbolic references in order to reach a feasible
 We adopt the sampling distribution used in Zucker et al.~\cite{workspacebias}
 for a symbolic reference $p$ with sample value $x$, in state $s \in \St$:
 $$q(s, p, x) \propto \exp(\theta_{p}^{T} f(s, p, x)).$$
-We define the expected reward of an episode $\xi$:
-$$\eta(\theta_{p}) = \mathbb{E}_{q}[R(\xi)]$$ and approximate its gradient:
+We define the expected reward of an episode $\xi$,
+$$\eta(\theta_{p}) = \mathbb{E}_{q}[R(\xi)],$$ and approximate its gradient:
 $$\nabla \eta(\theta_{p}) \approx \frac{R(\xi)}{\epsilon} \sum_{i=1}^{\epsilon}(f(s, p, x_{i}) - \mathbb{E}_{q,s}[f]).$$
 $R(\xi)$ is the sum over all rewards obtained throughout $\xi$, and
 $\mathbb{E}_{q,s}[f]$ is the expected feature vector under $q$ in state $s$. The weight vector update is then:
@@ -82,5 +82,5 @@ $$\theta_{p} \leftarrow \theta_{p} + \alpha \nabla \eta(\theta_{p})$$
 for appropriate step size $\alpha$.
 
 We sample $x$ from $q$ using the Metropolis algorithm~\cite{chib1995understanding}.
-Since our distributions are continuous, we cannot easily calculate $\mathbb{E}_{q}[f]$,
+Since our distributions are continuous, calculating $\mathbb{E}_{q,s}[f]$ is hard,
 so we approximate it with a Monte Carlo estimate.
