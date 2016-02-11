@@ -18,7 +18,7 @@ we construct $$f((n, m)) = \begin{bmatrix} f(n) \\ f(n) \end{bmatrix}^\top \begi
 which stacks the feature vector for $n$ on itself, then turns off the bottom half when $m = 0$ and the
 top half when $m = 1$. Now that we have defined a feature vector associated with each decision in a given {\sc prg},
 we can obtain human-demonstrated trajectories (sequences of actions $(n, m)^{*}$) that intelligently
-navigate the {\sc prg}. We then solve the following max-margin optimization problem with a constant margin and slack variables:
+navigate the {\sc prg}. We then solve the following maximum-margin optimization problem with a constant margin and slack variables:
 \begin{align*}
 &\min_{w, \xi_i \geq 0} & ||w||^2 + C \sum_i \xi_i\\
 &\text{s.t.} & w^{\top}f^*_i \geq w^{\top}f_{ij} + 1 - \xi_{i}\ \forall i, j \ ,
