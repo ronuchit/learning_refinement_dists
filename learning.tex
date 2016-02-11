@@ -52,7 +52,7 @@ infeasibility, but now resampling the grasping pose to obtain \{\emph{gp$_{1}$},
 We learn a policy for this {\sc mdp} by adapting the method of Zucker et al.~\cite{workspacebias}, which
 uses a linear combination of features to define a distribution over poses. In our setting, we learn a weight
 vector $\theta_{p}$ for each reference \emph{type}, comprised of a pose type and possibly a gripper
-(e.g., ``left gripper grasp pose,'' ``right gripper putdown pose,'' ``base pose'').
+(e.g., ``left gripper grasping pose,'' ``right gripper putdown pose,'' ``base pose'').
 This decouples the learned distributions from any single high-level plan and allows generalization across problem instances.
 
 We develop a feature function $f(s, a) = f(s, p, x)$ that maps the current

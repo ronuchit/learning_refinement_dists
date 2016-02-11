@@ -20,19 +20,20 @@ interacting logic-based and geometric components.
 \begin{figure}[t]
   \centering
     \noindent
-    \includegraphics[scale=0.15]{images/move_grasp.png}\hspace{6 mm}
-    \includegraphics[scale=0.19]{images/grasp_teaser_bad.png}
-    \includegraphics[scale=0.185]{images/grasp_teaser_good.png}
-  \caption{\small{\textbf{Left}: We use reinforcement learning to train good sampling distributions for
-      continuous motion planning parameters in long-horizon tasks.
-      The image shows learned base position (blue) and
-      grasping (green) distributions for picking up the black can. The grasping
-      policy learned to avoid the obstructions. The green points refer
-      to the position of the tool center point; the end effector is oriented
-      to point toward the object being grasped. \textbf{Right}: When trying to grasp the black can, the sampled grasping pose can
-      significantly affect the quality of the obstructions determined. The new plan proposed from the rightmost image only
-      requires moving 2 obstructions out of the way, versus 6 from the other. We integrate inverse reinforcement learning into our task and
-      motion planning system to learn an ordering on plan exploration, causing the system to prefer simpler and more feasible plans.}}
+    \includegraphics[scale=0.112]{images/learns.png}
+    \includegraphics[scale=0.13]{images/dinner_tray_initial.png}
+    \includegraphics[scale=0.13]{images/frying_initial.png}\vspace{1em}
+    \includegraphics[scale=0.112]{images/learn12.png}
+    \includegraphics[scale=0.13]{images/dinner_tray_final.png}
+    \includegraphics[scale=0.13]{images/frying_final.png}
+  \caption{\small{We use reinforcement learning to train good sampling distributions for
+      continuous motion planning parameters in long-horizon tasks. The top images show
+      initial, uniform distributions. The bottom images show learned base position (blue) and
+      grasping (green, yellow) distributions for picking up various objects in our simulated domains:
+      a can (left), a tray (middle), and a frying pan (right).
+      The green and yellow points refer to the positions of the tool center points;
+      the end effectors are oriented to point toward the object being grasped. The can and
+      frying pan are picked up using only one gripper.}}
   \label{fig:cover}
 \end{figure}
 

@@ -6,7 +6,7 @@ level has a two-tiered decision to make: which node in the {\sc prg} to
 visit next, and whether to attempt to refine this node or generate failure information
 from it. These decisions are encoded in the routines \textsc{NDGetNextNode}
 and \textsc{NDChoice}. \figref{fig:cover} illustrates why making this decision intelligently is critical
-to good performance. We now explain our inverse {\sc rl}
+to good performance (TODO: remove this). We now explain our inverse {\sc rl}
 approach to training heuristics that implement these routines. The heuristics are trained to estimate
 the difficulty associated with refining a plan, and to decide when to quickly generate
 a geometric fact used for replanning with the task planner. In our explanation, $n$ is the selected
@@ -29,6 +29,20 @@ demonstrated trajectory has an associated slack variable in this formulation.
 The weight vector $w$ encodes a ranking function on the different actions.
 We then use {\sc DAgger}~\cite{dagger} to augment our training data. At test time, we follow the policy encoded by
 $w$, picking the highest-scoring action at each step.
+
+TODO: cite \figref{fig:hlsearch}
+
+\begin{figure}[t]
+  \centering
+    \noindent
+    \includegraphics[scale=0.17, angle=270]{images/grasp_teaser_bad.png}
+    \includegraphics[scale=0.17, angle=270]{images/grasp_teaser_good.png}
+  \caption{\small{When trying to grasp the black can, the sampled grasping pose can
+      significantly affect the quality of the obstructions determined. The new plan proposed from the rightmost image only
+      requires moving 2 obstructions out of the way, versus 6 from the other. We integrate inverse reinforcement learning into our task and
+      motion planning system to learn an ordering on plan exploration, causing the system to prefer simpler and more feasible plans.}}
+  \label{fig:hlsearch}
+\end{figure}
 
 % \begin{figure}[t]
 %   \centering
