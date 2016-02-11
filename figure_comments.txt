@@ -1,0 +1,54 @@
+Fig. 1
+-----------------------------------------------------------------
+
+In an ideal world, we'd replace this figure with one that is more
+printer friendly...
+
+"good sampling distributions" --- this isn't the best way to
+characterize our system, what does 'good' mean? It's basically an
+empty world here, we should just say what we mean by good instead.
+
+Fig. 2
+------------------------------------------------------------------
+
+Looks much better, but still a couple suggestions. 
+
+We should use notation to represent the plan that is similar to the
+notation used in other papers, the style used in the bsp tamp paper is
+a good option.
+
+I think this will be more readable with a left alignment for the
+plans.
+
+Fig. 3
+-------------------------------------------------------------------
+
+I think the caption could use some work here, but I'll just give it a
+shot on my pass.
+
+
+Fig. 4
+-------------------------------------------------------------------
+
+Nice illustration of context sensitivity, I have some comments on the
+caption, but I can integrate them myself.
+
+It looks to me like the only thing changing in the image is a single
+obstruction. It would be good to make that can a different color so
+that it is clear to readers what is changing between the different
+scene.
+
+I also think this might make for a good teaser image --- it's more
+visually appealing and intuitive than the picture with all 3 domains.
+
+
+Delayed Rewards
+-------------------------------------------------------------------
+
+I think this is close, but not quite what we want. It's not an
+argument that delayed rewards are important. Instead, we want to give
+an example of a trajectory through this MDP and show what
+happens. That trajectory illustrates the impact and potential for
+delayed rewards in this MDP.
+
+I can take a stab a re-writing this part too. 
