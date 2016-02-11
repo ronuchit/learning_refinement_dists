@@ -11,11 +11,7 @@ high-level plan, its current (potentially infeasible) refinement, and the
 geometric environment.
 \item Actions are pairs $\langle p, x \rangle$, where $p$ is the discrete symbolic
 reference to resample and $x$ is the continuous value assigned to $p$ in the new refinement.
-\item The transition function $T(s, a, s')$ is split into 2 cases.
-  \begin{tightlist}
-  \item Case 1: The proposed value $x$ is {\sc ik} infeasible. The state remains the same.
-  \item Case 2: Otherwise, the value of $p$ is set to $x$ and the motion planner is called.
-  \end{tightlist}
+\item The value of $p$ is set to $x$ in order to transition the state. If $x$ is {\sc ik} feasible, the motion planner is called.
 \item The reward function $R(s, a, s')$ provides rewards based on a measure of closeness to a valid plan refinement.
 \item The process terminates after $H$ timesteps.
 \item $\Prob$ is a distribution over planning problems and defines the initial state distribution for this {\sc mdp}.
@@ -28,20 +24,29 @@ Our reward function $R$ explicitly encourages successful plan refinement, provid
 interpolated between 0 and 20 based on the fraction of high-level actions whose preconditions are
 satisfied. Additionally, we give $-1$ reward every time we sample an {\sc ik} infeasible pose.
 
-\begin{figure}[t]
-  \centering
-    \noindent
-    \includegraphics[scale=0.15]{images/fry_bad_grasp_pd1.png}\hspace{6mm}
-    \includegraphics[scale=0.15]{images/fry_bad_grasp_pd2.png}
-    \includegraphics[scale=0.16]{images/fry_good_grasp_bad_pd.png}\hspace{6mm}
-    \includegraphics[scale=0.13]{images/fry_good_grasp_good_pd.png}
-  \caption{\small{\textbf{Top}: When the frying pan is not grasped by the handle, any attempted putdown pose for
-placing it into the narrow shelf fails. \textbf{Bottom}: When the frying pan is grasped by the handle, some putdown
-poses may succeed, as in the right, and some may fail, as in the left. In general, delayed rewards
-are important in the plan refinement {\sc mdp}; sometimes multiple symbolic references require resampling to
-change an infeasible refinement into a feasible one.}}
-  \label{fig:delayed}
-\end{figure}
+Delayed rewards are an important aspect of the {\sc mdp}. Typically, several distinct symbolic references
+must be resampled for an infeasible refinement to become feasible. For example, consider a pick-place domain
+where the robot must grasp an object and put it down at a certain location. Suppose that for a certain grasping
+pose, \emph{gp$_{0}$}, the putdown pose \emph{pdp$_{0}$} is {\sc ik} infeasible; for another,
+\emph{gp$_{1}$}, \emph{pdp$_{0}$} is valid.
+Then, suppose some refinement \{\emph{gp$_{0}$}, \emph{pdp$_{1}$}\} involving another putdown pose is infeasible due to some violated precondition.
+Resampling the putdown pose to obtain \{\emph{gp$_{0}$}, \emph{pdp$_{0}$}\} gives a reward of -1 due to {\sc ik}
+infeasibility, but now resampling the grasping pose to obtain \{\emph{gp$_{1}$}, \emph{pdp$_{0}$}\} gives a reward of 20.
+
+% \begin{figure}[t]
+%   \centering
+%     \noindent
+%     \includegraphics[scale=0.15]{images/fry_bad_grasp_pd1.png}\hspace{6mm}
+%     \includegraphics[scale=0.15]{images/fry_bad_grasp_pd2.png}
+%     \includegraphics[scale=0.16]{images/fry_good_grasp_bad_pd.png}\hspace{6mm}
+%     \includegraphics[scale=0.13]{images/fry_good_grasp_good_pd.png}
+%   \caption{\small{\textbf{Top}: When the frying pan is not grasped by the handle, any attempted putdown pose for
+% placing it into the narrow shelf fails. \textbf{Bottom}: When the frying pan is grasped by the handle, some putdown
+% poses may succeed, as in the right, and some may fail, as in the left. In general, delayed rewards
+% are important in the plan refinement {\sc mdp}; sometimes multiple symbolic references require resampling to
+% change an infeasible refinement into a feasible one.}}
+%   \label{fig:delayed}
+% \end{figure}
 
 \subsection{Training Process}
 We learn a policy for this {\sc mdp} by adapting the method of Zucker et al.~\cite{workspacebias}, which
@@ -63,11 +68,6 @@ algorithm to attempt to find a valid plan refinement, allowing the \textsc{Resam
 routine to be called $H$ times before termination. Select actions according to the $\theta_{p}$
 and collect rewards according to $R$. After every $\epsilon$ calls to
 \textsc{Resample}, perform a gradient update on the weights.
-
-\figref{fig:delayed} shows that delayed rewards are an important
-aspect of the {\sc mdp}: if a grasping pose along the lip of the frying pan is sampled, no putdown pose can lead
-to it being placed inside the shelf. Typically, an infeasible refinement must undergo
-resampling for several distinct symbolic references in order to reach a feasible refinement.
 
 \subsection{Distribution and Gradient Updates}
 We adopt the sampling distribution used in Zucker et al.~\cite{workspacebias}
