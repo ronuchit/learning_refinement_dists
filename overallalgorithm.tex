@@ -56,19 +56,19 @@ we address the first limitation; in the following sections, we address the secon
   \centering
   \begin{tikzpicture}[sibling distance=10em,
   every node/.style = {shape=rectangle, rounded corners,
-    draw, align=center,
+    draw, align=left,
     color=black},
   decoration={
       markings,
       mark=at position 1 with {\arrow[scale=2,black]{latex}};
     }]
-  \node (1) at (-1, 0) {1. Move \{\emph{pose}$_{init}$, \emph{pose$_{A}$}\}\\2. Grasp A \{\emph{pose$_{A}$}\}};
-  \node (2) at (-3, -3) {1. Move \{\emph{pose}$_{init}$, \emph{pose$_{B}$}\}\\2. Grasp B \{\emph{pose$_{B}$}\}\\
-    3. Move \{\emph{pose}$_{B}$, \emph{pose$_{A}$}\}\\4. Grasp A \{\emph{pose$_{A}$}\}};
-  \node (3) at (1.5, -3) {1. Move \{\emph{pose}$_{init}$, \emph{pose$_{C}$}\}\\2. Grasp C \{\emph{pose$_{C}$}\}\\
-    3. Move \{\emph{pose}$_{C}$, \emph{pose$_{A}$}\}\\4. Grasp A \{\emph{pose$_{A}$}\}};
-  \draw [postaction={decorate}] (-2, -0.5) -- (2) node [midway, left, draw=none, text=red] {B obstructs\\path to A};
-  \draw [postaction={decorate}] (0, -0.5) -- (3) node [midway, right, draw=none, text=red] {C obstructs\\path to A};
+  \node (1) at (-1, 0) {1. \emph{MoveTo}(pose$_{init}$, pose$_{A}$)\\2. \emph{Grasp}($A$, pose$_{A}$)};
+  \node (2) at (-3, -3) {1. \emph{MoveTo}(pose$_{init}$, pose$_{B}$)\\2. \emph{Grasp}($B$, pose$_{B}$)\\
+    3. \emph{MoveTo}(pose$_{B}$, pose$_{A}$)\\4. \emph{Grasp}($A$, pose$_{A}$)};
+  \node (3) at (1.5, -3) {1. \emph{MoveTo}(pose$_{init}$, pose$_{C}$)\\2. \emph{Grasp}($C$, pose$_{C}$)\\
+    3. \emph{MoveTo}(pose$_{C}$, pose$_{A}$)\\4. \emph{Grasp}($A$, pose$_{A}$)};
+  \draw [postaction={decorate}] (-2, -0.5) -- (2) node [midway, left, draw=none, text=red, align=center] {B obstructs\\path to A};
+  \draw [postaction={decorate}] (0, -0.5) -- (3) node [midway, right, draw=none, text=red, align=center] {C obstructs\\path to A};
   \end{tikzpicture}
   \caption{\small{A simple plan refinement graph for an environment with 3 objects: A,
 B, and C. The goal is to grasp object A. Each node maintains a high-level

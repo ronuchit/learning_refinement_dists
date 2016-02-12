@@ -8,6 +8,8 @@ printer friendly...
 characterize our system, what does 'good' mean? It's basically an
 empty world here, we should just say what we mean by good instead.
 
+(Rohan) I just got rid of the word "good" as it doesn't help anything.
+
 Fig. 2
 ------------------------------------------------------------------
 
@@ -20,12 +22,15 @@ a good option.
 I think this will be more readable with a left alignment for the
 plans.
 
+(Rohan) Done.
+
 Fig. 3
 -------------------------------------------------------------------
 
 I think the caption could use some work here, but I'll just give it a
 shot on my pass.
 
+(Rohan) Thanks.
 
 Fig. 4
 -------------------------------------------------------------------
@@ -41,6 +46,7 @@ scene.
 I also think this might make for a good teaser image --- it's more
 visually appealing and intuitive than the picture with all 3 domains.
 
+(Rohan) Done. As for making it the teaser, you can decide. I like the current teaser image though. I think it is pretty intuitive itself.
 
 Delayed Rewards
 -------------------------------------------------------------------
@@ -51,4 +57,6 @@ an example of a trajectory through this MDP and show what
 happens. That trajectory illustrates the impact and potential for
 delayed rewards in this MDP.
 
-I can take a stab a re-writing this part too. 
+I can take a stab a re-writing this part too.
+
+(Rohan) Thanks.
