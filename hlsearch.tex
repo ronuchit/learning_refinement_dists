@@ -1,14 +1,26 @@
 \section{Learning What Task Plan to Refine}
+\subsection{Significance}
 The approach presented thus far can be succinctly described as learning \emph{how} to
 refine a single high-level plan. In this section, we present a method for learning
 \emph{which} plan to try refining. Recall that in Alg.\,\ref{alg:complete}, the high
-level has a two-tiered decision to make: which node in the {\sc prg} to
-visit next, and whether to attempt to refine this node or generate failure information
+level has a two-tiered decision to make: 1) which node in the {\sc prg} to
+visit next, and 2) whether to attempt to refine this node or generate failure information
 from it. These decisions are encoded in the routines \textsc{NDGetNextNode}
-and \textsc{NDChoice}. \figref{fig:cover} illustrates why making this decision intelligently is critical
-to good performance (TODO: remove this). We now explain our inverse {\sc rl}
-approach to training heuristics that implement these routines. The heuristics are trained to estimate
-the difficulty associated with refining a plan, and to decide when to quickly generate
+and \textsc{NDChoice}. Making these decisions intelligently is critical to good
+performance. For example, in a pick-place domain, different sampled grasping poses
+can cause different obstruction errors to be propagated back up to the task planner. The {\sc prg}
+would then contain plans for picking up the target object through distinct obstruction paths. This
+is illustrated in \figref{fig:hlsearch}; we would want the system to choose the plan that is easier
+to refine. In general, however, naively choosing the plan involving fewer obstructions
+may not be prudent; we instead use machine learning to guide the decisions.
+
+\subsection{Approach}
+Unfortunately, direct application of {\sc rl} to this task is difficult for two major reasons: 1)
+the space of potential high-level plans is very large, and the plans are not of a fixed length; 2)
+taking actions in this space corresponds to expending computation on attemped plan refinement, if the
+appropriate mode gets selected. Thus, we use inverse {\sc rl} with expert demonstrations to train heuristics at this level.
+
+The heuristics are trained to 1) estimate the difficulty associated with refining a plan and 2) decide when to quickly generate
 a geometric fact used for replanning with the task planner. In our explanation, $n$ is the selected
 node and $m$ is the mode to apply (either trying to refine the node or quickly generating failure information).
 
@@ -29,8 +41,6 @@ demonstrated trajectory has an associated slack variable in this formulation.
 The weight vector $w$ encodes a ranking function on the different actions.
 We then use {\sc DAgger}~\cite{dagger} to augment our training data. At test time, we follow the policy encoded by
 $w$, picking the highest-scoring action at each step.
-
-TODO: cite \figref{fig:hlsearch}
 
 \begin{figure}[t]
   \centering
