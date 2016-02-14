@@ -1,7 +1,8 @@
-\section{Learning Refinement Distributions}
-Randomized refinement provides us with a framework to learn a policy that implements
-\textsc{NDGetInstantiation} and performs well empirically. We apply {\sc rl}
-to train continuous proposal distributions for symbolic reference instantiations.
+\section{Learning How to Refine Task Plans}
+%% Randomized refinement provides us with a framework to learn a policy
+%% that implements \textsc{NDGetInstantiation} and performs well
+%% empirically. We apply {\sc rl} to train continuous proposal
+%% distributions for symbolic reference instantiations.
 
 \subsection{Formulation as Markov Decision Process}
 We formulate plan refinement as the following {\sc mdp}:
@@ -11,27 +12,28 @@ high-level plan, its current (potentially infeasible) refinement, and the
 geometric environment.
 \item Actions are pairs $\langle p, x \rangle$, where $p$ is the discrete symbolic
 reference to resample and $x$ is the continuous value assigned to $p$ in the new refinement.
-\item The value of $p$ is set to $x$ in order to transition the state. If $x$ is {\sc ik} feasible, the motion planner is called.
-\item The reward function $R(s, a, s')$ provides rewards based on a measure of closeness to a valid plan refinement.
-\item The process terminates after $H$ timesteps.
-\item $\Prob$ is a distribution over planning problems and defines the initial state distribution for this {\sc mdp}.
+\item The transition distribution is definged by setting $p$'s value
+  to $x$. If $x$ is {\sc ik} feasible, the motion planner determines
+  any new trajectories.
+\item The reward function $R(s, a, s')$ is linearly interpolated
+  between 0 and 20 based on the fraction of high-level actions whose
+  preconditions are satisfied. Actions that result in an {\sc ik}
+  infeasible pose receive reward $-i$.
+\item The horizon is the number of available samples.
+\item $\Prob$ is a distribution over plans to be refined, defines as a
+  distribution over planning problems.
 \end{tightlist}
 
-We restrict our attention to training policies that suggest $x$ for actions in $\A$, since
-randomized refinement already provides a fixed policy for selecting $p$.
-
-Our reward function $R$ explicitly encourages successful plan refinement, providing positive reward linearly
-interpolated between 0 and 20 based on the fraction of high-level actions whose preconditions are
-satisfied. Additionally, we give $-1$ reward every time we sample an {\sc ik} infeasible pose.
-
-Delayed rewards are an important aspect of the {\sc mdp}. Typically, several distinct symbolic references
-must be resampled for an infeasible refinement to become feasible. For example, consider a pick-place domain
-where the robot must grasp an object and put it down at a certain location. Suppose that for a certain grasping
-pose, \emph{gp$_{0}$}, the putdown pose \emph{pdp$_{0}$} is {\sc ik} infeasible; for another,
-\emph{gp$_{1}$}, \emph{pdp$_{0}$} is valid.
-Then, suppose some refinement \{\emph{gp$_{0}$}, \emph{pdp$_{1}$}\} involving another putdown pose is infeasible due to some violated precondition.
-Resampling the putdown pose to obtain \{\emph{gp$_{0}$}, \emph{pdp$_{0}$}\} gives a reward of -1 due to {\sc ik}
-infeasibility, but now resampling the grasping pose to obtain \{\emph{gp$_{1}$}, \emph{pdp$_{0}$}\} gives a reward of 20.
+As an example, consider refining a pick-place task plan, where the
+robot grasps an object and puts it down at a certain location. The
+initial state consists of this plan, a list of initialized parameters,
+and meshes that describe the geometry of the problem. We'll suppose
+that the initial grasp is infeasible for both the pickup and the down
+actions. The first action selects a new grasp, but receives no reward
+because it does not work with the current pick or putdown poses. The
+two actions set values for these poses that work with the grasp. The
+final step collects the maximum reward of 20 because all instantiated
+actions are feasible.
 
 % \begin{figure}[t]
 %   \centering
@@ -49,37 +51,44 @@ infeasibility, but now resampling the grasping pose to obtain \{\emph{gp$_{1}$},
 % \end{figure}
 
 \subsection{Training Process}
-We learn a policy for this {\sc mdp} by adapting the method of Zucker et al.~\cite{workspacebias}, which
-uses a linear combination of features to define a distribution over poses. In our setting, we learn a weight
-vector $\theta_{p}$ for each reference \emph{type}, comprised of a pose type and possibly a gripper
-(e.g., ``left gripper grasping pose,'' ``right gripper putdown pose,'' ``base pose'').
-This decouples the learned distributions from any single high-level plan and allows generalization across problem instances.
+We restrict our attention to training policies that suggest $x$ for a
+given parameter. Our refinement algorithim defines a way to select
+$p$. Our approach is to adapt the method of Zucker et
+al.~\cite{workspacebias}, which uses a linear combination of features
+to define a distribution over poses. We learn a weight vector
+$\theta_{p}$ for each reference \emph{type}, comprised of a pose type
+and possibly a gripper (e.g., ``left gripper grasping pose,'' ``right
+gripper putdown pose,'' ``base pose'').
 
-We develop a feature function $f(s, a) = f(s, p, x)$ that maps the current
-state $s \in \St$ and action $a \in \A$ to a
-feature vector; $f$ defines a policy class for the {\sc mdp}. Additionally, we define
-$N$ as the number of planning problems on which to train and
-$\epsilon$ as the number of samples comprising a training episode, after which we update weights.
+We use a feature function $f(s, a) = f(s, p, x)$ that maps the current
+state $s \in \St$ and action $a \in \A$ to a feature vector; $f$
+defines a policy class for the {\sc mdp}. Additionally, we define $N$
+as the number of planning problems on which to train and $\epsilon$ as
+the number of samples comprising a training episode, after which we
+update weights.
 
-The training is a natural extension of randomized
-refinement and progresses as follows. $N$ times, sample from $\Prob$ to obtain
-a complete planning problem $\Pi$. For each $\Pi$, run the randomized refinement
-algorithm to attempt to find a valid plan refinement, allowing the \textsc{Resample}
-routine to be called $H$ times before termination. Select actions according to the $\theta_{p}$
-and collect rewards according to $R$. After every $\epsilon$ calls to
-\textsc{Resample}, perform a gradient update on the weights.
+The training is a natural extension of randomized refinement and
+progresses as follows. $N$ times, sample from $\Prob$ to obtain a
+complete planning problem $\Pi$. For each $\Pi$, compute a task plan
+and run the randomized refinement algorithm to attempt to find a valid
+plan refinement. Select actions according to the $\theta_{p}$ and
+collect rewards according to $R$. After every $\epsilon$ calls to
+\textsc{Resample}, take a gradient step on $\theta_{p}$.
 
-\subsection{Distribution and Gradient Updates}
-We adopt the sampling distribution used in Zucker et al.~\cite{workspacebias}
-for a symbolic reference $p$ with sample value $x$, in state $s \in \St$:
+For a symbolic reference $p$, in state $s$, our policy selects a
+sample value $x$ with probability
 $$q(s, p, x) \propto \exp(\theta_{p}^{T} f(s, p, x)).$$
-We define the expected reward of an episode $\xi$,
-$$\eta(\theta_{p}) = \mathbb{E}_{q}[R(\xi)],$$ and approximate its gradient:
-$$\nabla \eta(\theta_{p}) \approx \frac{R(\xi)}{\epsilon} \sum_{i=1}^{\epsilon}(f(s, p, x_{i}) - \mathbb{E}_{q,s}[f]).$$
+
+We define the expected reward of an episode $\xi$, as
+$\eta(\theta_{p})~=~\mathbb{E}_{q}[R(\xi)],$ and approximate its
+gradient:
+$$\nabla \eta(\theta_{p}) \approx \frac{R(\xi)}{\epsilon}
+\sum_{i=1}^{\epsilon}(f(s, p, x_{i}) - \mathbb{E}_{q,s}[f]).$$
 $R(\xi)$ is the sum over all rewards obtained throughout $\xi$, and
-$\mathbb{E}_{q,s}[f]$ is the expected feature vector under $q$ in state $s$. The weight vector update is then:
-$$\theta_{p} \leftarrow \theta_{p} + \alpha \nabla \eta(\theta_{p})$$
-for appropriate step size $\alpha$.
+$\mathbb{E}_{q,s}[f]$ is the expected feature vector under $q$ in
+state $s$. Then, for an appropriate step size $\alpha$ the weight
+vector update is:
+$$\theta_{p} \leftarrow \theta_{p} + \alpha \nabla \eta(\theta_{p}).$$
 
 We sample $x$ from $q$ using the Metropolis algorithm~\cite{chib1995understanding}.
 Since our distributions are continuous, calculating $\mathbb{E}_{q,s}[f]$ is hard,

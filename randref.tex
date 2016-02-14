@@ -1,16 +1,22 @@
 \subsection{A Randomized Algorithm for Plan Refinement}
-In order to apply the complete planning algorithm described above, we must provide definitions for each of the subroutines mentioned in Alg.\,\ref{alg:complete}. There are many ways to implement these functions. For example, {\sc sfrcra-14} uses a backtracking search over a discrete set of instantiations to implement \textsc{RefineNode}. Since we want to apply {\sc rl} to learn policies for refinement,
-we seek an algorithm that allows for easy formulation as an {\sc mdp}. Our method
-imitates that of Zhang and Dietterich~\cite{JobShopSched}:
-we initialize an infeasible refinement and use a randomized local search to propose
-improvements. Alg.\,\ref{alg:randref} shows pseudocode for this refinement strategy,
-which implements \textsc{RefineNode} in Alg.\,\ref{alg:complete}.
+In order to apply the complete planning algorithm described above, we
+must provide definitions for each of the subroutines mentioned in
+Alg.\,\ref{alg:complete}. {\sc sfrcra-14} uses a backtracking search
+over a discrete set of instantiations to implement
+\textsc{RefineNode}. We want to learn policies for refinement, so we
+seek an algorithm that is more easily formulated as an {\sc mdp}. Our
+method imitates that of Zhang and Dietterich~\cite{JobShopSched}: we
+initialize an infeasible refinement and use a randomized local search
+to propose improvements. Alg.\,\ref{alg:randref} shows pseudocode for
+this refinement strategy, which implements \textsc{RefineNode} in
+Alg.\,\ref{alg:complete}.
 
-The algorithm takes as input a high-level plan and a maximum iteration count.
-In line 1, we initialize a (potentially invalid) refinement by sampling from distributions associated
-with each symbolic reference. We continue sampling
-until we find bindings that satisfy inverse kinematics constraints ({\sc ik} feasibility). Trajectories are
-initialized as straight lines.
+The algorithm takes as input a high-level plan and a maximum iteration
+count.  In line 1, we initialize a (potentially invalid) refinement by
+sampling from distributions associated with each symbolic
+reference. We continue sampling until we find bindings that satisfy
+inverse kinematics constraints ({\sc ik} feasibility). Trajectories
+are initialized as straight lines.
 
 \begin{algorithm}[t]
 \begin{small}
@@ -52,12 +58,13 @@ resamples its value. \textsc{InitRefinement} and \textsc{Resample} together defi
 through the steps of the plan, checks precondition and trajectory feasibility, and returns
 a failed action index and associated predicate.
 
-Randomized refinement has two key properties. The first is a very explicit algorithm state.
-We show in the next section that this allows for a straightforward {\sc mdp}
-formulation. The second is that
-it allows the instantiations for a particular action in
-the plan to be influenced by those for a \emph{future} action. For example, in a
-pick-place domain, it can make sense for the object's grasping pose to be sampled
-conditionally on the current instantiation of the putdown pose, even though the putdown
-appears after the grasp in the plan sequence. This allows plan refinement to account for
-long-term dependencies in symbolic reference instantiation.
+Randomized refinement has two key properties. The first is a very
+explicit algorithm state.  We show in the next section that this
+allows for a straightforward {\sc mdp} formulation. The second is that
+it allows the instantiations for a particular action in the plan to be
+influenced by those for a \emph{future} action. For example, in a
+pick-place domain, it can make sense for the object's grasping pose to
+be sampled conditionally on the current instantiation of the putdown
+pose, even though the putdown appears after the grasp in the plan
+sequence. This allows plan refinement to account for long-term
+dependencies in symbolic reference instantiation.

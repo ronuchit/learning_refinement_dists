@@ -1,36 +1,39 @@
 \section{Solving Task and Motion Planning Problems}
-Solving {\sc tamp} problems requires evaluation of
-possible courses of action comprised of different combinations of
-instantiated action operators. This is particularly challenging
-because the set of possible action instantiations (and thus the
-branching factor of the underlying search problem) is infinite.
-We give a brief overview of {\sc sfrcra-14}, a recent approach to {\sc tamp}, and
-refer the interested reader to the cited paper for further details.
-Then, we present a complete algorithm for {\sc tamp} that we implemented in
-the framework of {\sc sfrcra-14}.
+Solving {\sc tamp} problems requires evaluation of possible courses of
+action, each comprised of different combinations of instantiated
+action operators. A fundamental challenge is that the set of possible
+action instantiations (and thus the branching factor of the underlying
+search problem) is infinite.  We give a brief overview of {\sc
+  sfrcra-14}, a recent approach to {\sc tamp}, and refer the
+interested reader to the cited paper for further details.  Then, we
+present a complete algorithm for {\sc tamp} that uses the framework of
+{\sc sfrcra-14}.
 
 \subsection{Preliminaries}
-The fundamental {\sc tamp} problem is that high-level
-logical descriptions are lossy abstractions of the true environment
+The fundamental {\sc tamp} problem is that high-level logical
+descriptions are lossy abstractions of the true environment
 dynamics. Thus, they may not include sufficient information to
-determine the applicability of a sequence of actions.
-{\sc sfrcra-14} addresses this by: incrementally
-searching for a high-level plan that solves the logical abstraction
-of the given {\sc tamp} problem; determining a prefix of the plan that has a
-motion planning feasible refinement; updating the high-level
-abstraction to reflect the reason for infeasibility; and searching for
-a new plan suffix from the failure step onwards.
+determine the applicability of a sequence of actions.  {\sc sfrcra-14}
+addresses this by: incrementally searching for a high-level plan that
+solves the logical abstraction of the given {\sc tamp} problem;
+determining a prefix of the plan that has a motion planning feasible
+refinement; updating the high-level abstraction to reflect the reason
+for infeasibility; and searching for a new plan suffix from the
+failure step onwards.
 
-In general, including geometric properties in the logic-based formulation leads to an
-increase in the number of objects representing distinct poses and/or trajectories. For
-instance, expressing the fact that a trajectory for grasping \emph{can$_1$} is obstructed by
-\emph{can$_3$} from the current pose of the robot would require setting a fluent of the
-form \emph{obstructs(can$_3$, pose$_{17877}$, trajectory$_{3219}$, can$_1$)} to true in
-the description of the high-level state. In turn, this would require adding
-\emph{pose$_{17877}$} and \emph{trajectory$_{3219}$} into the set of objects if they were
-not already included. Unfortunately, the size of the abstracted, logic-based state space
-grows exponentially with the number of objects, and such an approach quickly leads to
-unsolvable task planning problems.
+In general, including geometric properties in the logic-based
+formulation leads to an increase in the number of objects representing
+distinct poses and/or trajectories. For instance, expressing the fact
+that a trajectory for grasping \emph{can$_1$} is obstructed by
+\emph{can$_3$} from the current pose of the robot would require
+setting a fluent of the form \emph{obstructs(can$_3$, pose$_{17877}$,
+  trajectory$_{3219}$, can$_1$)} to true in the description of the
+high-level state. In turn, this would require adding
+\emph{pose$_{17877}$} and \emph{trajectory$_{3219}$} into the set of
+objects if they were not already included. Unfortunately, the size of
+the abstracted, logic-based state space grows exponentially with the
+number of objects, and such an approach quickly leads to unsolvable
+task planning problems.
 
 {\sc sfrcra-14} addresses this challenge by abstracting the continuous
 action arguments, such as robot grasping poses and trajectories, into
@@ -70,61 +73,70 @@ we address the first limitation; in the following sections, we address the secon
   \draw [postaction={decorate}] (-2, -0.5) -- (2) node [midway, left, draw=none, text=red, align=center] {B obstructs\\path to A};
   \draw [postaction={decorate}] (0, -0.5) -- (3) node [midway, right, draw=none, text=red, align=center] {C obstructs\\path to A};
   \end{tikzpicture}
-  \caption{\small{A simple plan refinement graph for an environment with 3 objects: A,
-B, and C. The goal is to grasp object A. Each node maintains a high-level
-plan and a set of instantiated continuous values for its symbolic references.
-The edges are labeled with errors discovered by the low-level motion planner; these errors are
-propagated back up to the task planner for replanning.}}
+  \caption{\small{A plan refinement graph for an environment with 3
+      objects: A, B, and C. The goal is to grasp A. Each node is a
+      task plan and edges are labeled with errors discovered during
+      failed attempts at plan refinement. Each edge points to a plan
+      that addresses that reason failure. In this example, failures
+      are obstructions and new plans move the offending object out of
+      the way.}}
   \label{fig:prg}
 \end{figure}
 
 \subsection{A Complete Algorithm for {\sc tamp}}
 We introduce a complete algorithm that maintains a \emph{plan
-  refinement graph} ({\sc prg}). \figref{fig:prg} illustrates a simple example with 3 high-level plans.
-Every node $u$ in the {\sc prg}
-represents a high-level plan $\pi_u$ and the current state of the search
-for a refinement. An edge $(u,v)$ in the {\sc prg}
-represents a ``correction'' of $\pi_u$ for a specific instantiation of
-the symbolic references in $\pi_u$. Let $\pi_{u,k}$ be the plan prefix of
-$\pi_u$ consisting of the first $k$ actions. Formally, each edge
-$e=(u,v)$ is labeled with a tuple $\langle \sigma, k, \varphi \rangle$.
-$\sigma$ denotes an instantiation of references for a prefix $\pi_{u,k}$ of
-$\pi_u$ such that feasible motion plans have been found for all
-previous actions $\pi_{u,k-1}$. $\varphi$ denotes a conjunctive formula
-consisting of fluent literals
-that were required in the preconditions of the $k^{th}$ action in
-$\pi_u$ but were not true in the state obtained upon
-application of $\pi_{u,k-1}$ with the instantiation $\sigma_k$.  The
-plan in node $v$ (if any) retains the prefix $\pi_{u,k-1}$ and solves
-the new high-level problem which incorporates the discovered facts $\varphi_{u,v}$
-in the $k^{th}$ state.
+  refinement graph} ({\sc prg}). \figref{fig:prg} illustrates a simple
+example with 3 task plans.  Every node $u$ in the {\sc prg} represents
+a high-level plan $\pi_u$ and the current state of the search for a
+refinement. An edge $(u,v)$ essentially represents a ``correction'' of
+$\pi_u$ for a specific instantiation of the symbolic references in
+$\pi_u$. We let $\pi_{u,k}$ be the plan prefix of $\pi_u$ consisting
+of the first $k$ actions. Formally, each edge $e=(u,v)$ is labeled
+with a tuple $\langle \sigma, k, \varphi \rangle$.  $\sigma$ is an
+instantiation of references for a prefix $\pi_{u,k}$ of $\pi_u$, where
+feasible motion plans have been found for all previous actions
+$\pi_{u,k-1}$. $\varphi$ denotes a conjunctive formula consisting of
+fluent literals that were required in the preconditions of the
+$k^{th}$ action in $\pi_u$ but were not true in the state obtained
+upon application of $\pi_{u,k-1}$ with the instantiation $\sigma_k$.
+The plan in node $v$ (if any) retains the prefix $\pi_{u,k-1}$ and
+solves the new high-level problem that incorporates the discovered
+facts $\varphi_{u,v}$ in the $k^{th}$ state.
 
 The overall search algorithm interleaves the search for feasible
-refinements of each high-level plan with the addition
-of new edges and plan nodes into the {\sc prg} using the semantics described
-above. This process is described using non-deterministic choices
-(denoted using the prefix ``ND'') in
+refinements of task plans with the addition of new edges and plan
+nodes into the {\sc prg}. This process is described using
+non-deterministic choices (denoted using the prefix ``ND'') in
 Alg.\,\ref{alg:complete}. Subroutine \textsc{RefineNode} selects a
 reference instantiation and attempts to solve the motion planning
-problems corresponding to it. Subroutine \textsc{AddChild} selects a
-reference instantiation and creates a new node that either 1)
-incorporates the reason for infeasibility (provided by the
-subroutine \textsc{GetError}), or 2) holds a nearly identical high-level plan,
-but with a random change at a single step.
-The latter can be required in some
-pathological domains that have dead-ends and where changing the
-instantiation of symbolic references for an action has no effect on the
-action outcomes. \textsc{GetError} returns some failed precondition
-for an infeasible refinement; a typical implementation may, for example, run collision
-checking on the current set of trajectories to detect obstruction information.
+problems it defines. Subroutine \textsc{AddChild} selects a reference
+instantiation and creates a new node that either 1) incorporates the
+reason for infeasibility (provided by the subroutine
+\textsc{GetError}), or 2) holds a nearly identical high-level plan,
+but with a random change at a single step.  The latter can be required
+in some pathological domains that have dead-ends and where changing
+the instantiation of symbolic references for an action has no effect
+on the action outcomes. \textsc{GetError} returns a failed
+precondition for an infeasible refinement (e.g., collision
+check the current set of trajectories to detect obstructions).
 
 Different implementations of the non-deterministic choices in
-Alg.\,\ref{alg:complete} can capture various search algorithms
-with adaptations for handling unbounded branching factors (e.g.,
-iterative-deepening with iterative-broadening best first
-search). Indeed, {\sc sfrcra-14} can be seen as a greedy depth-first traversal of the
-{\sc prg}. We show that using trained search heuristics with the
-{\sc prg} can improve performance.
+Alg.\,\ref{alg:complete} can capture various search algorithms that
+account for unbounded branching factors (e.g., iterative-deepening
+with iterative-broadening best first search). Indeed, {\sc sfrcra-14}
+can be seen as a greedy depth-first traversal of the {\sc prg}. We
+show that using trained search heuristics with the {\sc prg} can
+improve performance. It is easy to see that the resulting algorithm is
+complete.
+
+\begin{thm}
+If there exists a high-level sequence of actions that 
+a) does not revisit symbolic states when using the high-level domain
+definition and b) has a motion planning feasible refinement within the scope
+of symbol interpretations, then Alg.\,\ref{alg:complete} will find it,
+as long as the non-deterministic policies assign non-zero weight to each choice.
+\end{thm}
+
 
 \begin{algorithm}[t]
 \begin{small}
@@ -174,15 +186,6 @@ search). Indeed, {\sc sfrcra-14} can be seen as a greedy depth-first traversal o
 \label{alg:complete}
 \end{algorithm}
 
-It is easy to see that the resulting algorithm is complete.
-
-\begin{thm}
-If there exists a high-level sequence of actions that 
-a) does not revisit symbolic states when using the high-level domain
-definition and b) has a motion planning feasible refinement within the scope
-of symbol interpretations, then Alg.\,\ref{alg:complete} will find it,
-as long as the non-deterministic policies assign non-zero weight to each choice.
-\end{thm}
 
 The proof follows easily because if there is a solution, then
 the non-deterministic calls can be selected appropriately to find

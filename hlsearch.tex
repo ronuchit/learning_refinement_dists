@@ -1,56 +1,82 @@
 \section{Learning What Task Plan to Refine}
 \subsection{Significance}
-The approach presented thus far can be succinctly described as learning \emph{how} to
-refine a single high-level plan. In this section, we present a method for learning
-\emph{which} plan to try refining. Recall that in Alg.\,\ref{alg:complete}, the high
-level has a two-tiered decision to make: 1) which node in the {\sc prg} to
-visit next, and 2) whether to attempt to refine this node or generate failure information
-from it. These decisions are encoded in the routines \textsc{NDGetNextNode}
-and \textsc{NDChoice}. Making these decisions intelligently is critical to good
-performance. For example, in a pick-place domain, different sampled grasping poses
-can cause different obstruction errors to be propagated back up to the task planner. The {\sc prg}
-would then contain plans for picking up the target object through distinct obstruction paths. This
-is illustrated in \figref{fig:hlsearch}; we would want the system to choose the plan that is easier
-to refine. In general, however, naively choosing the plan involving fewer obstructions
-may not be prudent; we instead use machine learning to guide the decisions.
+The approach presented thus far can be succinctly described as
+learning \emph{how} to refine a single high-level plan. In this
+section, we present a method for learning \emph{which} plan to try
+refining. Recall that in Alg.\,\ref{alg:complete}, the high level has
+a two-tiered decision to make: 1) which node in the {\sc prg} to visit
+next, and 2) whether to attempt to refine this node or generate
+failure information from it. These decisions are encoded in the
+routines \textsc{NDGetNextNode} and \textsc{NDChoice}. Making these
+decisions intelligently is critical to good performance. 
+
+For example, consider a pick-place domain. Different sampled grasping
+poses cause different obstruction errors to be propagated back up to
+the task planner. \figref{fig:hlsearch} illustrates two different
+failures, one of which generates a large number of obstructions. The
+{\sc prg} contains plans to remedy both of these issues, however one
+will take much longer to refne than the other. An effective heuristic
+would allow us to allocate more search effort to the promising
+plan. In this section, we describe a method to learn one such
+heuristic.
 
 \subsection{Approach}
-Unfortunately, direct application of {\sc rl} to this task is difficult for two major reasons: 1)
-the space of potential high-level plans is very large, and the plans are not of a fixed length; 2)
-taking actions in this space corresponds to expending computation on attemped plan refinement, if the
-appropriate mode gets selected. Thus, we use inverse {\sc rl} with expert demonstrations to train heuristics at this level.
+Direct application of {\sc rl} is difficult for two reasons: 1) the
+space of potential high-level plans is very large and reward are
+sparse; 2) actions take a long time to `execute' as they often require
+motion planning. These combine to make the learning problem quite
+challenging, so we use {\sc irl} with expert demonstrations to
+train heuristics.
 
-The heuristics are trained to 1) estimate the difficulty associated with refining a plan and 2) decide when to quickly generate
-a geometric fact used for replanning with the task planner. In our explanation, $n$ is the selected
-node and $m$ is the mode to apply (either trying to refine the node or quickly generating failure information).
+The heuristics are trained to trade off the computation time from
+refining a plan with that of generating a plan correction and adding a
+new plan to the {\sc prg}. We use $u$ to represent the selected node
+and $m$ is the mode to apply (either trying to refine the node or
+quickly generating failure information).
 
-We exploit properties of the environment to hand-design a feature vector $f(n)$ that encodes the refinability
-of a single high-level plan. Because the mode $m$ is binary,
-we construct $$f((n, m)) = \begin{bmatrix} f(n) \\ f(n) \end{bmatrix}^\top \begin{bmatrix} 1 - m \\ m \end{bmatrix},$$
-which stacks the feature vector for $n$ on itself, then turns off the bottom half when $m = 0$ and the
-top half when $m = 1$. Now that we have defined a feature vector associated with each decision in a given {\sc prg},
-we can obtain human-demonstrated trajectories (sequences of actions $(n, m)^{*}$) that intelligently
-navigate the {\sc prg}. We then solve the following maximum-margin optimization problem with a constant margin and slack variables:
+We encode geometric features of a current plan refinement in a feature
+vector $f(n).$ We train seperate weights to estimate the utility of
+each mode. We do this by stacking two copies of the features and using
+an indicator to zero out the top or bottom half: $f((u, m))
+= \begin{bmatrix} f(u) \\ f(u) \end{bmatrix}^\top \begin{bmatrix} 1 -
+  m \\ m \end{bmatrix}.\vspace{2pt}$ 
+
+We obtain human-demonstrated trajectories (sequences of actions $(u,
+m)^{*}$) that intelligently navigate the {\sc prg}. We solve the
+following maximum-margin optimization~\cite{taskar2005learning} to
+recover a set of weights so that the expert's demonstration is
+(approximately) optimal:
 \begin{align*}
 &\min_{w, \xi_i \geq 0} & ||w||^2 + C \sum_i \xi_i\\
-&\text{s.t.} & w^{\top}f^*_i \geq w^{\top}f_{ij} + 1 - \xi_{i}\ \forall i, j \ ,
+&\text{s.t.} & w^{\top}f^*_i \geq w^{\top}f_{ij} + 1 - \xi_{i}\ \forall i, j \ .
 \end{align*}
 
-where the $i$ iterate over the demonstrated trajectories and the $j$ iterate over possible actions. Each
-demonstrated trajectory has an associated slack variable in this formulation.
-The weight vector $w$ encodes a ranking function on the different actions.
-We then use {\sc DAgger}~\cite{dagger} to augment our training data. At test time, we follow the policy encoded by
+The $i$ iterate over the demonstrated trajectories and the $j$ iterate
+over possible actions. The $\xi$ are slack variables that ensure that
+a solution always exists. $C$ is a regularization parameter that
+controls overfitting. At test time, we follow the policy encoded by
 $w$, picking the highest-scoring action at each step.
+
+A single round of this approach often fails. The graphs generated by a
+human expert look very different from the set of graphs generated by
+the (approximate) policy that is learned. Dataset
+aggregation~\cite{dagger} is a general approach to this problem where
+the expert provides new demonstrations on a set of states generated by
+executing the learned policy.
 
 \begin{figure}[t]
   \centering
     \noindent
     \includegraphics[scale=0.17, angle=270]{images/grasp_teaser_bad.png}
     \includegraphics[scale=0.17, angle=270]{images/grasp_teaser_good.png}
-  \caption{\small{When trying to grasp the black can, the sampled grasping pose can
-      significantly affect the quality of the obstructions determined. The new plan proposed from the rightmost image only
-      requires moving 2 obstructions out of the way, versus 6 from the other. We integrate inverse reinforcement learning into our task and
-      motion planning system to learn an ordering on plan exploration, causing the system to prefer simpler and more feasible plans.}}
+  \caption{\small{In this problem the goal is to grasp the black
+      can. Obstructions make it so that no plan exists, however, which
+      obstructions are moved will have a big impact on how low it
+      takes to find a solution (i.e., 6 obstructions in the left image
+      vs. 2 obstructions in the right image). Each of these failures
+      generates a new node in the plan refinement graph. We learn
+      heuristics from expert demonstrations that allow the search to
+      focus on the promising nodes in the graph.}}
   \label{fig:hlsearch}
 \end{figure}
 

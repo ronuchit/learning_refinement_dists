@@ -56,68 +56,95 @@
       4 (frying) & L & 92 (6.8) & 90.6 & 120.9\\
     \bottomrule[1.5pt]
   \end{tabular}}
-  \caption{\small{Percent solved and standard deviation, along with time spent refining and number of calls to the motion
-planner for baseline 1 (T), baseline 2 (B), our learned refinement policies with the graph search used in baseline 2 (L),
-and our full system: learned refinement policies and graph search heuristics (F). Results for L and F
-are averaged across 5 separately trained sets of weights. As described, we only run F for the can domain. Time limit: 300s.}}
+  \caption{\small{Percent solved, standard deviation, refinment time,
+      and \# of motion planning calls for baseline 1 (T); baseline 2
+      (B); learned refinement policies with greedy graph search (L);
+      and our full system: learned refinement policies and graph
+      search heuristics (F). Results for L and F are averaged across 5
+      separately trained sets of weights. Time limit: 300s.}}
   \label{table:results}
   \vspace{-1em}
 \end{table}
 
 \subsection{Methodology}
-We evaluate our approach in three distinct domains: cans distributed randomly on a table (the \emph{can domain}),
-setting up bowls for dinner (the \emph{dinner domain}), and placing frying pans into a narrow shelf (the \emph{frying domain}).
-We compare performance with two baselines, both of which use the hand-coded refinement distributions used in {\sc sfrcra-14}.
+We evaluate our approach in three domains: cans distributed randomly
+on a table (the \emph{can domain}), setting up bowls for dinner (the
+\emph{dinner domain}), and placing frying pans into a narrow shelf
+(the \emph{frying domain}).  We compare performance with two
+baselines, both of which use the hand-coded refinement distributions
+used in {\sc sfrcra-14}.
 
-Baseline 1 is {\sc sfrcra-14}: it uses exhaustive backtracking search for refinement
-and greedy depth-first search of the {\sc prg}, which always tries to refine
-the plan that incorporates all error information obtained thus far.
-Baseline 2 uses randomized refinement with the following fixed graph search policy: try 3 times to refine the deepest
-node in the graph; if unsuccessful, generate a geometric error, replan with the task planner (which creates a child node), and repeat.
+Baseline 1 is {\sc sfrcra-14}: it uses exhaustive backtracking search
+for refinement and greedy depth-first search of the {\sc prg}, which
+always tries to refine the plan that incorporates all error
+information obtained thus far.  Baseline 2 uses randomized refinement
+with the following fixed graph search policy: try 3 times to refine
+the deepest node in the graph; if unsuccessful, generate a geometric
+error, replan with the task planner (which creates a child node), and
+repeat.
 
-For the can domain, we report results for 4 systems: 1) baseline 1; 2) baseline 2; 3) our learned refinement policies
-with the graph search used in baseline 2; and 4) our full system, with learned refinement policies and graph search heuristics.
-For the dinner domain and frying domain, we report results only for the first 3 systems, because the errors propagated in these
-domains relate to the stackability of objects. Since this is independent of the current refinement, we want to
-incorporate all available error information when attempting refinement. Thus, the graph search strategy
-from baseline 2 can be expected to perform well in these settings.
+We compare these baselines against two systems. The first combines
+learned refinement policies with the graph search used in baseline
+2. The second is our full system, and uses learned refinement policies
+and graph search heuristics.  For the dinner domain and frying domain,
+we focus on the low-level learning. The errors propagated in these
+domains relate to the stackability of objects and a good strategy at
+the high-level incorporates all available error information when
+attempting refinement. Thus, the graph search strategy from baseline 2
+already performs quite well.
 
-For refinement distributions, initial experimentation revealed that training weights for all reference types jointly is intractable,
-because planning takes a long time. So, we apply curriculum learning by training with a planning problem distribution
-$\Prob$ that gets progressively harder. The details of this curriculum are described in each experiment's section.
-Additionally, we train the refinement policies first, then fix them while collecting demonstrations and training the graph search heuristics.
-For the fourth system, we reduce variance in the learning as follows. We train 3 sets of refinement weights independently,
-test each one on a validation set, and output the best-performing one. We set $\alpha = 0.1$.
+Initial experimentation revealed that jointly learning weights for all
+parameter types was intractable. We used a curriculum where the
+distribution of planning problems, $\Prob$, gets progressively
+harder. For the full system, we train the refinement policies first,
+then fix them while collecting demonstrations and training the graph
+search heuristics. To reduce variance in the process, we train 3 sets
+of refinement weights independently and select the one that performs
+best on a validation set.
 
-We report results on fixed test sets of 50 randomly generated environments for the can and dinner domains,
-and 20 for the frying domain (because these environments have less variation).
-For the third and fourth systems, we average results across running the training
-process 5 times independently and evaluating each final set of weights.
+We report results on fixed test sets of 50 randomly generated
+environments for the can and dinner domains, and 20 for the frying
+domain (because these environments have less variation).  For the
+third and fourth systems, we average results across running the
+training process 5 times independently and evaluating each final set
+of weights.
 
-For training refinement distributions, our weight vectors $\theta_{p}$ are initialized to $\vec{\mathbf{0}}$ for each symbolic reference type.
-We use 24 features. 9 binary features encode the bucketed distance between the sample
-and target object. 9 binary features encode the bucketed sample height. 3 features
-describe the number of other objects within discs of radius 7, 10, and 15 centimeters around the
-sample. 3 binary features describe the angle made between the vector from the
-robot to the target and the vector from the sample to the target: whether the angle is less than
-$\pi/3$, $\pi/2$, and $3\pi/4$.
+Our low-level policies use 24 features and rely on the notion of a
+target object. 9 binary features encode the bucketed distance between
+the sample and target object. 9 binary features encode the bucketed
+sample height. 3 features describe the number of other objects within
+discs of radius 7, 10, and 15 centimeters around the sample. 3 binary
+features describe the angle made between the vector from the robot to
+the target and the vector from the sample to the target: whether the
+angle is less than $\pi/3$, $\pi/2$, and $3\pi/4$.
 
-For training graph search, we use the following feature vector $f(n)$ for a {\sc prg} node storing a high-level plan.
-We first consider features of a single grasp action, targeted
-at an object $o$. Consider a cone ranging from angles $-\frac{\pi}{3}$ to $\frac{\pi}{3}$
-toward the closest table edge from $o$. The first feature, exists\_obstr, is a binary variable indicating
-whether any other objects lie in this cone. The second, exists\_path, is a binary variable indicating whether there is a linear
-grasp path wide enough for the robot's gripper to fit through within the cone. For the third feature, we approximate the robot's arm and gripper with a cylinder $c$ and sweep it across 10 discretized angles from $-\frac{\pi}{3}$ to
-$\frac{\pi}{3}$. We then store the minimum number of collisions with $c$ as the feature, sweep\_count. This gives us a coarse approximation for the minimum number of objects that should be moved before the target object is accessible via a linear path.
-We construct these features for the first five grasp actions in the plan, padding with -1.
-We then add on the following aggregate features associated with the entire plan: 1) the minimum exists\_obstr across all grasp actions,
-2) the sum of sweep\_count across all grasp actions, 3) the number of times $n$ was picked for refinement,
-and 4) the number of times $n$ was picked for generating an error.
+Our high-level heuristics use features to describe the feasibility of
+plans. In our domains, this mainly summarizes issues with potential
+grasps and we use three features to evalute a potential grasp action,
+targeted at an object $o$. We consider a cone whose point is at the
+object center that ranges from angles $-\frac{\pi}{3}$ to
+$\frac{\pi}{3}$ and points toward the closest table edge from $o$. The
+exists\_obstr feature is a binary variable that indicates whether any
+other objects lie in this cone. The exists\_path feature is a binary
+variable that indicating whether there is a linear grasp path wide
+enough for the robot's gripper to fit through within the cone. The
+sweep\_count feature computes the minimum collision for the robot
+gripper at any angle inside the cone. 
 
-Our experiments are conducted in Python 2.7 using the OpenRave simulator~\cite{Diankov_2008_6117} with a PR2 robot.
-The motion planner we use is trajopt~\cite{schulman2013finding}, and the task planner is Fast-Forward~\cite{FF}.
-The experiments were carried out in series on an Intel Core i7-4770K machine with 16GB RAM.
-Table \ref{table:results} summarizes our quantitative results.
+We construct these features for the first five grasp actions in the
+plan, padding with -1 as necessary. We then add on the following
+aggregate features associated with the entire plan: 1) the minimum
+exists\_obstr across all grasp actions, 2) the sum of sweep\_count
+across all grasp actions, 3) the number of times $u$ was picked for
+refinement, and 4) the number of times $u$ was picked for generating
+an error.
+
+Our experiments are conducted in Python 2.7 using the OpenRave
+simulator~\cite{Diankov_2008_6117} with a PR2 robot.  The motion
+planner we use is trajopt~\cite{schulman2013finding}, and the task
+planner is Fast-Forward~\cite{FF}.  The experiments were carried out
+in series on an Intel Core i7-4770K machine with 16GB RAM.  Table
+\ref{table:results} summarizes our quantitative results.
 
 % \begin{figure}[t]
 %   \centering
@@ -147,22 +174,24 @@ Table \ref{table:results} summarizes our quantitative results.
 % \end{figure}
 
 \subsection{Can Domain}
-We run three sets of experiments, using 30, 35, and 40 cans on the table.
-The goal is always for the robot to pick up a particular can with its
-left gripper. We disable the right gripper, so any obstructions to the target object must be picked up and
-placed elsewhere on the table. This domain has 4 types of continuous references: base poses, object grasping
-poses, object putdown poses, and object putdown locations.
-% The range of allowable values for grasping and putdown poses is a cube of side length 30 centimeters around the
-% target object or putdown location. For base poses, the range is a square of side length 1 meter around the
-% object or location which the robot is approaching. For putdown locations, the range is defined by the table.
+We run three sets of experiments, using 30, 35, and 40 cans on the
+table.  The goal is always for the robot to pick up a particular can
+with its left gripper. We disable the right gripper, so any
+obstructions to the target object must be picked up and placed
+elsewhere on the table. This domain has 4 types of continuous
+references: base poses, object grasping poses, object putdown poses,
+and object putdown locations.
 
-Our curriculum learning system first trains base poses and grasping poses for $N = 12$ iterations with $\epsilon = 5$,
-then base poses, grasping poses, and putdown poses (at fixed location) for $N = 18$ iterations with $\epsilon = 20$,
-then all reference types for $N = 30$ iterations with $\epsilon = 20$. We fix $H = 100$.
+Our curriculum learning system trains distributions for base poses and
+grasping poses for 12 iterations with $\epsilon = 5$, then base poses,
+grasping poses, and putdown poses (at fixed location) for 18
+iterations with $\epsilon = 20$, then all reference types for 30
+iterations with $\epsilon = 20$. We fix $H = 100$.
 
-To train the graph search heuristics,
-we collect approximately 300 optimal actions from the human demonstrator, over 3 rounds of {\sc DAgger}. After these 3 rounds,
-we found that performance plateaued. We use $C = 10^{9}$ in solving the maximum-margin optimization problem.
+To train the graph search heuristics, we collected approximately 300
+optimal actions from the human demonstrator, over 3 rounds of {\sc
+  DAgger}. After these 3 rounds, performance plateaued. We use $C =
+10^{9}$ to solve the maximum-margin optimization problem.
 
 \begin{figure}[t]
   \centering
@@ -170,85 +199,68 @@ we found that performance plateaued. We use $C = 10^{9}$ in solving the maximum-
     \includegraphics[scale=0.13]{images/grasp_context_1.png}
     \includegraphics[scale=0.13]{images/grasp_context_2.png}
     \includegraphics[scale=0.13]{images/grasp_context_3.png}
-  \caption{\small{The learned left arm grasping (green) distribution for the black can is affected significantly
-by the position of the red obstructing object. The points refer to the position of the left tool center point; the gripper
-is oriented toward the black can.}}
+  \caption{\small{The learned left arm grasping (green) distribution
+      for the black can as a single potential obstruction (red) is
+      moved.}}
   \label{fig:context}
 \end{figure}
 
-The results demonstrate significant improvements in performance to the baseline systems for success rate.
-However, backtracking search provides faster average refinement time. This is likely because
-refinement times were averaged over the test cases where all 4 systems succeeded. These plans tended
-to be easier to refine, so exhaustive backtracking search performs well because the total search space is small.
-\figref{fig:cover} shows learned base motion and pickup distributions. \figref{fig:context} shows
-that our system learned to shape distributions based on the geometry of the environment in which an action
-is performed. The grasping distribution learned to shift away from obstructing objects, increasing robustness.
-
-% \begin{figure}[t]
-%   \centering
-%   \begin{subfigure}[b]{0.45\linewidth}
-%     \includegraphics[width=\textwidth]{images/dinner_tray_initial.png}
-%     \caption{Initial distributions.}
-%   \end{subfigure}
-%   \begin{subfigure}[b]{0.45\linewidth}
-%     \includegraphics[width=\textwidth]{images/dinner_tray_final.png}
-%     \caption{Final distributions.}
-%   \end{subfigure}
-%   \caption{\small{Initial and learned base position (blue) and tray pickup (green, yellow) distributions
-% for the dinner domain. The green points refer to the position of the right tool center point; the gripper
-% is oriented toward the tray. The left gripper is placed in a symmetric position on the other side of
-% the tray, as marked by the yellow points. Final distributions are after 20 iterations.}}
-%   \label{fig:dinner}
-% \end{figure}
+The results demonstrate significant improvements in performance when
+compared to the baseline systems for success rate. When backtracking
+search succeeds, it does so quickly, so it has a faster average
+refinement time on the successes. \figref{fig:cover} shows learned
+base motion and pickup distributions. \figref{fig:context} shows how
+the learned distribution shifts, based on the geometric context.
 
 \subsection{Dinner Domain}
-We run two sets of experiments, using 2 and 4 bowls. The robot must move the
-bowls from their initial locations on one table to target locations on the other. We assign a cost to
-base motion in the environment, so the robot is encouraged to use the provided tray, onto which bowls can be stacked.
-This domain has 5 types of continuous references: base poses, object grasping poses, object putdown poses, tray pickup
-poses, and tray putdown poses.
+We run two sets of experiments, using 2 and 4 bowls. The robot must
+move the bowls from their initial locations on one table to target
+locations on the other. We assign a cost to base motion in the
+environment, so the robot is encouraged to use the provided tray, onto
+which bowls can be stacked.  This domain has 5 types of continuous
+references: base poses, object grasping poses, object putdown poses,
+tray pickup poses, and tray putdown poses.
 
-Our curriculum learning system first trains base poses and tray pickup and putdown poses for
-$N = 20$ iterations, then object grasping and putdown poses for $N = 20$ iterations. We fix $H = 100$ and $\epsilon = 10$.
+Our curriculum learning system first trains base poses and tray pickup
+and putdown poses for 20 iterations, then object grasping and putdown
+poses for 20 iterations. We fix $H = 100$ and $\epsilon = 10$.
 
-The results demonstrate comparable performance to the baseline systems. The reason is that
-hand-coding the sample space works well in this domain. For example, the optimal
-robot base pose from which to pick up the tray is directly in front of it, which is quickly sampled in
-the baseline systems. Additionally, the lack of long-term dependencies in the plan
-means that backtracking search finds a valid refinement quickly. The fact that our system performs comparably
-with the baselines shows that our learning algorithm can recover good hand-coded distributions.
-\figref{fig:cover} shows learned tray pickup poses after all 20 iterations.
-
-% \begin{figure}[t]
-%   \centering
-%   \begin{subfigure}[b]{0.25\linewidth}
-%     \includegraphics[width=\textwidth]{images/frying_hand.png}
-%     \caption{Hand-coded distribution.}
-%   \end{subfigure}
-%   \begin{subfigure}[b]{0.25\linewidth}
-%     \includegraphics[width=\textwidth]{images/frying_initial.png}
-%     \caption{Initial distribution.}
-%   \end{subfigure}
-%   \begin{subfigure}[b]{0.25\linewidth}
-%     \includegraphics[width=\textwidth]{images/frying_final.png}
-%     \caption{Final distribution.}
-%   \end{subfigure}
-%   \caption{\small{Hand-coded distribution, along with initial and final distributions using our training methods,
-% for picking up the frying pan. The green points refer to the position of the tool center point; the end
-% effector is oriented downward. Our system learned to prefer picking up the pan at its handle to fit it into the shelf (not shown). Final distributions are after 20 iterations.}}
-%   \label{fig:frying}
-% \end{figure}
+The results demonstrate comparable performance to the baseline
+systems. The reason is that hand-coding the sample space works well in
+this domain. For example, the optimal robot base pose from which to
+pick up the tray is directly in front of it, which is quickly sampled
+in the baseline systems. Additionally, the lack of long-term
+dependencies in the plan means that backtracking search finds a valid
+refinement quickly. The fact that our system performs comparably with
+the baselines shows that our learning algorithm can recover good
+hand-coded distributions.  \figref{fig:cover} shows learned tray
+pickup poses after all 20 iterations.
 
 \subsection{Frying Domain}
-We run two sets of experiments, using 2 and 4 frying pans. The robot must stack the frying pans in order of decreasing
-radius into a narrow shelf. To be successful, it must grasp the frying pans at the handle, so that the handle sticks out
-after the pan is placed in the shelf. This domain has 3 types of continuous references: base poses, pan grasping poses, and
-pan putdown poses. We do not use curriculum learning, as weights for all these parameters can be trained jointly.
-We fix $N = 30$, $H = 100$, and $\epsilon = 5$. {\sc sfrcra-14} did not have a frying domain, so we use the following
-hand-coded distribution for picking up the pans: 4 grasping poses in the cardinal directions around the lip of the pan,
+We run two sets of experiments, using 2 and 4 frying pans. The robot
+must stack the frying pans in order of decreasing radius into a narrow
+shelf. To be successful, it must grasp the frying pans at the handle,
+so that the handle sticks out after the pan is placed in the
+shelf. This domain has 3 types of continuous references: base poses,
+pan grasping poses, and pan putdown poses. 
+
+We did not need curriculum learning. We fix $N = 30$, $H = 100$, and
+$\epsilon = 5$. {\sc sfrcra-14} did not have a frying domain, so we
+use the following hand-coded distribution for picking up the pans: 4
+grasping poses in the cardinal directions around the lip of the pan,
 and 4 equidistant along the handle.
 
-The results demonstrate significantly higher success rate versus the baseline systems. The backtracking baseline is faster likely because
-the refinement times were averaged over cases where all 3 systems succeeded; backtracking often succeeded only when
-it ``got lucky'' and picked grasping poses along the handle early in the search. \figref{fig:cover} shows learned frying pan
-grasping poses after all 30 iterations. Our system learned to prefer picking up the pan at its handle to fit it into the shelf, which is not shown.
+The results demonstrate significantly higher success rate versus the
+baseline systems. The backtracking baseline is faster likely because
+the refinement times were averaged over cases where all 3 systems
+succeeded; backtracking often succeeded only when it ``got lucky'' and
+picked grasping poses along the handle early in the
+search. \figref{fig:cover} shows learned frying pan grasping poses
+after all 30 iterations. Our system learned to prefer picking up the
+pan at its handle to fit it into the shelf, which is not shown.
+
+
+
+
+
+
