@@ -11,27 +11,29 @@ states independently for each symbolic state in the task sequence,
 while our distributions are conditioned on an entire plan and its
 current refinement.
 
-Kaelbling et al.~\cite{kaelbling2011hierarchical} use hand-coded
-``geometric suggesters'' to propose continuous geometric values for
-the plan parameters. These suggesters are heuristic computations which
-map information about the robot type and geometric operators to a
-restricted set of values to sample for each plan parameter. It would
-be interesting to adapt the methods considered here to their setting.
+One set of approaches to {\sc tamp} search through a discretized space
+a task plans. Kaelbling et al.~\cite{kaelbling2011hierarchical} search
+through a hierarchy of these spaces and use ``geometric suggesters''
+to lazily perform this discretization. Dornhege et
+al.~\cite{dornhege2012semantic} define a way to integrate this
+discretization in classical planning. Garrett et
+al.~\cite{GarrettWAFR14} define a heuristic for {\sc tamp} that allows
+the heuristic to incorporate geometric feasibility. Our approach could
+augment these systems by learning domain specific discretizations of
+parameters.
 
-Lagriffoul et al.~\cite{lagriffoul2014orientation} propose a set of
-geometric constraints that involve the kinematics and sizes of the
-specific objects of interest in the environment. These constraints
-then define a feasible region from which to search for geometric
-instantiations of plan parameters. One way to think of our work is
-that we are learning distributions which incorporate the joint
-constraints their system computes.
-
-Garrett et al.~\cite{GarrettWAFR14} use information about reachability
-in the configuration space and symbolic state space to construct a
-\emph{relaxed plan graph} that guides motion planning, using geometric
-biases to break ties. Intermediate poses are sampled from a hand-coded
-distribution, whereas we learn these distributions using {\sc rl} and
-could use them with this graph.
+An alternative set of approaches treats the a task plan as defining a
+constraint satisfaction problem (CSP) where the parameters of the plan
+are the variables of the CSP. Lozano-P{\'e}rez and
+Kaelbling~\cite{lozano2014constraint} discretize the parameter space
+and use a standard CSP solver. Lagriffoul et
+al.~\cite{lagriffoul2014orientation} and Garrett et
+al.~\cite{garrett2015backward} use a set of relaxed constraints to
+reduce the search space for a global
+solution. Toussaint~\cite{toussaint2015logic} treats the problem as a
+global trajectory optimization. Our approach could be used to learn
+domain specific initialization or discretization strategies for these
+approaches.
 
 Our problem formulation is motivated by Zhang and Dietterich's
 application of {\sc rl} to job shop
