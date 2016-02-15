@@ -7,7 +7,7 @@ framework of combined \emph{task and motion planning} ({\sc tamp}).
 In {\sc tamp}, an agent is given a symbolic, logical characterization
 of actions (e.g., move, grasp, putdown), along with a geometric
 encoding of the environment.  Efficient integration of high-level,
-symbolic task planning and low-level, geometric motion planning is
+symbolic task planning and low-level, geometric motion planning in {\sc tamp} is
 difficult; recent research has proposed several
 approaches~\cite{srivastava2014combined, deardenplanningtamp,
   kaelbling2011hierarchical, lagriffoul2014orientation, GarrettWAFR14,
@@ -56,9 +56,9 @@ the plan. We refer to the search for a valid refinement as \emph{plan
 planner to update the symbolic state and generate a new high-level
 plan.  For example, if motion planning discovers an obstruction in a
 pick-place domain, the new plan may involve moving the obstruction out
-of the way.  The key step in our approach defines a \emph{plan
+of the way.  The key step in our approach uses this error information to define a \emph{plan
   refinement graph}, where nodes are high-level plans and edges are
-unsatisfiable preconditions that explain a failed attempt at
+unsatisfied preconditions that explain a failed attempt at
 refinement. We develop a complete algorithm that interleaves search
 over this graph with plan refinement.
 

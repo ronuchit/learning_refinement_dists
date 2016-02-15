@@ -31,12 +31,12 @@
     \midrule
       40 (can) & F & 74 (3.2) & 20.7 & 10.4\\
     \midrule[2pt]
-      2 (dinner) & T & 100 (0) & 35.5 & 60.2\\
-    \midrule
-      2 (dinner) & B & 100 (0) & 37.3 & 59.2\\
-    \midrule
-      2 (dinner) & L & 99 (1.8) & 41.5 & 61.6\\
-    \midrule[1.5pt]
+    %   2 (dinner) & T & 100 (0) & 35.5 & 60.2\\
+    % \midrule
+    %   2 (dinner) & B & 100 (0) & 37.3 & 59.2\\
+    % \midrule
+    %   2 (dinner) & L & 99 (1.8) & 41.5 & 61.6\\
+    % \midrule[1.5pt]
       4 (dinner) & T & 100 (0) & 43.2 & 98.0\\
     \midrule
       4 (dinner) & B & 90 (0) & 63.0 & 95.5\\
@@ -56,11 +56,11 @@
       4 (frying) & L & 92 (6.8) & 90.6 & 120.9\\
     \bottomrule[1.5pt]
   \end{tabular}}
-  \caption{\small{Percent solved, standard deviation, refinement time,
-      and number of motion planning calls for baseline 1 (T); baseline 2
+  \caption{\small{Percent solved, standard deviation, and average refinement time \& number of motion
+      planning calls on successes, for baseline 1 (T); baseline 2
       (B); learned refinement policies with greedy graph search (L);
       and our full system: learned refinement policies and graph
-      search heuristics (F). Results for L and F are averaged across 5
+      search heuristics (F). L and F results are averaged across 5
       separately trained sets of weights. Time limit: 300s.}}
   \label{table:results}
 \end{table}
@@ -86,11 +86,11 @@ We compare these baselines against two systems. The first combines
 learned refinement policies with the graph search used in baseline
 2. The second is our full system, and uses learned refinement policies
 and graph search heuristics.  For the dinner domain and frying domain,
-we focus only on the low-level learning. The errors propagated in these
-domains relate to the stackability of objects and a good strategy at
-the high-level incorporates all available error information when
+we focus only on the low-level learning. Since the errors propagated in these
+domains only relate to the stackability of objects, a good graph search strategy
+incorporates all available error information when
 attempting refinement. Thus, the graph search strategy from baseline 2
-already performs quite well.
+already performs well.
 
 Initial experimentation revealed that jointly learning weights for all
 parameter types was intractable. Thus, we use a curriculum where the
@@ -142,7 +142,8 @@ Our experiments are conducted in Python 2.7 using the OpenRave
 simulator~\cite{Diankov_2008_6117} with a PR2 robot.  The motion
 planner we use is trajopt~\cite{schulman2013finding}, and the task
 planner is Fast-Forward~\cite{FF}.  The experiments were carried out
-in series on an Intel Core i7-4770K machine with 16GB RAM.  Table
+in series on an Intel Core i7-4770K machine with 16GB RAM. The time limit
+for each problem was 300 seconds. Table
 \ref{table:results} summarizes our quantitative results.
 
 % \begin{figure}[t]
@@ -212,7 +213,7 @@ base motion and pickup distributions. \figref{fig:context} shows how
 the learned distribution shifts based on the geometric context.
 
 \subsection{Dinner Domain}
-We run two sets of experiments, using 2 and 4 bowls. The robot must
+We run one set of experiments, using 4 bowls. The robot must
 move the bowls from their initial locations on one table to target
 locations on the other. We assign a cost to base motion in the
 environment, so the robot is encouraged to use the provided tray, onto
@@ -250,11 +251,10 @@ grasping poses in the cardinal directions around the lip of the pan,
 and 4 equidistant along the handle.
 
 The results demonstrate significantly higher success rate versus the
-baseline systems. The backtracking baseline is faster likely because
-the refinement times were averaged over cases where all 3 systems
-succeeded; backtracking often succeeded only when it ``got lucky'' and
-picked grasping poses along the handle early in the
-search. \figref{fig:cover} shows learned frying pan grasping poses
+baseline systems. Similar to the can domain, when backtracking ``gets lucky'' and
+picks grasping poses along the handle early in the search, it succeeds quickly, leading
+to a faster average refinement time on the successes.
+\figref{fig:cover} shows learned frying pan grasping poses
 after all 30 iterations. Our system learned to prefer picking up the
 pan at its handle to fit it into the shelf, which is not shown.
 
