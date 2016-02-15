@@ -1,4 +1,4 @@
-\section{Learning How to Refine Task Plans}
+\section{Learning How to Refine High-Level Plans}
 %% Randomized refinement provides us with a framework to learn a policy
 %% that implements \textsc{NDGetInstantiation} and performs well
 %% empirically. We apply {\sc rl} to train continuous proposal
@@ -12,23 +12,23 @@ high-level plan, its current (potentially infeasible) refinement, and the
 geometric environment.
 \item Actions are pairs $\langle p, x \rangle$, where $p$ is the discrete symbolic
 reference to resample and $x$ is the continuous value assigned to $p$ in the new refinement.
-\item The transition distribution is definged by setting $p$'s value
+\item The transition distribution is defined by setting $p$'s value
   to $x$. If $x$ is {\sc ik} feasible, the motion planner determines
-  any new trajectories.
+  any corresponding trajectories.
 \item The reward function $R(s, a, s')$ is linearly interpolated
   between 0 and 20 based on the fraction of high-level actions whose
   preconditions are satisfied. Actions that result in an {\sc ik}
   infeasible pose receive reward $-i$.
 \item The horizon is the number of available samples.
-\item $\Prob$ is a distribution over plans to be refined, defines as a
+\item $\Prob$ is a distribution over plans to be refined, defined as a
   distribution over planning problems.
 \end{tightlist}
 
-As an example, consider refining a pick-place task plan, where the
+As an example, consider refining a pick-place high-level plan, where the
 robot grasps an object and puts it down at a certain location. The
 initial state consists of this plan, a list of initialized parameters,
 and meshes that describe the geometry of the problem. We'll suppose
-that the initial grasp is infeasible for both the pickup and the down
+that the initial grasp is infeasible for both the pick and the putdown
 actions. The first action selects a new grasp, but receives no reward
 because it does not work with the current pick or putdown poses. The
 two actions set values for these poses that work with the grasp. The
@@ -52,7 +52,7 @@ actions are feasible.
 
 \subsection{Training Process}
 We restrict our attention to training policies that suggest $x$ for a
-given parameter. Our refinement algorithim defines a way to select
+given parameter, since our refinement algorithm defines a way to select
 $p$. Our approach is to adapt the method of Zucker et
 al.~\cite{workspacebias}, which uses a linear combination of features
 to define a distribution over poses. We learn a weight vector
@@ -69,17 +69,17 @@ update weights.
 
 The training is a natural extension of randomized refinement and
 progresses as follows. $N$ times, sample from $\Prob$ to obtain a
-complete planning problem $\Pi$. For each $\Pi$, compute a task plan
-and run the randomized refinement algorithm to attempt to find a valid
+complete planning problem $\Pi$. For each $\Pi$, compute a high-level plan
+and run randomized refinement to attempt to find a valid
 plan refinement. Select actions according to the $\theta_{p}$ and
 collect rewards according to $R$. After every $\epsilon$ calls to
 \textsc{Resample}, take a gradient step on $\theta_{p}$.
 
 For a symbolic reference $p$, in state $s$, our policy selects a
 sample value $x$ with probability
-$$q(s, p, x) \propto \exp(\theta_{p}^{T} f(s, p, x)).$$
+$$q(s, p, x) \propto \exp(\theta_{p}^{\top} f(s, p, x)).$$
 
-We define the expected reward of an episode $\xi$, as
+We define the expected reward of an episode, $\xi$, as
 $\eta(\theta_{p})~=~\mathbb{E}_{q}[R(\xi)],$ and approximate its
 gradient:
 $$\nabla \eta(\theta_{p}) \approx \frac{R(\xi)}{\epsilon}

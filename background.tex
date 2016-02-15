@@ -32,14 +32,14 @@ $\langle \T, \Obj, \F, \I, \G, \U \rangle$:
   objects and are Boolean functions defined over the configuration
   space.
 
-\item $\I$: a conjuntion of fluents that define the initial state.
+\item $\I$: a conjunction of fluents that defines the initial state.
 
-\item $\G$: a conjunction of fluents that defines the goal states.
+\item $\G$: a conjunction of fluents that defines the goal state.
 
 \item $\U$: a set of \emph{high-level actions} (e.g., grasp, move, and
-  place), parameterized by objects and defined by
-  \emph{preconditions}, a set of fluent that defines when an action
-  can be taken; and \emph{effects}, a set of fluent that hold true
+  putdown), parameterized by objects and defined by
+  \emph{preconditions}, a set of fluents that describe when an action
+  can be taken; and \emph{effects}, a set of fluents that hold true
   after the action is performed.
 \end{tightlist}
 \end{defn}
@@ -47,8 +47,8 @@ $\langle \T, \Obj, \F, \I, \G, \U \rangle$:
 An instantiated action is said to be \emph{feasible} in a state if and
 only if its preconditions hold in that state. A solution to a {\sc
   tamp} problem is a sequence of instantiated actions $a_{0}, a_{1},
-..., a_{n} \in \U$ such that every action is feasible, when applied
-successively starting with $\I$, and final state reached satisfies the
+..., a_{n} \in \U$ such that every action is feasible when applied
+successively starting with $\I$, and the final state reached satisfies the
 goal condition $\G$.
 
 % As a simple example, we consider a pick domain where the robot is capable of
@@ -144,8 +144,8 @@ R, H, \Prob \rangle$, where
 \item $\Prob$ is the initial state distribution.
 \end{tightlist}
 \end{defn}
-A solution to an {\sc mdp} is a policy that maps the state and time
-step to an action, $\pi: \St \times \mathbb{Z} \rightarrow \A$.  The
+A solution to an {\sc mdp} is a policy, $\pi: \St \times \mathbb{Z} \rightarrow \A$,
+that maps the state and timestep to an action.  The
 value function under $\pi$ is a function of the timestep $k$ and state
 $s$:
 $$V_{\pi}^{k}(s) = \mathbb{E}\left[\sum_{t=k}^{H}R(s_{t}) \mid \pi, s_{k} = s\right].$$

@@ -55,7 +55,7 @@ We then call the \textsc{Resample} routine on the symbolic parameters
 associated with the infeasibility; this routine picks one at random and
 resamples its value. \textsc{InitRefinement} and \textsc{Resample} together define
 \textsc{NDGetInstantiation} for our implementation, while \textsc{GetError} iterates
-through the steps of the plan, checks precondition and trajectory feasibility, and returns
+through the steps of the plan, checks precondition feasibility, and returns
 a failed action index and associated predicate.
 
 Randomized refinement has two key properties. The first is a very

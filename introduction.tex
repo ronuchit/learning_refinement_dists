@@ -28,7 +28,7 @@ and search problems into interacting logical and geometric components.
   \caption{\small{We apply reinforcement learning to speed up planning
       for {\sc tamp} tasks. We break the problem down into a low-level
       policy that samples promising values for continuous parameters
-      (e.g., pre-grasp poses, grasps, \ldots etc.), and a high-level
+      (e.g., pre-grasp poses, grasping poses, etc.), and a high-level
       policy that ranks different high-level plans. The above figures
       illustrate learning for the low-level system. The top images
       show initial, uniform distributions. The bottom images show
@@ -54,17 +54,19 @@ the plan. We refer to the search for a valid refinement as \emph{plan
 
 {\sc sfrcra-14} uses error information propagated from the geometric
 planner to update the symbolic state and generate a new high-level
-plan.  For example, if motion planning discovers an obstructionq in a
+plan.  For example, if motion planning discovers an obstruction in a
 pick-place domain, the new plan may involve moving the obstruction out
 of the way.  The key step in our approach defines a \emph{plan
   refinement graph}, where nodes are high-level plans and edges are
-unsatisfiable preconditions the explain a failed attempt at
+unsatisfiable preconditions that explain a failed attempt at
 refinement. We develop a complete algorithm that interleaves search
 over this graph with plan refinement.
 
-Natrually, the space of task plans and their possible refinements is
+Natrually, the space of high-level plans and their possible refinements is
 quite large. To combat this, we present machine learning techniques
-that guide search over both components of the search. At the low
+that guide search over both spaces.
+
+At the low
 level, our system learns to propose continuous values for symbolic
 references that are likely to result in collision-free
 trajectories. Discretizing the space of continuous parameters is a
@@ -82,11 +84,11 @@ new values for symbolic references.
 
 
 At the high level, we train heuristics that estimate how difficult it
-is to refine a given plan. Directly applying reinforcement learning to
+is to refine a given plan. Directly applying {\sc rl} to
 this task is challenging because actions amount to either motion
-planning or task planning, and so are time consuming, and because
-there are often a wide range of options to select between. It is,
-however, fairly easy for a person to determine high-level plans that
+planning or task planning, and so are time consuming;
+there is also often a wide range of options among which to select. It is,
+however, fairly easy for a person to determine which high-level plans
 are promising, so we use inverse reinforcement learning based on
 expert demonstrations to train heuristics for this problem.
 

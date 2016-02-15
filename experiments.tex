@@ -63,7 +63,6 @@
       search heuristics (F). Results for L and F are averaged across 5
       separately trained sets of weights. Time limit: 300s.}}
   \label{table:results}
-  \vspace{-1em}
 \end{table}
 
 \subsection{Methodology}
@@ -87,14 +86,14 @@ We compare these baselines against two systems. The first combines
 learned refinement policies with the graph search used in baseline
 2. The second is our full system, and uses learned refinement policies
 and graph search heuristics.  For the dinner domain and frying domain,
-we focus on the low-level learning. The errors propagated in these
+we focus only on the low-level learning. The errors propagated in these
 domains relate to the stackability of objects and a good strategy at
 the high-level incorporates all available error information when
 attempting refinement. Thus, the graph search strategy from baseline 2
 already performs quite well.
 
 Initial experimentation revealed that jointly learning weights for all
-parameter types was intractable. We used a curriculum where the
+parameter types was intractable. Thus, we use a curriculum where the
 distribution of planning problems, $\Prob$, gets progressively
 harder. For the full system, we train the refinement policies first,
 then fix them while collecting demonstrations and training the graph
@@ -120,16 +119,16 @@ angle is less than $\pi/3$, $\pi/2$, and $3\pi/4$.
 
 Our high-level heuristics use features to describe the feasibility of
 plans. In our domains, this mainly summarizes issues with potential
-grasps and we use three features to evalute a potential grasp action,
+grasps. We use three features to evalute a potential grasp action,
 targeted at an object $o$. We consider a cone whose point is at the
-object center that ranges from angles $-\frac{\pi}{3}$ to
-$\frac{\pi}{3}$ and points toward the closest table edge from $o$. The
+object center and ranges from angles $-\frac{\pi}{3}$ to
+$\frac{\pi}{3}$, pointing toward the closest table edge from $o$. The
 exists\_obstr feature is a binary variable that indicates whether any
 other objects lie in this cone. The exists\_path feature is a binary
-variable that indicating whether there is a linear grasp path wide
+variable that indicates whether there is a linear grasp path wide
 enough for the robot's gripper to fit through within the cone. The
-sweep\_count feature computes the minimum collision for the robot
-gripper at any angle inside the cone. 
+sweep\_count feature computes the minimum number of collisions with the robot's
+gripper placed at any angle inside the cone.
 
 We construct these features for the first five grasp actions in the
 plan, padding with -1 as necessary. We then add on the following
@@ -189,8 +188,8 @@ iterations with $\epsilon = 20$, then all reference types for 30
 iterations with $\epsilon = 20$. We fix $H = 100$.
 
 To train the graph search heuristics, we collected approximately 300
-optimal actions from the human demonstrator, over 3 rounds of {\sc
-  DAgger}. After these 3 rounds, performance plateaued. We use $C =
+optimal actions from the human demonstrator, over 3 rounds of dataset aggregation.
+After these 3 rounds, performance plateaued. We use $C =
 10^{9}$ to solve the maximum-margin optimization problem.
 
 \begin{figure}[t]
@@ -200,7 +199,7 @@ optimal actions from the human demonstrator, over 3 rounds of {\sc
     \includegraphics[scale=0.13]{images/grasp_context_2.png}
     \includegraphics[scale=0.13]{images/grasp_context_3.png}
   \caption{\small{The learned left arm grasping (green) distribution
-      for the black can as a single potential obstruction (red) is
+      for the black can adapts as a single potential obstruction (red) is
       moved.}}
   \label{fig:context}
 \end{figure}
@@ -210,7 +209,7 @@ compared to the baseline systems for success rate. When backtracking
 search succeeds, it does so quickly, so it has a faster average
 refinement time on the successes. \figref{fig:cover} shows learned
 base motion and pickup distributions. \figref{fig:context} shows how
-the learned distribution shifts, based on the geometric context.
+the learned distribution shifts based on the geometric context.
 
 \subsection{Dinner Domain}
 We run two sets of experiments, using 2 and 4 bowls. The robot must

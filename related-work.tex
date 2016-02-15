@@ -1,6 +1,6 @@
 \section{Related Work}
 Dearden and Burbridge~\cite{deardenplanningtamp} use machine learning
-to learn learning probability models that map symbolic predicates to
+to learn probability models that map symbolic predicates to
 geometric states in {\sc tamp} problems. They use these models in a
 backtracking search over potential geometric state instantiations for
 the sequence of symbolic states visited by the plan.  Their work
@@ -15,7 +15,7 @@ Kaelbling et al.~\cite{kaelbling2011hierarchical} use hand-coded
 ``geometric suggesters'' to propose continuous geometric values for
 the plan parameters. These suggesters are heuristic computations which
 map information about the robot type and geometric operators to a
-restricted set of values to sample for each plan parameter. In would
+restricted set of values to sample for each plan parameter. It would
 be interesting to adapt the methods considered here to their setting.
 
 Lagriffoul et al.~\cite{lagriffoul2014orientation} propose a set of
@@ -23,8 +23,8 @@ geometric constraints that involve the kinematics and sizes of the
 specific objects of interest in the environment. These constraints
 then define a feasible region from which to search for geometric
 instantiations of plan parameters. One way to think of our work is
-that we are learning distributions that incorporate the joint
-constraints their system computes. 
+that we are learning distributions which incorporate the joint
+constraints their system computes.
 
 Garrett et al.~\cite{GarrettWAFR14} use information about reachability
 in the configuration space and symbolic state space to construct a
@@ -43,7 +43,7 @@ local search that proposes changes to an existing suboptimal
 schedule. The authors formulate this as an {\sc mdp} and use {\sc
   td}($\lambda$)~\cite{suttonbarto} with function approximation to
 learn a value function for it. Their approach outperformed the
-previous state-of-the-art for this task and scaled larger scheduling
+previous state-of-the-art for this task and scaled to larger scheduling
 problems.
 
 Zucker et al.~\cite{workspacebias} use {\sc rl} to bias the
@@ -51,14 +51,14 @@ distribution of a rapidly exploring random tree ({\sc rrt}) for motion
 planning. They use features of a discretized workspace to train a
 non-uniform configuration space sampler with a policy gradient
 algorithm.  In our work, we adapt their gradient updates to the {\sc
-  tamp} framework (Section V-C).
+  tamp} framework.
 
 Another line of research uses machine learning to learn heuristics for
 search. This general formulation is applied to many domains other than
 robotics.  Boyan et al.~\cite{Boyanlearning} solve optimization
 problems by learning a state evaluation function that guides local
 search. Arbelaez et al.~\cite{hamadisearch} solve constraint
-satisfaction problems with a heuristic model that is refined with
-supervised learning.  Xu et al.~\cite{Xu07discriminativelearning}
+satisfaction problems using a heuristic model that is refined with
+supervised learning. Xu et al.~\cite{Xu07discriminativelearning}
 train heuristics to control forward state-space beam search in task
 planning.

@@ -2,8 +2,7 @@
 Solving {\sc tamp} problems requires evaluation of possible courses of
 action, each comprised of different combinations of instantiated
 action operators. A fundamental challenge is that the set of possible
-action instantiations (and thus the branching factor of the underlying
-search problem) is infinite.  We give a brief overview of {\sc
+action instantiations is infinite.  We give a brief overview of {\sc
   sfrcra-14}, a recent approach to {\sc tamp}, and refer the
 interested reader to the cited paper for further details.  Then, we
 present a complete algorithm for {\sc tamp} that uses the framework of
@@ -75,9 +74,9 @@ we address the first limitation; in the following sections, we address the secon
   \end{tikzpicture}
   \caption{\small{A plan refinement graph for an environment with 3
       objects: A, B, and C. The goal is to grasp A. Each node is a
-      task plan and edges are labeled with errors discovered during
+      high-level plan, and edges are labeled with errors discovered during
       failed attempts at plan refinement. Each edge points to a plan
-      that addresses that reason failure. In this example, failures
+      that addresses that reason for failure. In this example, failures
       are obstructions and new plans move the offending object out of
       the way.}}
   \label{fig:prg}
@@ -86,7 +85,7 @@ we address the first limitation; in the following sections, we address the secon
 \subsection{A Complete Algorithm for {\sc tamp}}
 We introduce a complete algorithm that maintains a \emph{plan
   refinement graph} ({\sc prg}). \figref{fig:prg} illustrates a simple
-example with 3 task plans.  Every node $u$ in the {\sc prg} represents
+example with 3 high-level plans.  Every node $u$ in the {\sc prg} represents
 a high-level plan $\pi_u$ and the current state of the search for a
 refinement. An edge $(u,v)$ essentially represents a ``correction'' of
 $\pi_u$ for a specific instantiation of the symbolic references in
@@ -104,7 +103,7 @@ solves the new high-level problem that incorporates the discovered
 facts $\varphi_{u,v}$ in the $k^{th}$ state.
 
 The overall search algorithm interleaves the search for feasible
-refinements of task plans with the addition of new edges and plan
+refinements of high-level plans with the addition of new edges and plan
 nodes into the {\sc prg}. This process is described using
 non-deterministic choices (denoted using the prefix ``ND'') in
 Alg.\,\ref{alg:complete}. Subroutine \textsc{RefineNode} selects a
@@ -117,8 +116,8 @@ but with a random change at a single step.  The latter can be required
 in some pathological domains that have dead-ends and where changing
 the instantiation of symbolic references for an action has no effect
 on the action outcomes. \textsc{GetError} returns a failed
-precondition for an infeasible refinement (e.g., collision
-check the current set of trajectories to detect obstructions).
+precondition for an infeasible refinement (e.g., collision-check
+the current set of trajectories to detect obstructions).
 
 Different implementations of the non-deterministic choices in
 Alg.\,\ref{alg:complete} can capture various search algorithms that
