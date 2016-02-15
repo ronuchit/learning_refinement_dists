@@ -18,7 +18,7 @@ reference to resample and $x$ is the continuous value assigned to $p$ in the new
 \item The reward function $R(s, a, s')$ is linearly interpolated
   between 0 and 20 based on the fraction of high-level actions whose
   preconditions are satisfied. Actions that result in an {\sc ik}
-  infeasible pose receive reward $-i$.
+  infeasible pose receive reward $-1$.
 \item The horizon is the number of available samples.
 \item $\Prob$ is a distribution over plans to be refined, defined as a
   distribution over planning problems.
