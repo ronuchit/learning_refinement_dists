@@ -22,10 +22,10 @@ We define a task and motion planning ({\sc tamp}) problem as a tuple
 $\langle \T, \Obj, \F, \I, \G, \U \rangle$:
 \begin{tightlist}
 \item $\T$: a set of object \emph{types} (e.g., movable objects,
-  trajectories, poses, and locations).
+  trajectories, poses, locations).
 
-\item $\Obj$: a set of \emph{objects} (e.g., cans, trajectories, and
-  poses). $\Obj$ defines the configuration space of all movable
+\item $\Obj$: a set of \emph{objects} (e.g., can$_{2}$, grasping\_pose$_{6}$, location$_{3}$).
+  $\Obj$ defines the configuration space of all movable
   objects, including the robot.
 
 \item $\F$: a set of \emph{fluents}, which define relationships among
@@ -36,7 +36,7 @@ $\langle \T, \Obj, \F, \I, \G, \U \rangle$:
 
 \item $\G$: a conjunction of fluents that defines the goal state.
 
-\item $\U$: a set of \emph{high-level actions} (e.g., grasp, move, and
+\item $\U$: a set of \emph{high-level actions} (e.g., grasp, move,
   putdown), parameterized by objects and defined by
   \emph{preconditions}, a set of fluents that describe when an action
   can be taken; and \emph{effects}, a set of fluents that hold true

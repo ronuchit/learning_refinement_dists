@@ -24,16 +24,15 @@ reference to resample and $x$ is the continuous value assigned to $p$ in the new
   distribution over planning problems.
 \end{tightlist}
 
-As an example, consider refining a pick-place high-level plan, where the
-robot grasps an object and puts it down at a certain location. The
-initial state consists of this plan, a list of initialized parameters,
+Consider an example execution of refining a pick-place high-level plan. The
+robot must grasp an object and put it down at a certain location. The
+initial state consists of this plan, a set of initialized parameters,
 and meshes that describe the geometry of the problem. We'll suppose
-that the initial grasp is infeasible for both the pick and the putdown
-actions. The first action selects a new grasp, but receives no reward
-because it does not work with the current pick or putdown poses. The
-two actions set values for these poses that work with the grasp. The
-final step collects the maximum reward of 20 because all instantiated
-actions are feasible.
+that the initial grasping pose causes both the grasp and the putdown
+actions to have violated preconditions. The first action in the {\sc mdp} selects a new grasping pose;
+suppose it receives no reward because it does not work with the current putdown pose. The subsequent
+two actions then set consistent values for the grasping and putdown poses. This provides
+the maximum reward of 20 because all instantiated actions are now feasible.
 
 % \begin{figure}[t]
 %   \centering
