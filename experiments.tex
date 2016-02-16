@@ -141,31 +141,28 @@ distance from $l$ to $t_{l}$. 3 features count the number of objects
 in each bucket of a cone with apex $l$, angle range 0 to $\frac{3\pi}{4}$, and $p = t_{l}$.
 
 Our high-level heuristics use features to describe the feasibility of
-plans. In our domains, this mainly summarizes issues with potential
-grasps. We use three features to evaluate a potential grasp action,
-targeted at an object $o$. We consider a cone with apex $o$, angle range
-$-\frac{\pi}{3}$ to $\frac{\pi}{3}$, and $p = t_{o}$. The
-binary feature exists\_obstr indicates whether any
-other objects lie in this cone. The binary feature exists\_path
-indicates whether there is a linear grasp path within the cone wide
-enough to fit the robot's gripper. The
-sweep\_count feature computes the minimum number of collisions with the robot's
-gripper placed at any angle inside the cone.
-We construct these features for the first five grasp actions in the
-plan, padding with -1. We then add on the following
-aggregate features associated with the entire plan: 1) the minimum
-exists\_obstr across all grasp actions, 2) the sum of sweep\_count
-across all grasp actions, 3) the number of times $u$ was picked for
-refinement, and 4) the number of times $u$ was picked for generating
-an error.
+plans. For our domains, we focus on capturing the feasibility of
+grasps. We use three features, exists\_obstr, exists\_path, and sweep\_count, to evaluate a potential grasp action
+targeted at an object $o$. We consider a cone with apex $o$, angle
+range $-\frac{\pi}{3}$ to $\frac{\pi}{3}$, and $p = t_{o}$.
+Exists\_obstr is true iff there are any obstructions in the
+cone. Exists\_path is true iff there is a collision-free straight-line end effector path
+within the cone. Sweep\_count is the minimum number of collisions with
+the robot's gripper at any angle inside the cone. We construct
+these features for the first five grasp actions in the plan, padding
+with -1. We then add on the following aggregate features associated
+with the entire plan: 1) the minimum exists\_obstr across all grasp
+actions, 2) the sum of sweep\_count across all grasp actions, 3) the
+number of times $u$ was picked for refinement, and 4) the number of
+times $u$ was picked for generating an error.
 
 Our experiments are conducted in Python 2.7 using the OpenRave
-simulator~\cite{Diankov_2008_6117} with a PR2.  Our motion planner is
+simulator~\cite{Diankov_2008_6117}.  Our motion planner is
 trajopt~\cite{schulman2013finding}, and our task planner is
 Fast-Forward~\cite{FF}. Experiments were carried out in series on an
 Intel Core i7-4770K machine with 16GB RAM. Each problem's time limit
 was 300 seconds. Table \ref{table:results} summarizes quantitative
-results.
+results. The supplementary video shows learned distributions in each domain.
 
 % \begin{figure}[t]
 %   \centering

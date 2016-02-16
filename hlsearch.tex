@@ -3,7 +3,7 @@
 Recall that in Alg.\,\ref{alg:complete}, the high level has
 a two-tiered decision to make: 1) which node in the {\sc prg} to visit
 next, and 2) whether to attempt to refine this node or generate
-failure information from it. These decisions are encoded in the
+error information from it. These decisions are encoded in the
 routines \textsc{NDGetNextNode} and \textsc{NDChoice} in the outermost loops. Making these
 decisions intelligently is critical to good performance. 
 
@@ -26,10 +26,10 @@ challenging, so we use {\sc irl} with expert demonstrations to
 train heuristics.
 
 The heuristics are trained to trade off the computation time from
-refining a plan with that of generating a plan correction and adding a
+refining a plan with that of generating a geometric error and adding a
 new plan to the {\sc prg}. We use $u$ to represent the selected node
 and $m$ the mode to apply (either trying to refine the node or
-quickly generating failure information).
+quickly generating error information).
 
 We encode geometric features of a current plan refinement in a feature
 vector $f(u).$ We train separate weights to estimate the utility of
