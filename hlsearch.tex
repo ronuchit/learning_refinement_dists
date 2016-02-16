@@ -1,17 +1,16 @@
 \section{Learning What High-Level Plan to Refine}
 \subsection{Significance}
-In this section, we present a method for learning \emph{which} high-level plan to try
-refining. Recall that in Alg.\,\ref{alg:complete}, the high level has
+Recall that in Alg.\,\ref{alg:complete}, the high level has
 a two-tiered decision to make: 1) which node in the {\sc prg} to visit
 next, and 2) whether to attempt to refine this node or generate
 failure information from it. These decisions are encoded in the
-routines \textsc{NDGetNextNode} and \textsc{NDChoice}. Making these
+routines \textsc{NDGetNextNode} and \textsc{NDChoice} in the outermost loops. Making these
 decisions intelligently is critical to good performance. 
 
 For example, consider a pick-place domain. Different sampled grasping
 poses may cause different obstruction errors to be propagated back up to
 the task planner. \figref{fig:hlsearch} illustrates two different
-failures, one of which generates a large number of obstructions. The
+failures, one of which generates a larger number of obstructions. The
 {\sc prg} contains plans to remedy both of these issues; however, one
 will take much longer to refine than the other. An effective heuristic
 would allow us to allocate more search effort for the promising
@@ -19,7 +18,7 @@ plan. In this section, we describe a method to learn one such
 heuristic.
 
 \subsection{Approach}
-Direct application of {\sc rl} is difficult for two reasons: 1) the
+Direct application of {\sc rl} at the high level is difficult for two reasons: 1) the
 space of potential high-level plans is very large and reward are
 sparse; 2) actions take a long time to `execute' as they often require
 motion planning. These combine to make the learning problem quite
@@ -50,7 +49,7 @@ recover a set of weights so that the expert's demonstration is
 \end{align*}
 
 The $i$ iterate over the demonstrated trajectories and the $j$ iterate
-over possible actions. The $\xi$ are slack variables that ensure that
+over possible actions. The $\xi_{i}$ are slack variables that ensure
 a solution always exists. $C$ is a regularization parameter that
 controls overfitting. At test time, we follow the policy encoded by
 $w$, picking the highest-scoring action at each step.
@@ -71,7 +70,7 @@ executing the learned policy.
       can. Obstructions make it so that this is not immediately possible; however, which
       obstructions are moved will have a big impact on how long it
       takes to find a solution (i.e., 6 obstructions in the left image
-      vs. 2 obstructions in the right image). Each of these failures
+      versus 2 obstructions in the right image). Each of these failures
       generates a new node in the plan refinement graph. We learn
       heuristics from expert demonstrations that allow the search to
       focus on the promising nodes in the graph.}}
