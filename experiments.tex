@@ -109,39 +109,42 @@ third and fourth systems, we average results across running the
 training process 5 times independently and evaluating each final set
 of weights.
 
-Many of our features use the concept of a \emph{cone}, parameterized by an apex,
-an angle range, a direction, and a number of buckets.
+Our features use the concept of a \emph{cone}, parameterized by an apex $a$,
+an angle range, a number of buckets, and a point $p$ toward which it is directed.
+To bucket a sample $s$ within a cone means to measure the angle between the vector from
+$a$ to $s$ and the vector from $a$ to $p$, then determine which bucket of the cone
+it lies in, within the angle range. We also denote the closest point on the table edge to an object $o$ as $t_{o}$.
+
 To learn grasping poses for a target object $o$, we use 25 features.
 9 binary features bucket the distance between
 the sample and $o$. 9 binary features bucket the
 sample height. 3 features describe the number of objects within
 discs of radius 7, 10, and 15 centimeters around the sample. 3 binary
-features bucket the sample within a cone of apex $o$ and angle range 0 to $\pi$, directed
-toward the robot. The final feature is binary and is 1 iff the 2-norm of
+features bucket the sample within a cone of apex $o$, angle range 0 to $\pi$, and $p$
+the robot position. The final feature is binary and is 1 iff the 2-norm of
 the difference between the previous sample and the current one exceeds $10^{-3}$.
 
 To learn putdown poses for a target location $l$, we use 24 features. The first
 18 are the same as for grasping. 5 binary features bucket the sample within
-a cone of apex $l$ and angle range 0 to $\pi$ (with the last feature describing
-orientation), directed toward the closest table edge. The final feature is the same as
-for grasping.
+a cone of apex $l$, angle range 0 to $\pi$, and $p = t_{l}$. The last feature describes
+orientation. The final feature is the same as for grasping.
 
 To learn base poses for interacting with an object $o$, we use 18 features. The first 9 are the same as
-for grasping. 7 binary features bucket the sample within a cone of apex $o$ and angle range 0 to $\pi$
-(with the last feature describing orientation), directed toward the closest table edge.
-1 feature describes whether the sampled pose collides with unmovable objects in the environment.
+for grasping. 7 binary features bucket the sample within a cone of apex $o$, angle range 0 to $\pi$, and $p = t_{o}$.
+The last feature describes orientation.
+1 feature describes if the sampled pose collides with any objects.
 1 feature describes whether there are obstructions in front of the sampled pose.
 
 To learn putdown locations $l$, we use 5 features. 1 binary feature encodes whether
 any objects are within 15 centimeters of $l$. 1 feature is the
 distance from $l$ to the closest table edge. 3 features count the number of objects
-in each bucket of a cone with apex $l$ and angle range 0 to $\frac{3\pi}{4}$, directed toward the closest table edge.
+in each bucket of a cone with apex $l$, angle range 0 to $\frac{3\pi}{4}$, and $p = t_{l}$.
 
 Our high-level heuristics use features to describe the feasibility of
 plans. In our domains, this mainly summarizes issues with potential
 grasps. We use three features to evaluate a potential grasp action,
-targeted at an object $o$. We consider a cone with apex $o$ and angle range
-$-\frac{\pi}{3}$ to $\frac{\pi}{3}$, directed toward the closest table edge. The
+targeted at an object $o$. We consider a cone with apex $o$, angle range
+$-\frac{\pi}{3}$ to $\frac{\pi}{3}$, and $p = t_{o}$. The
 binary feature exists\_obstr indicates whether any
 other objects lie in this cone. The binary feature exists\_path
 indicates whether there is a linear grasp path within the cone wide
@@ -157,12 +160,12 @@ refinement, and 4) the number of times $u$ was picked for generating
 an error.
 
 Our experiments are conducted in Python 2.7 using the OpenRave
-simulator~\cite{Diankov_2008_6117} with a PR2 robot.  The motion
-planner we use is trajopt~\cite{schulman2013finding}, and the task
-planner is Fast-Forward~\cite{FF}.  The experiments were carried out
-in series on an Intel Core i7-4770K machine with 16GB RAM. The time limit
-for each problem was 300 seconds. Table
-\ref{table:results} summarizes our quantitative results.
+simulator~\cite{Diankov_2008_6117} with a PR2.  Our motion planner is
+trajopt~\cite{schulman2013finding}, and our task planner is
+Fast-Forward~\cite{FF}. Experiments were carried out in series on an
+Intel Core i7-4770K machine with 16GB RAM. Each problem's time limit
+was 300 seconds. Table \ref{table:results} summarizes quantitative
+results.
 
 % \begin{figure}[t]
 %   \centering
@@ -206,7 +209,6 @@ grasping poses for 12 iterations with $\epsilon = 5$, then base poses,
 grasping poses, and putdown poses (at fixed location) for 18
 iterations with $\epsilon = 20$, then all reference types for 30
 iterations with $\epsilon = 20$. We fix $H = 100$.
-
 To train the graph search heuristics, we collected approximately 300
 optimal actions from the human demonstrator, over 3 rounds of dataset aggregation.
 After these 3 rounds, performance plateaued. We use $C =
