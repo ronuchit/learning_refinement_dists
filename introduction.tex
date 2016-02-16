@@ -7,7 +7,7 @@ framework of combined \emph{task and motion planning} ({\sc tamp}).
 In {\sc tamp}, an agent is given a symbolic, logical characterization
 of actions (e.g., move, grasp, putdown), along with a geometric
 encoding of the environment.  Efficient integration of high-level,
-symbolic task planning and low-level, geometric motion planning in {\sc tamp} is
+symbolic task planning and low-level, geometric motion planning is
 difficult; recent research has proposed several
 approaches~\cite{srivastava2014combined, deardenplanningtamp,
   kaelbling2011hierarchical, lagriffoul2014orientation,
@@ -78,7 +78,7 @@ distributions over these values in a domain-independent fashion.  Our
 approach draws inspiration from Zhang and
 Dietterich~\cite{JobShopSched}, who applied {\sc rl} to job shop
 scheduling. In their formulation, states correspond to schedules and
-actions propose changes to the schedule. In our setting, states
+actions propose changes to a schedule. In our setting, states
 correspond to (potentially infeasible) refinements and actions propose
 new values for symbolic references.
 
@@ -86,10 +86,10 @@ new values for symbolic references.
 At the high level, we train heuristics that estimate how difficult it
 is to refine a given plan. Directly applying {\sc rl} to
 this task is challenging because actions amount to either motion
-planning or task planning, and so are time consuming;
-there is also often a wide range of options among which to select. It is,
-however, fairly easy for a person to determine which high-level plans
-are promising, so we use inverse reinforcement learning based on
+planning or task planning, and so are time consuming. Also, there are often
+many candidate task plans among which to select. It is,
+however, fairly easy for a human to determine which high-level plans
+are promising, so we use inverse reinforcement learning ({\sc irl}) based on
 expert demonstrations to train heuristics for this problem.
 
 
