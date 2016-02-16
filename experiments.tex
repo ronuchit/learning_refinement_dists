@@ -5,31 +5,31 @@
   \tabcolsep=0.11cm{
   \begin{tabular}{ccccc}
     \toprule[1.5pt]
-      \textbf{\# Objects} & \textbf{System} & \textbf{\% Solved (SD)} & \textbf{Avg Ref Time (s)} & \textbf{Avg \# MP Calls}\\
+      \textbf{Condition} & \textbf{\% Solved (St. Dev.)} & \textbf{Time (sec): A (S)} & \textbf{\# MP Calls: S}\\
     \midrule[2pt]
-      30 (can) & T & 42 (0) & 6.2 & 8.0\\
+      30 (can), T & 42 (0) & 179 (6.2) & 8\\
     \midrule
-      30 (can) & B & 40 (0) & 20.5 & 10.5\\
+      30 (can), B & 40 (0) & 194 (20.5) & 11\\
     \midrule
-      30 (can) & L & 72 (8.2) & 20.4 & 11.3\\
+      30 (can), L & 72 (8.2) & 132 (20.4) & 11\\
     \midrule
-      30 (can) & F & 81 (3.0) & 17.9 & 12.7\\
+      30 (can), F & 81 (3.0) & 106 (17.9) & 13\\
     \midrule[1.5pt]
-      35 (can) & T & 50 (0) & 9.2 & 8.0\\
+      35 (can), T & 50 (0) & 157 (9.2) & 8\\
     \midrule
-      35 (can) & B & 50 (0) & 17.6 & 9.2\\
+      35 (can), B & 50 (0) & 161 (17.6) & 9\\
     \midrule
-      35 (can) & L & 68 (8.3) & 11.6 & 6.6\\
+      35 (can), L & 68 (8.3) & 123 (11.6) & 7\\
     \midrule
-      35 (can) & F & 78 (2.2) & 10.6 & 6.8\\
+      35 (can), F & 78 (2.2) & 103 (10.6) & 7\\
     \midrule[1.5pt]
-      40 (can) & T & 34 (0) & 19.7 & 10.3\\
+      40 (can), T & 34 (0) & 207 (19.7) & 10\\
     \midrule
-      40 (can) & B & 36 (0) & 21.7 & 10.0\\
+      40 (can), B & 36 (0) & 204 (21.7) & 10\\
     \midrule
-      40 (can) & L & 61 (6.3) & 18.7 & 9.4\\
+      40 (can), L & 61 (6.3) & 149 (18.7) & 9\\
     \midrule
-      40 (can) & F & 74 (3.2) & 20.7 & 10.4\\
+      40 (can), F & 74 (3.2) & 128 (20.7) & 10\\
     \midrule[2pt]
     %   2 (dinner) & T & 100 (0) & 35.5 & 60.2\\
     % \midrule
@@ -37,30 +37,31 @@
     % \midrule
     %   2 (dinner) & L & 99 (1.8) & 41.5 & 61.6\\
     % \midrule[1.5pt]
-      4 (dinner) & T & 100 (0) & 43.2 & 98.0\\
+      4 (dinner), T & 100 (0) & 43 (43.2) & 98\\
     \midrule
-      4 (dinner) & B & 90 (0) & 63.0 & 95.5\\
+      4 (dinner), B & 90 (0) & 87 (63.0) & 96\\
     \midrule
-      4 (dinner) & L & 99 (0.6) & 69.2 & 97.1\\
+      4 (dinner), L & 99 (0.6) & 69 (69.2) & 97\\
     \midrule[2pt]
-      2 (frying) & T & 96 (0) & 29.0 & 67.2\\
+      2 (frying), T & 95 (0) & 48 (29.0) & 67\\
     \midrule
-      2 (frying) & B & 88 (0) & 46.9 & 60.0\\
+      2 (frying), B & 80 (0) & 98 (46.9) & 60\\
     \midrule
-      2 (frying) & L & 99 (2.0) & 22.6 & 44.7\\
+      2 (frying), L & 99 (2.0) & 27 (22.6) & 45\\
     \midrule[1.5pt]
-      4 (frying) & T & 55 (0) & 48.9 & 131.8\\
+      4 (frying), T & 55 (0) & 176 (48.9) & 132\\
     \midrule
-      4 (frying) & B & 20 (0) & 187.9 & 155.5\\
+      4 (frying), B & 20 (0) & 278 (187.9) & 156\\
     \midrule
-      4 (frying) & L & 92 (6.8) & 90.6 & 120.9\\
+      4 (frying), L & 92 (6.8) & 136 (90.6) & 121\\
     \bottomrule[1.5pt]
   \end{tabular}}
-  \caption{\small{Percent solved, standard deviation, and average refinement time \& number of motion
-      planning calls on successes, for baseline 1 (T); baseline 2
-      (B); learned refinement policies with greedy graph search (L);
-      and our full system: learned refinement policies and graph
-      search heuristics (F). L and F results are averaged across 5
+  \caption{\small{Percent solved, standard deviation, average refinement time, and number of motion
+      planning calls. A averages across all runs, treating timeouts as 300s; S averages across runs where all systems succeeded.
+      T: baseline 1. B: baseline 2.
+      L: learned refinement policies with greedy graph search.
+      F: learned refinement policies and graph
+      search heuristics. L and F results are averaged across 5
       separately trained sets of weights. Time limit: 300s.}}
   \label{table:results}
 \end{table}
@@ -99,7 +100,7 @@ harder. For the full system, we train the refinement policies first,
 then fix them while collecting demonstrations and training the graph
 search heuristics. To reduce variance in the process, we train 3 sets
 of refinement weights independently and select the one that performs
-best on a validation set.
+best on a validation set. We set the step size $\alpha = 0.1$.
 
 We report results on fixed test sets of 50 randomly generated
 environments for the can and dinner domains, and 20 for the frying
@@ -116,8 +117,8 @@ the sample and $o$. 9 binary features bucket the
 sample height. 3 features describe the number of objects within
 discs of radius 7, 10, and 15 centimeters around the sample. 3 binary
 features bucket the sample within a cone of apex $o$ and angle range 0 to $\pi$, directed
-toward the robot. The final feature compares the 2-norm of
-the difference between the previous sample and the current one with $10^{-3}$.
+toward the robot. The final feature is binary and is 1 iff the 2-norm of
+the difference between the previous sample and the current one exceeds $10^{-3}$.
 
 To learn putdown poses for a target location $l$, we use 24 features. The first
 18 are the same as for grasping. 5 binary features bucket the sample within
@@ -134,23 +135,21 @@ for grasping. 7 binary features bucket the sample within a cone of apex $o$ and 
 To learn putdown locations $l$, we use 5 features. 1 binary feature encodes whether
 any objects are within 15 centimeters of $l$. 1 feature is the
 distance from $l$ to the closest table edge. 3 features count the number of objects
-in each bucket of a cone with apex $l$ and angle range 0 to $3\pi/4$, directed toward the closest table edge.
+in each bucket of a cone with apex $l$ and angle range 0 to $\frac{3\pi}{4}$, directed toward the closest table edge.
 
 Our high-level heuristics use features to describe the feasibility of
 plans. In our domains, this mainly summarizes issues with potential
 grasps. We use three features to evaluate a potential grasp action,
-targeted at an object $o$. We consider a cone whose point is at the
-object center and ranges from angles $-\frac{\pi}{3}$ to
-$\frac{\pi}{3}$, pointing toward the closest table edge from $o$. The
-exists\_obstr feature is a binary variable that indicates whether any
-other objects lie in this cone. The exists\_path feature is a binary
-variable that indicates whether there is a linear grasp path wide
-enough for the robot's gripper to fit through within the cone. The
+targeted at an object $o$. We consider a cone with apex $o$ and angle range
+$-\frac{\pi}{3}$ to $\frac{\pi}{3}$, directed toward the closest table edge. The
+binary feature exists\_obstr indicates whether any
+other objects lie in this cone. The binary feature exists\_path
+indicates whether there is a linear grasp path within the cone wide
+enough to fit the robot's gripper. The
 sweep\_count feature computes the minimum number of collisions with the robot's
 gripper placed at any angle inside the cone.
-
 We construct these features for the first five grasp actions in the
-plan, padding with -1 as necessary. We then add on the following
+plan, padding with -1. We then add on the following
 aggregate features associated with the entire plan: 1) the minimum
 exists\_obstr across all grasp actions, 2) the sum of sweep\_count
 across all grasp actions, 3) the number of times $u$ was picked for
@@ -193,7 +192,7 @@ for each problem was 300 seconds. Table
 % \end{figure}
 
 \subsection{Can Domain}
-We run three sets of experiments, using 30, 35, and 40 cans on the
+We run three experiments, using 30, 35, and 40 cans on the
 table.  The goal is always for the robot to pick up a particular can
 with its left gripper. We disable the right gripper, so any
 obstructions to the target object must be picked up and placed
@@ -202,7 +201,7 @@ This domain has 4 types of continuous
 references: base poses, object grasping poses, object putdown poses,
 and object putdown locations.
 
-Our curriculum learning system trains distributions for base poses and
+Our system trains distributions for base poses and
 grasping poses for 12 iterations with $\epsilon = 5$, then base poses,
 grasping poses, and putdown poses (at fixed location) for 18
 iterations with $\epsilon = 20$, then all reference types for 30
@@ -226,14 +225,14 @@ After these 3 rounds, performance plateaued. We use $C =
 \end{figure}
 
 The results demonstrate significant improvements in performance when
-compared to the baseline systems for success rate. When backtracking
+compared to the baseline systems for success rate and average refinement time. When backtracking
 search succeeds, it does so quickly, so it has a faster average
 refinement time on the successes. \figref{fig:cover} shows learned
 base motion and pickup distributions. \figref{fig:context} shows how
 the learned distribution shifts based on the geometric context.
 
 \subsection{Dinner Domain}
-We run one set of experiments, using 4 bowls. The robot must
+We run one experiment, using 4 bowls. The robot must
 move the bowls from their initial locations on one table to target
 locations on the other. We assign a cost to base motion in the
 environment, so the robot is encouraged to use the provided tray, onto
@@ -242,27 +241,25 @@ This domain has 5 types of continuous
 references: base poses, object grasping poses, object putdown poses,
 tray pickup poses, and tray putdown poses.
 
-Our curriculum learning system first trains base poses and tray pickup
+Our system first trains base poses and tray pickup
 and putdown poses for 20 iterations, then object grasping and putdown
 poses for 20 iterations. We fix $H = 100$ and $\epsilon = 10$.
 
 The results demonstrate comparable performance to the baseline
-systems. The reason is that hand-coding the sample space works well in
-this domain. For example, the optimal robot base pose from which to
-pick up the tray is directly in front of it, which is quickly sampled
-in the baseline systems. Additionally, the lack of long-term
-dependencies in the plan means that backtracking search finds a valid
-refinement quickly. The fact that our system performs comparably with
-the baselines shows that our learning algorithm can recover good
-hand-coded distributions.  \figref{fig:cover} shows learned tray
+systems. A simple hand-coded discretization works well in
+this domain. The optimal robot base pose for tray pickup
+is directly in front of it, which is quickly sampled.
+The lack of long-term
+dependencies in the plan also means that backtracking search succeeds
+quickly. This shows that our system recovers the performance of
+well-chosen discretizations, when they exist. \figref{fig:cover} shows learned tray
 pickup poses after all 20 iterations.
 
 \subsection{Frying Domain}
-We run two sets of experiments, using 2 and 4 frying pans. The robot
-must stack the frying pans in order of decreasing radius into a narrow
-shelf. To be successful, it must grasp the frying pans at the handle,
-so that the handle sticks out after the pan is placed in the
-shelf. A typical high-level plan in this domain has around 45 steps.
+We run two experiments, using 2 and 4 frying pans. The robot
+must stack these pans in order of decreasing radius in a narrow
+shelf. To succeed, it must grasp each frying pan at its handle.
+A typical high-level plan in this domain has around 45 steps.
 This domain has 3 types of continuous references: base poses,
 pan grasping poses, and pan putdown poses.
 
