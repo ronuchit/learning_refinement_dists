@@ -59,7 +59,7 @@
   \caption{\small{Percent solved, standard deviation, average refinement time, and number of motion
       planning calls. A averages across all runs, treating timeouts as 300s; S averages across runs where all systems succeeded.
       T: baseline 1. B: baseline 2.
-      L: learned refinement policies with greedy graph search.
+      L: learned refinement policies with B's graph search.
       F: learned refinement policies and graph
       search heuristics. L and F results are averaged across 5
       separately trained sets of weights. Time limit: 300s.}}
@@ -72,7 +72,7 @@ on a table (the \emph{can domain}), setting up bowls for dinner (the
 \emph{dinner domain}), and placing frying pans into a narrow shelf
 (the \emph{frying domain}).  We compare performance with two
 baselines, both of which use the hand-coded refinement distributions
-used in {\sc sfrcra-14}.
+from {\sc sfrcra-14}.
 
 Baseline 1 is {\sc sfrcra-14}: it uses exhaustive backtracking search
 for refinement and greedy depth-first search of the {\sc prg}, which
@@ -85,12 +85,12 @@ repeat.
 
 We compare these baselines against two systems. The first combines
 learned refinement policies with the graph search used in baseline
-2. The second is our full system, and uses learned refinement policies
+2. The second is our full system; it uses learned refinement policies
 and graph search heuristics.  For the dinner domain and frying domain,
-we focus only on the low-level learning. Since the errors propagated in these
-domains only relate to the stackability of objects, a good graph search strategy
+we focus only on learning refinement policies. Since the errors propagated in these
+domains only relate to the stackability of objects, a good {\sc prg} search strategy
 incorporates all available error information when
-attempting refinement. Thus, the graph search strategy from baseline 2
+attempting refinement. Thus, the {\sc prg} search strategy from baseline 2
 already performs well.
 
 Initial experimentation revealed that jointly learning weights for all
@@ -105,7 +105,7 @@ best on a validation set. We set the step size $\alpha = 0.1$.
 We report results on fixed test sets of 50 randomly generated
 environments for the can and dinner domains, and 20 for the frying
 domain (because these environments have less variation).  For the
-third and fourth systems, we average results across running the
+systems that use learned refinement distributions, we average results across running the
 training process 5 times independently and evaluating each final set
 of weights.
 
@@ -126,18 +126,18 @@ the difference between the previous sample and the current one exceeds $10^{-3}$
 
 To learn putdown poses for a target location $l$, we use 24 features. The first
 18 are the same as for grasping. 5 binary features bucket the sample within
-a cone of apex $l$, angle range 0 to $\pi$, and $p = t_{l}$. The last feature describes
+a cone of apex $l$, angle range 0 to $\pi$, and $p = t_{l}$. The last of these describes
 orientation. The final feature is the same as for grasping.
 
 To learn base poses for interacting with an object $o$, we use 18 features. The first 9 are the same as
 for grasping. 7 binary features bucket the sample within a cone of apex $o$, angle range 0 to $\pi$, and $p = t_{o}$.
-The last feature describes orientation.
+The last of these describes orientation.
 1 feature describes if the sampled pose collides with any objects.
 1 feature describes whether there are obstructions in front of the sampled pose.
 
 To learn putdown locations $l$, we use 5 features. 1 binary feature encodes whether
 any objects are within 15 centimeters of $l$. 1 feature is the
-distance from $l$ to the closest table edge. 3 features count the number of objects
+distance from $l$ to $t_{l}$. 3 features count the number of objects
 in each bucket of a cone with apex $l$, angle range 0 to $\frac{3\pi}{4}$, and $p = t_{l}$.
 
 Our high-level heuristics use features to describe the feasibility of
@@ -226,7 +226,7 @@ After these 3 rounds, performance plateaued. We use $C =
   \label{fig:context}
 \end{figure}
 
-The results demonstrate significant improvements in performance when
+The results demonstrate significant improvements in performance
 compared to the baseline systems for success rate and average refinement time. When backtracking
 search succeeds, it does so quickly, so it has a faster average
 refinement time on the successes. \figref{fig:cover} shows learned
@@ -250,7 +250,7 @@ poses for 20 iterations. We fix $H = 100$ and $\epsilon = 10$.
 The results demonstrate comparable performance to the baseline
 systems. A simple hand-coded discretization works well in
 this domain. The optimal robot base pose for tray pickup
-is directly in front of it, which is quickly sampled.
+is directly in front of the tray, which is quickly sampled.
 The lack of long-term
 dependencies in the plan also means that backtracking search succeeds
 quickly. This shows that our system recovers the performance of
