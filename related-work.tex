@@ -1,6 +1,6 @@
 \section{Related Work}
-Dearden and Burbridge~\cite{deardenplanningtamp} use machine learning
-to learn probability models that map symbolic predicates to
+Dearden and Burbridge~\cite{deardenplanningtamp}
+learn probability models that map symbolic predicates to
 geometric states in {\sc tamp} problems. They use these models in a
 backtracking search over potential geometric state instantiations for
 the sequence of symbolic states visited by the plan.  Their work
@@ -38,22 +38,21 @@ approaches.
 Our problem formulation is motivated by Zhang and Dietterich's
 application of {\sc rl} to job-shop
 scheduling~\cite{JobShopSched}. Job-shop scheduling is a combinatorial
-optimization problem where the goal is to find a minimum-duration
-schedule of a set of jobs with temporal and resource constraints. An
-empirically successful approach to this problem relies on a randomized
+optimization problem where the goal is to find the minimum-duration
+schedule for a set of jobs with temporal and resource constraints. An
+empirically successful approach relies on a randomized
 local search that proposes changes to an existing suboptimal
 schedule. The authors formulate this as an {\sc mdp} and use {\sc
   td}($\lambda$)~\cite{suttonbarto} with function approximation to
-learn a value function for it. Their approach outperformed the
-previous state-of-the-art for this task and scaled better to larger scheduling
+learn a value function. Their approach outperformed the
+previous state-of-the-art for this task and scaled to larger scheduling
 problems.
 
 Zucker et al.~\cite{workspacebias} use {\sc rl} to bias the
 distribution of a rapidly exploring random tree ({\sc rrt}) for motion
 planning. They use features of a discretized workspace to train a
 non-uniform configuration space sampler with a policy gradient
-algorithm.  In our work, we adapt their gradient updates to the {\sc
-  tamp} framework.
+algorithm. Our work applies similar ideas to {\sc tamp}.
 
 % Another line of research uses machine learning to learn heuristics for
 % search. This general formulation is applied to many domains other than

@@ -15,9 +15,9 @@ dynamics. Thus, they may not include sufficient information to
 determine the applicability of a sequence of actions.  {\sc sfrcra-14}
 addresses this by incrementally searching for a high-level plan that
 solves the logical abstraction of the given {\sc tamp} problem,
-determining a prefix of the plan that has a motion planning feasible
+determining a prefix of the plan that has a feasible
 refinement, updating the high-level abstraction to reflect the reason
-for infeasibility, and searching for a new plan suffix from the
+for an infeasible step, and searching for a new plan suffix from the
 failure step onwards.
 
 In general, including geometric properties in the logic-based
@@ -55,6 +55,7 @@ efficiency degrades as the number of symbolic references increases. In the next 
 we address the first limitation; in the following sections we address the second.
 
 \begin{figure}[t]
+  \vspace{0.5em}
   \centering
   \begin{tikzpicture}[sibling distance=10em,
   every node/.style = {shape=rectangle, rounded corners,
@@ -67,7 +68,7 @@ we address the first limitation; in the following sections we address the second
   \node (1) at (-1, 0) {1. \emph{MoveTo}(pose$_{init}$, pose$_{A}$)\\2. \emph{Grasp}($A$, pose$_{A}$)};
   \node (2) at (-3, -3) {1. \emph{MoveTo}(pose$_{init}$, pose$_{B}$)\\2. \emph{Grasp}($B$, pose$_{B}$)\\
     3. \emph{MoveTo}(pose$_{B}$, pose$_{A}$)\\4. \emph{Grasp}($A$, pose$_{A}$)};
-  \node (3) at (1.5, -3) {1. \emph{MoveTo}(pose$_{init}$, pose$_{C}$)\\2. \emph{Grasp}($C$, pose$_{C}$)\\
+  \node (3) at (1.3, -3) {1. \emph{MoveTo}(pose$_{init}$, pose$_{C}$)\\2. \emph{Grasp}($C$, pose$_{C}$)\\
     3. \emph{MoveTo}(pose$_{C}$, pose$_{A}$)\\4. \emph{Grasp}($A$, pose$_{A}$)};
   \draw [postaction={decorate}] (-2, -0.5) -- (2) node [midway, left, draw=none, text=red, align=center] {B obstructs\\path to A};
   \draw [postaction={decorate}] (0, -0.5) -- (3) node [midway, right, draw=none, text=red, align=center] {C obstructs\\path to A};
@@ -99,8 +100,8 @@ fluent literals that were required in the preconditions of the
 $k^{th}$ action in $\pi_u$ but were not true in the state obtained
 upon application of $\pi_{u,k-1}$ with the instantiation $\sigma_k$.
 The plan in node $v$ (if any) retains the prefix $\pi_{u,k-1}$ and
-solves the new high-level problem that incorporates the discovered
-errors $\varphi$ in the $k^{th}$ state.
+solves the new high-level problem incorporating the discovered
+error $\varphi$ in the $k^{th}$ state.
 
 The overall search algorithm interleaves the search for feasible
 refinements of high-level plans with the addition of new edges and plan
@@ -117,15 +118,13 @@ in some pathological domains that have dead-ends and where changing
 the instantiation of symbolic references for an action has no effect
 on the action outcomes. \textsc{GetError} returns a failed
 precondition for an infeasible refinement (e.g., collision-check
-the current set of trajectories to detect obstructions).
+the current trajectories).
 
 Different implementations of the non-deterministic choices in
 Alg.\,\ref{alg:complete} can capture various search algorithms that
 account for unbounded branching factors (e.g., iterative deepening
 with iterative broadening best-first search). Indeed, {\sc sfrcra-14}
-can be seen as a greedy depth-first traversal of the {\sc prg}. We
-show that using trained search heuristics with the {\sc prg} can
-improve performance.
+can be seen as a greedy depth-first traversal of the {\sc prg}.
 
 It is easy to see that the resulting algorithm is complete.
 
@@ -159,7 +158,7 @@ as long as the non-deterministic policies assign non-zero weight to each choice.
   \myproc{\textsc{RefineNode}($\pi$, $j$)}{
     \nl $\sigma \leftarrow$ \textsc{NDGetInstantiation}($\pi$, $j$)\;
     \tcc{\footnotesize resourceLimit($j$) is monotonically increasing in $j$.}
-    \nl  MP, FailedAction, FailedPred $\leftarrow$ \textsc{GetMotionPlan}($\sigma$, $\pi$, resourceLimit($j$))\;
+    \nl  MP, FailedAction, FailedPred $\leftarrow$ $~~~~~~$\textsc{GetMotionPlan}($\sigma$, $\pi$, resourceLimit($j$))\;
     \nl \If{MP $\ne$ NULL}{
       \nl return success\;
     }
@@ -172,7 +171,7 @@ as long as the non-deterministic policies assign non-zero weight to each choice.
     \nl mode $\leftarrow$ \textsc{NDChoice}\{error, random\}\;
     \nl \eIf{mode == error} {
       \nl NewState $\leftarrow$ \textsc{Patch}(\textsc{GetStateAt}(StepNum,
-      $\pi$), FailedPrecon)\;
+      $\pi$), $~~~~~~~~~~~~~~~~~~~~~~~~~~$FailedPrecon)\;
     }{
       \nl $\pi\leftarrow$ $\pi$, with an action
       before StepNum replaced $~~~~~~~~~~~$by a random applicable action\;

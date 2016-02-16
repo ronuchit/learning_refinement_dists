@@ -59,7 +59,7 @@
   \caption{\small{Percent solved, standard deviation, average refinement time, and number of motion
       planning calls. A averages across all runs, treating timeouts as 300s; S averages across runs where all systems succeeded.
       T: baseline 1. B: baseline 2.
-      L: learned refinement policies with B's graph search.
+      L: only learned refinement policies.
       F: learned refinement policies and graph
       search heuristics. L and F results are averaged across 5
       separately trained sets of weights. Time limit: 300s.}}
@@ -78,19 +78,17 @@ Baseline 1 is {\sc sfrcra-14}: it uses exhaustive backtracking search
 for refinement and greedy depth-first search of the {\sc prg}, which
 always tries to refine the plan that incorporates all error
 information obtained thus far.  Baseline 2 uses randomized refinement
-with the following fixed graph search policy: try 3 times to refine
-the deepest node in the graph; if unsuccessful, generate a geometric
-error, replan with the task planner (which creates a child node), and
-repeat.
+with the same greedy graph search policy; we allow 3 motion planning failures
+before propagating a geometric error to the high level.
 
 We compare these baselines against two systems. The first combines
-learned refinement policies with the graph search used in baseline
-2. The second is our full system; it uses learned refinement policies
+learned refinement policies with the graph search from the baselines.
+The second is our full system; it uses learned refinement policies
 and graph search heuristics.  For the dinner domain and frying domain,
-we focus only on learning refinement policies. Since the errors propagated in these
-domains only relate to the stackability of objects, a good {\sc prg} search strategy
+we focus only on learning refinement policies. The errors propagated in these
+domains only relate to the stackability of objects, so a good {\sc prg} search strategy
 incorporates all available error information when
-attempting refinement. Thus, the {\sc prg} search strategy from baseline 2
+attempting refinement. Thus, the {\sc prg} search strategy from the baselines
 already performs well.
 
 Initial experimentation revealed that jointly learning weights for all
@@ -104,7 +102,7 @@ best on a validation set. We set the step size $\alpha = 0.1$.
 
 We report results on fixed test sets of 50 randomly generated
 environments for the can and dinner domains, and 20 for the frying
-domain (because these environments have less variation).  For the
+domain (these environments have less variation).  For the
 systems that use learned refinement distributions, we average results across running the
 training process 5 times independently and evaluating each final set
 of weights.
@@ -118,7 +116,7 @@ it lies in, within the angle range. We also denote the closest point on the tabl
 To learn grasping poses for a target object $o$, we use 25 features.
 9 binary features bucket the distance between
 the sample and $o$. 9 binary features bucket the
-sample height. 3 features describe the number of objects within
+sample height. 3 features count the number of objects within
 discs of radius 7, 10, and 15 centimeters around the sample. 3 binary
 features bucket the sample within a cone of apex $o$, angle range 0 to $\pi$, and $p$
 the robot position. The final feature is binary and is 1 iff the 2-norm of
@@ -126,14 +124,14 @@ the difference between the previous sample and the current one exceeds $10^{-3}$
 
 To learn putdown poses for a target location $l$, we use 24 features. The first
 18 are the same as for grasping. 5 binary features bucket the sample within
-a cone of apex $l$, angle range 0 to $\pi$, and $p = t_{l}$. The last of these describes
-orientation. The final feature is the same as for grasping.
+a cone of apex $l$, angle range 0 to $\pi$, and $p = t_{l}$. The last of these is 1
+iff $t_{l}$, $l$, and the sample are oriented clockwise. The final feature is the same as for grasping.
 
 To learn base poses for interacting with an object $o$, we use 18 features. The first 9 are the same as
 for grasping. 7 binary features bucket the sample within a cone of apex $o$, angle range 0 to $\pi$, and $p = t_{o}$.
-The last of these describes orientation.
-1 feature describes if the sampled pose collides with any objects.
-1 feature describes whether there are obstructions in front of the sampled pose.
+The last of these is 1 iff $t_{o}$, $o$, and the sample are oriented clockwise.
+1 feature indicates whether the sampled pose collides with any objects.
+1 feature indicates whether there are obstructions in front of the sampled pose.
 
 To learn putdown locations $l$, we use 5 features. 1 binary feature encodes whether
 any objects are within 15 centimeters of $l$. 1 feature is the
@@ -192,6 +190,7 @@ results. The supplementary video shows learned distributions in each domain.
 % \end{figure}
 
 \subsection{Can Domain}
+\addtolength{\textheight}{-3cm}
 We run three experiments, using 30, 35, and 40 cans on the
 table.  The goal is always for the robot to pick up a particular can
 with its left gripper. We disable the right gripper, so any
@@ -212,6 +211,7 @@ After these 3 rounds, performance plateaued. We use $C =
 10^{9}$ to solve the maximum-margin optimization problem.
 
 \begin{figure}[t]
+  \vspace{0.5em}
   \centering
     \noindent
     \includegraphics[scale=0.13]{images/grasp_context_1.png}
@@ -228,7 +228,7 @@ compared to the baseline systems for success rate and average refinement time. W
 search succeeds, it does so quickly, so it has a faster average
 refinement time on the successes. \figref{fig:cover} shows learned
 base motion and pickup distributions. \figref{fig:context} shows how
-the learned distribution shifts based on the geometric context.
+the learned distribution reflects the geometric context.
 
 \subsection{Dinner Domain}
 We run one experiment, using 4 bowls. The robot must
@@ -246,10 +246,8 @@ poses for 20 iterations. We fix $H = 100$ and $\epsilon = 10$.
 
 The results demonstrate comparable performance to the baseline
 systems. A simple hand-coded discretization works well in
-this domain. The optimal robot base pose for tray pickup
-is directly in front of the tray, which is quickly sampled.
-The lack of long-term
-dependencies in the plan also means that backtracking search succeeds
+this domain, and the lack of long-term
+dependencies in the plan means that backtracking search succeeds
 quickly. This shows that our system recovers the performance of
 well-chosen discretizations, when they exist. \figref{fig:cover} shows learned tray
 pickup poses after all 20 iterations.
@@ -257,7 +255,7 @@ pickup poses after all 20 iterations.
 \subsection{Frying Domain}
 We run two experiments, using 2 and 4 frying pans. The robot
 must stack these pans in order of decreasing radius in a narrow
-shelf. To succeed, it must grasp each frying pan at its handle.
+shelf. The shelf can only be accessed by grasping a frying pan at its handle.
 A typical high-level plan in this domain has around 45 steps.
 This domain has 3 types of continuous references: base poses,
 pan grasping poses, and pan putdown poses.

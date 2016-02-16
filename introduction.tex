@@ -37,12 +37,11 @@ and search problems into interacting logical and geometric components.
       can (left), a tray (middle), and a frying pan (right).  The
       green and yellow points refer to the positions of the tool
       center points; the end effectors are oriented to point toward
-      the object being grasped. The can and frying pan are picked up
-      using only one gripper.}}
+      the object being grasped.}}
   \label{fig:cover}
 \end{figure}
 
-In this work, we develop a complete algorithm for {\sc tamp} and
+We develop a complete algorithm for {\sc tamp} and
 propose learning methods to guide a joint search in the space of
 high-level, symbolic plans and their low-level \emph{refinements}:
 instantiations of continuous values for symbolic references in the
@@ -64,14 +63,11 @@ over this graph with plan refinement.
 
 Naturally, the space of high-level plans and their possible refinements is
 quite large. To combat this, we present machine learning techniques
-that guide search over both spaces.
-
-At the low
+that guide search over both spaces. At the low
 level, our system learns to propose continuous values for symbolic
 references that are likely to result in collision-free
 trajectories. Discretizing the space of continuous parameters is a
-common step in {\sc tamp} systems and largely relies on hand-coded
-heuristics or well-chosen sampling distributions. 
+common time-consuming step in designing {\sc tamp} systems.
 
 We apply reinforcement learning ({\sc rl}) to learn domain-specific
 distributions over these values in a domain-independent fashion.  Our
@@ -82,7 +78,6 @@ actions propose changes to a schedule. In our setting, states
 correspond to (potentially infeasible) refinements and actions propose
 new values for symbolic references.
 
-
 At the high level, we train heuristics that estimate how difficult it
 is to refine a given plan. Directly applying {\sc rl} to
 this task is challenging because actions amount to either motion
@@ -92,13 +87,12 @@ however, fairly easy for a human to determine which high-level plans
 are promising, so we use inverse reinforcement learning ({\sc irl}) based on
 expert demonstrations to train heuristics for this problem.
 
-
 The contributions of our work are as follows: 1) we present a complete
 algorithm for {\sc tamp}; 2) we present a randomized local search
 algorithm for plan refinement that is easily formulated as an {\sc
   mdp}; 3) we apply {\sc rl} to learn a policy for this {\sc mdp}; 4)
 we learn from expert demonstrations to efficiently search the space of
-high-level plans, given options that address different
+high-level plans, given options that address different (potential)
 infeasibilities; and 5) we run experiments to evaluate the performance
 of our system in a variety of simulated domains. Our results
 demonstrate significantly improved performance over {\sc sfrcra-14}.

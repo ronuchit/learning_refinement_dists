@@ -18,7 +18,7 @@ concepts to this formulation.
 % and \emph{empty(gripper$_l$)}.
 
 \begin{defn}
-We define a task and motion planning ({\sc tamp}) problem as a tuple
+We define a \emph{task and motion planning} ({\sc tamp}) problem as a tuple
 $\langle \T, \Obj, \F, \I, \G, \U \rangle$:
 \begin{tightlist}
 \item $\T$: a set of object \emph{types} (e.g., movable objects,
@@ -27,9 +27,8 @@ $\langle \T, \Obj, \F, \I, \G, \U \rangle$:
 \item $\Obj$: a set of \emph{objects} (e.g., can$_{2}$, grasping\_pose$_{6}$, location$_{3}$).
   $\Obj$ defines the configuration space of the robot and all movable objects in its environment.
 
-\item $\F$: a set of \emph{fluents}, which define relationships among
-  objects and are Boolean functions over the configuration
-  space.
+\item $\F$: a set of \emph{fluents}, Boolean functions over the configuration
+  space that define relationships among objects.
 
 \item $\I$: a conjunction of fluents that define the initial state.
 
@@ -37,17 +36,17 @@ $\langle \T, \Obj, \F, \I, \G, \U \rangle$:
 
 \item $\U$: a set of \emph{high-level actions} (e.g., grasp, move,
   putdown), parameterized by objects and defined by
-  \emph{preconditions}, a set of fluents that describe when an action
-  can be taken; and \emph{effects}, a set of fluents that hold true
+  \emph{preconditions}, fluents that describe when an action
+  can be taken; and \emph{effects}, fluents that hold true
   after the action is performed.
 \end{tightlist}
 \end{defn}
 
-An instantiated action is said to be \emph{feasible} in a state iff
+An instantiated action is \emph{feasible} in a state iff
 its preconditions hold in that state. A solution to a {\sc
   tamp} problem is a sequence of instantiated actions $a_{0}, a_{1},
 ..., a_{n} \in \U$ such that every action is feasible when applied
-successively starting with $\I$, and the final state reached satisfies the
+successively starting with $\I$, and the final state satisfies the
 goal condition $\G$.
 
 % As a simple example, we consider a pick domain where the robot is capable of
@@ -127,18 +126,18 @@ goal condition $\G$.
 % before grasping $o_{t}$, and refining this plan succeeds.
 
 \subsection{Markov Decision Processes}
-Markov decision processes ({\sc mdp}s) formalize the interaction
-between an agent and its environment. At each step of an {\sc mdp}, the
-agent knows the current state and selects an action. This causes the
-state to change according to a known transition distribution.
+Markov decision processes formalize the interaction
+between an agent and its environment. At each timestep, the
+agent knows the state and selects an action, changing the
+state according to a known transition distribution.
 \begin{defn}
-We define a finite-horizon {\sc mdp} as a tuple $\langle \St, \A, T,
+We define a finite-horizon \emph{Markov decision process} ({\sc mdp}) as a tuple $\langle \St, \A, T,
 R, H, \Prob \rangle$:
 \begin{tightlist}
 \item $\St$: the state space.
 \item $\A$: the action space.
-\item $T(s, a, s') = Pr(s' \mid s, a)$ for $s, s' \in \St, a \in \A$: the transition distribution.
-\item $R(s, a, s')$ for $s, s' \in \St, a \in \A$: the reward function.
+\item $T(s, a, s')$: the transition distribution for $s, s' \in \St, a \in \A$.
+\item $R(s, a, s')$: the reward function for $s, s' \in \St, a \in \A$.
 \item $H$: the horizon, or total number of timesteps.
 \item $\Prob$: the initial state distribution.
 \end{tightlist}
