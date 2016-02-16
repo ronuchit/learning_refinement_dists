@@ -24,7 +24,7 @@ In general, including geometric properties in the logic-based
 formulation leads to an increase in the number of objects representing
 distinct poses and/or trajectories. For instance, expressing the fact
 that a trajectory for grasping \emph{can$_1$} is obstructed by
-\emph{can$_3$} from the current pose of the robot would require
+\emph{can$_3$} from the current pose of the robot may require
 setting a fluent of the form \emph{obstructs(can$_3$, pose$_{17877}$,
   trajectory$_{3219}$, can$_1$)} to true in the description of the
 high-level state. In turn, this would require adding
@@ -37,8 +37,8 @@ task planning problems.
 {\sc sfrcra-14} addresses this challenge by abstracting the continuous
 action arguments, such as robot grasping poses and trajectories, into
 a \emph{bounded} set of symbolic references to potential values. A
-\emph{high-level}, or \emph{symbolic}, plan refers to the fixed task
-sequence returned by a task planner, and is comprised of these symbolic
+\emph{high-level} plan refers to the fixed task
+sequence returned by a task planner; it is comprised of these symbolic
 references. An \emph{interface layer} conducts plan refinement,
 searching for instantiations of continuous values for symbolic
 references while ensuring action feasibility.  The resulting process
@@ -47,11 +47,11 @@ carrying out the necessary exchange of information in a scalable
 manner.
 
 However, this algorithm has two
-main limitations: it is not guaranteed to find a solution when
-there exists one, and the sets of values from which instantiations
-get sampled are object-specific, hand-coded distributions. Since the algorithm
+main limitations: 1) it is not guaranteed to find a solution when
+there exists one, and 2) instantiations
+are sampled from object-specific, hand-coded distributions. Since the algorithm
 never reduces the set of possible sampled values, its
-efficiency degrades as the number of values that get sampled increases. In the next subsection,
+efficiency degrades as the number of symbolic references increases. In the next subsection,
 we address the first limitation; in the following sections, we address the second.
 
 \begin{figure}[t]
@@ -100,7 +100,7 @@ $k^{th}$ action in $\pi_u$ but were not true in the state obtained
 upon application of $\pi_{u,k-1}$ with the instantiation $\sigma_k$.
 The plan in node $v$ (if any) retains the prefix $\pi_{u,k-1}$ and
 solves the new high-level problem that incorporates the discovered
-facts $\varphi_{u,v}$ in the $k^{th}$ state.
+errors $\varphi$ in the $k^{th}$ state.
 
 The overall search algorithm interleaves the search for feasible
 refinements of high-level plans with the addition of new edges and plan
@@ -121,12 +121,13 @@ the current set of trajectories to detect obstructions).
 
 Different implementations of the non-deterministic choices in
 Alg.\,\ref{alg:complete} can capture various search algorithms that
-account for unbounded branching factors (e.g., iterative-deepening
-with iterative-broadening best first search). Indeed, {\sc sfrcra-14}
+account for unbounded branching factors (e.g., iterative deepening
+with iterative broadening best-first search). Indeed, {\sc sfrcra-14}
 can be seen as a greedy depth-first traversal of the {\sc prg}. We
 show that using trained search heuristics with the {\sc prg} can
-improve performance. It is easy to see that the resulting algorithm is
-complete.
+improve performance.
+
+It is easy to see that the resulting algorithm is complete.
 
 \begin{thm}
 If there exists a high-level sequence of actions that 

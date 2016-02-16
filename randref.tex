@@ -33,7 +33,7 @@ are initialized as straight lines.
   \nl return success }
   \nl \ElseIf {$failPred$ == NULL} {
   \tcc{\footnotesize Motion planning failure.}
-  \nl $failAction \leftarrow \pi.ops[failStep]$\;
+  \nl $failAction \leftarrow \pi.actions[failStep]$\;
   \nl \textsc{Resample}($failAction.params$) }
   \nl \Else {
   \tcc{\footnotesize Action precondition violation.}
@@ -44,15 +44,15 @@ are initialized as straight lines.
 \label{alg:randref}
 \end{algorithm}
 
-The \textsc{MotionPlan} subroutine called in line 3 attempts to
-find a collision-free set of trajectories linking all pose instantiations.
+The \textsc{GetMotionPlan} subroutine called in line 3 attempts to
+find collision-free trajectories linking all pose instantiations.
 To do so, it iterates through the sequence of actions comprising the high-level plan.
 For each, it first calls the motion planner to find a trajectory
 linking the sampled poses. If this succeeds, it tests the action preconditions;
 as part of this step, it checks that the trajectory is collision-free.
 
-We then call the \textsc{Resample} routine on the symbolic parameters
-associated with the infeasibility; this routine picks one at random and
+If an infeasibility is detected, we call the \textsc{Resample} routine on the
+associated symbolic references. This routine picks one at random and
 resamples its value. \textsc{InitRefinement} and \textsc{Resample} together define
 \textsc{NDGetInstantiation} for our implementation, while \textsc{GetError} iterates
 through the steps of the plan, checks precondition feasibility, and returns
