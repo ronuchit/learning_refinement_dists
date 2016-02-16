@@ -16,7 +16,7 @@ of high-level plans. Kaelbling et al.~\cite{kaelbling2011hierarchical} search
 through a hierarchy of these spaces and use ``geometric suggesters''
 to lazily perform this discretization. Dornhege et
 al.~\cite{dornhege2012semantic} define a way to integrate this
-discretization in classical planning. Garrett et
+discretization in classical task planning. Garrett et
 al.~\cite{GarrettWAFR14} define a heuristic for {\sc tamp} that allows
 the search to incorporate geometric feasibility. Our approach could
 augment these systems by learning domain-specific discretizations of
@@ -31,7 +31,7 @@ al.~\cite{lagriffoul2014orientation} and Garrett et
 al.~\cite{garrett2015backward} use a set of relaxed constraints to
 reduce the search space for a global
 solution. Toussaint~\cite{toussaint2015logic} treats the problem as a
-global trajectory optimization. Our approach could be used to learn
+global trajectory optimization. Our methods could be used to learn
 domain-specific initialization or discretization strategies for these
 approaches.
 
@@ -45,7 +45,7 @@ local search that proposes changes to an existing suboptimal
 schedule. The authors formulate this as an {\sc mdp} and use {\sc
   td}($\lambda$)~\cite{suttonbarto} with function approximation to
 learn a value function for it. Their approach outperformed the
-previous state-of-the-art for this task and scaled to larger scheduling
+previous state-of-the-art for this task and scaled better to larger scheduling
 problems.
 
 Zucker et al.~\cite{workspacebias} use {\sc rl} to bias the
