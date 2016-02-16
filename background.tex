@@ -143,7 +143,7 @@ R, H, \Prob \rangle$:
 \item $\Prob$: the initial state distribution.
 \end{tightlist}
 \end{defn}
-A solution to a finite-horizon {\sc mdp} is a policy, $\pi: \St \times \mathbb{Z} \rightarrow \A$,
+A solution to a finite-horizon {\sc mdp} is a policy, $\pi: \St \times \mathbb{N} \rightarrow \A$,
 that maps the state and timestep to an action.  The
 value function under $\pi$ is a function of the timestep $k$ and state
 $s$:
@@ -151,7 +151,7 @@ $$V_{\pi}^{k}(s) = \mathbb{E}\left[\sum_{t=k}^{H}R(s_{t}) \mid \pi, s_{k} = s\ri
 
 In reinforcement learning ({\sc rl}), an agent must determine
 $\pi^{*}$ through interaction with its environment (i.e., without
-explicit access to $\St$ or $T$). At each timestep, the agent knows
+explicit access to $\St$ or $T$). At each timestep the agent knows
 the state and what actions are available, but initially it does not know
 how taking actions affects the state. There is a large body of
 research on {\sc rl}. Standard techniques include value function

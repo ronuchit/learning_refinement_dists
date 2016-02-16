@@ -47,8 +47,8 @@ are initialized as straight lines.
 The \textsc{GetMotionPlan} subroutine called in line 3 attempts to
 find collision-free trajectories linking all pose instantiations.
 To do so, it iterates through the sequence of actions comprising the high-level plan.
-For each, it first calls the motion planner to find a trajectory
-linking the sampled poses. If this succeeds, it tests the action preconditions;
+For each action, it calls the motion planner to find a trajectory
+that links the sampled poses. If this succeeds, it tests the action preconditions;
 as part of this step, it checks that the trajectory is collision-free.
 
 If an infeasibility is detected, we call the \textsc{Resample} routine on the
@@ -61,9 +61,9 @@ a failed action index and associated predicate.
 Randomized refinement has two key properties. The first is a very
 explicit algorithm state.  We show in the next section that this
 allows for a straightforward {\sc mdp} formulation. The second is that
-it allows the instantiations for a particular action in the plan to be
-influenced by those for a \emph{future} action. For example, in a
-pick-place domain, it can make sense for the object's grasping pose to
+it allows the instantiations of a particular action in the plan to be
+influenced by those of a \emph{future} action. For example, in a
+pick-place domain it can make sense for the object's grasping pose to
 be sampled conditionally on the current instantiation of the putdown
 pose, even though the putdown appears after the grasp in the plan
 sequence. This allows plan refinement to account for long-term

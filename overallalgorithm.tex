@@ -13,11 +13,11 @@ The fundamental {\sc tamp} problem is that high-level logical
 descriptions are lossy abstractions of the true environment
 dynamics. Thus, they may not include sufficient information to
 determine the applicability of a sequence of actions.  {\sc sfrcra-14}
-addresses this by: incrementally searching for a high-level plan that
-solves the logical abstraction of the given {\sc tamp} problem;
+addresses this by incrementally searching for a high-level plan that
+solves the logical abstraction of the given {\sc tamp} problem,
 determining a prefix of the plan that has a motion planning feasible
-refinement; updating the high-level abstraction to reflect the reason
-for infeasibility; and searching for a new plan suffix from the
+refinement, updating the high-level abstraction to reflect the reason
+for infeasibility, and searching for a new plan suffix from the
 failure step onwards.
 
 In general, including geometric properties in the logic-based
@@ -51,8 +51,8 @@ main limitations: 1) it is not guaranteed to find a solution when
 there exists one, and 2) instantiations
 are sampled from object-specific, hand-coded distributions. Since the algorithm
 never reduces the set of possible sampled values, its
-efficiency degrades as the number of symbolic references increases. In the next subsection,
-we address the first limitation; in the following sections, we address the second.
+efficiency degrades as the number of symbolic references increases. In the next subsection
+we address the first limitation; in the following sections we address the second.
 
 \begin{figure}[t]
   \centering
