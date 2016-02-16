@@ -5,4 +5,4 @@ Player Information:
 Run with Totem. Tested on version 3.0.1.
 
 Contact Information:
-Rohan Chitnis, ronuchit@berkeley.edu
+Rohan Chitnis, ronuchit@gmail.com
