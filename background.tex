@@ -3,9 +3,9 @@
 
 A motion planning problem is defined by a configuration space for a
 robot and all movable objects in its environment, along with initial
-and final configurations. The solution to a motion planning problem is
+and goal configurations. The solution to a motion planning problem is
 a collision-free trajectory for the robot that connects these
-configurations.  In task and motion planning, we add more abstract
+configurations. In task and motion planning, we add more abstract
 concepts to this formulation.
 
 % For example, we can use the action schema \emph{grasp(Object o,
@@ -25,16 +25,15 @@ $\langle \T, \Obj, \F, \I, \G, \U \rangle$:
   trajectories, poses, locations).
 
 \item $\Obj$: a set of \emph{objects} (e.g., can$_{2}$, grasping\_pose$_{6}$, location$_{3}$).
-  $\Obj$ defines the configuration space of all movable
-  objects, including the robot.
+  $\Obj$ defines the configuration space of the robot and all movable objects in its environment.
 
 \item $\F$: a set of \emph{fluents}, which define relationships among
-  objects and are Boolean functions defined over the configuration
+  objects and are Boolean functions over the configuration
   space.
 
-\item $\I$: a conjunction of fluents that defines the initial state.
+\item $\I$: a conjunction of fluents that define the initial state.
 
-\item $\G$: a conjunction of fluents that defines the goal state.
+\item $\G$: a conjunction of fluents that define the goal state.
 
 \item $\U$: a set of \emph{high-level actions} (e.g., grasp, move,
   putdown), parameterized by objects and defined by
@@ -44,8 +43,8 @@ $\langle \T, \Obj, \F, \I, \G, \U \rangle$:
 \end{tightlist}
 \end{defn}
 
-An instantiated action is said to be \emph{feasible} in a state if and
-only if its preconditions hold in that state. A solution to a {\sc
+An instantiated action is said to be \emph{feasible} in a state iff
+its preconditions hold in that state. A solution to a {\sc
   tamp} problem is a sequence of instantiated actions $a_{0}, a_{1},
 ..., a_{n} \in \U$ such that every action is feasible when applied
 successively starting with $\I$, and the final state reached satisfies the
@@ -129,22 +128,22 @@ goal condition $\G$.
 
 \subsection{Markov Decision Processes}
 Markov decision processes ({\sc mdp}s) formalize the interaction
-between an agent and an environment. At each step of an {\sc mdp}, the
+between an agent and its environment. At each step of an {\sc mdp}, the
 agent knows the current state and selects an action. This causes the
 state to change according to a known transition distribution.
 \begin{defn}
 We define a finite-horizon {\sc mdp} as a tuple $\langle \St, \A, T,
-R, H, \Prob \rangle$, where
+R, H, \Prob \rangle$:
 \begin{tightlist}
-\item $\St$ is the state space.
-\item $\A$ is the action space.
-\item $T(s, a, s') = Pr(s' \mid s, a)$ for $s, s' \in \St, a \in \A$ is the transition distribution.
-\item $R(s, a, s')$ for $s, s' \in \St, a \in \A$ is the reward function.
-\item $H$ is the horizon, or total number of timesteps.
-\item $\Prob$ is the initial state distribution.
+\item $\St$: the state space.
+\item $\A$: the action space.
+\item $T(s, a, s') = Pr(s' \mid s, a)$ for $s, s' \in \St, a \in \A$: the transition distribution.
+\item $R(s, a, s')$ for $s, s' \in \St, a \in \A$: the reward function.
+\item $H$: the horizon, or total number of timesteps.
+\item $\Prob$: the initial state distribution.
 \end{tightlist}
 \end{defn}
-A solution to an {\sc mdp} is a policy, $\pi: \St \times \mathbb{Z} \rightarrow \A$,
+A solution to a finite-horizon {\sc mdp} is a policy, $\pi: \St \times \mathbb{Z} \rightarrow \A$,
 that maps the state and timestep to an action.  The
 value function under $\pi$ is a function of the timestep $k$ and state
 $s$:
@@ -153,14 +152,14 @@ $$V_{\pi}^{k}(s) = \mathbb{E}\left[\sum_{t=k}^{H}R(s_{t}) \mid \pi, s_{k} = s\ri
 In reinforcement learning ({\sc rl}), an agent must determine
 $\pi^{*}$ through interaction with its environment (i.e., without
 explicit access to $\St$ or $T$). At each timestep, the agent knows
-the state and what actions are available, but initially does not know
-how taking actions will affect the state. There is a large body of
+the state and what actions are available, but initially it does not know
+how taking actions affects the state. There is a large body of
 research on {\sc rl}. Standard techniques include value function
 approximation, which uses methods such as temporal difference
-learning, and direct policy estimation, which encompasses
+learning; and direct policy estimation, which encompasses
 gradient-based and gradient-free methods~\cite{suttonbarto}.
 
-In \emph{inverse reinforcement learning} ({\sc
+In inverse reinforcement learning ({\sc
   irl})~\cite{ng2000algorithms}, an agent attempts to recover $R$ from
 a description of the {\sc mdp} and execution traces of optimal
 behavior. This is useful in scenarios where an expert demonstrator can
