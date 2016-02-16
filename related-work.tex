@@ -11,28 +11,28 @@ states independently for each symbolic state in the task sequence,
 while our distributions are conditioned on an entire plan and its
 current refinement.
 
-One set of approaches to {\sc tamp} search through a discretized space
-a task plans. Kaelbling et al.~\cite{kaelbling2011hierarchical} search
+One set of approaches to {\sc tamp} involves search through a discretized space
+of high-level plans. Kaelbling et al.~\cite{kaelbling2011hierarchical} search
 through a hierarchy of these spaces and use ``geometric suggesters''
 to lazily perform this discretization. Dornhege et
 al.~\cite{dornhege2012semantic} define a way to integrate this
 discretization in classical planning. Garrett et
 al.~\cite{GarrettWAFR14} define a heuristic for {\sc tamp} that allows
-the heuristic to incorporate geometric feasibility. Our approach could
-augment these systems by learning domain specific discretizations of
+the search to incorporate geometric feasibility. Our approach could
+augment these systems by learning domain-specific discretizations of
 parameters.
 
-An alternative set of approaches treats the a task plan as defining a
-constraint satisfaction problem (CSP) where the parameters of the plan
-are the variables of the CSP. Lozano-P{\'e}rez and
+An alternative set of approaches treats the high-level plan as defining a
+constraint satisfaction problem ({\sc csp}) where the parameters of the plan
+are the variables of the {\sc csp}. Lozano-P{\'e}rez and
 Kaelbling~\cite{lozano2014constraint} discretize the parameter space
-and use a standard CSP solver. Lagriffoul et
+and use a standard {\sc csp} solver. Lagriffoul et
 al.~\cite{lagriffoul2014orientation} and Garrett et
 al.~\cite{garrett2015backward} use a set of relaxed constraints to
 reduce the search space for a global
 solution. Toussaint~\cite{toussaint2015logic} treats the problem as a
 global trajectory optimization. Our approach could be used to learn
-domain specific initialization or discretization strategies for these
+domain-specific initialization or discretization strategies for these
 approaches.
 
 Our problem formulation is motivated by Zhang and Dietterich's
@@ -55,12 +55,12 @@ non-uniform configuration space sampler with a policy gradient
 algorithm.  In our work, we adapt their gradient updates to the {\sc
   tamp} framework.
 
-Another line of research uses machine learning to learn heuristics for
-search. This general formulation is applied to many domains other than
-robotics.  Boyan et al.~\cite{Boyanlearning} solve optimization
-problems by learning a state evaluation function that guides local
-search. Arbelaez et al.~\cite{hamadisearch} solve constraint
-satisfaction problems using a heuristic model that is refined with
-supervised learning. Xu et al.~\cite{Xu07discriminativelearning}
-train heuristics to control forward state-space beam search in task
-planning.
+% Another line of research uses machine learning to learn heuristics for
+% search. This general formulation is applied to many domains other than
+% robotics.  Boyan et al.~\cite{Boyanlearning} solve optimization
+% problems by learning a state evaluation function that guides local
+% search. Arbelaez et al.~\cite{hamadisearch} solve constraint
+% satisfaction problems using a heuristic model that is refined with
+% supervised learning. Xu et al.~\cite{Xu07discriminativelearning}
+% train heuristics to control forward state-space beam search in task
+% planning.

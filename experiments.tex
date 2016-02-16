@@ -108,14 +108,33 @@ third and fourth systems, we average results across running the
 training process 5 times independently and evaluating each final set
 of weights.
 
-Our low-level policies use 24 features and rely on the notion of a
-target object. 9 binary features encode the bucketed distance between
-the sample and target object. 9 binary features encode the bucketed
-sample height. 3 features describe the number of other objects within
+Many of our features use the concept of a \emph{cone}, parameterized by an apex,
+an angle range, a direction, and a number of buckets.
+To learn grasping poses for a target object $o$, we use 25 features.
+9 binary features bucket the distance between
+the sample and $o$. 9 binary features bucket the
+sample height. 3 features describe the number of objects within
 discs of radius 7, 10, and 15 centimeters around the sample. 3 binary
-features describe the angle made between the vector from the robot to
-the target and the vector from the sample to the target: whether the
-angle is less than $\pi/3$, $\pi/2$, and $3\pi/4$.
+features bucket the sample within a cone of apex $o$ and angle range 0 to $\pi$, directed
+toward the robot. The final feature compares the 2-norm of
+the difference between the previous sample and the current one with $10^{-3}$.
+
+To learn putdown poses for a target location $l$, we use 24 features. The first
+18 are the same as for grasping. 5 binary features bucket the sample within
+a cone of apex $l$ and angle range 0 to $\pi$ (with the last feature describing
+orientation), directed toward the closest table edge. The final feature is the same as
+for grasping.
+
+To learn base poses for interacting with an object $o$, we use 18 features. The first 9 are the same as
+for grasping. 7 binary features bucket the sample within a cone of apex $o$ and angle range 0 to $\pi$
+(with the last feature describing orientation), directed toward the closest table edge.
+1 feature describes whether the sampled pose collides with unmovable objects in the environment.
+1 feature describes whether there are obstructions in front of the sampled pose.
+
+To learn putdown locations $l$, we use 5 features. 1 binary feature encodes whether
+any objects are within 15 centimeters of $l$. 1 feature is the
+distance from $l$ to the closest table edge. 3 features count the number of objects
+in each bucket of a cone with apex $l$ and angle range 0 to $3\pi/4$, directed toward the closest table edge.
 
 Our high-level heuristics use features to describe the feasibility of
 plans. In our domains, this mainly summarizes issues with potential
@@ -178,7 +197,8 @@ We run three sets of experiments, using 30, 35, and 40 cans on the
 table.  The goal is always for the robot to pick up a particular can
 with its left gripper. We disable the right gripper, so any
 obstructions to the target object must be picked up and placed
-elsewhere on the table. This domain has 4 types of continuous
+elsewhere on the table. A typical high-level plan in this domain has around 6 steps.
+This domain has 4 types of continuous
 references: base poses, object grasping poses, object putdown poses,
 and object putdown locations.
 
@@ -217,7 +237,8 @@ We run one set of experiments, using 4 bowls. The robot must
 move the bowls from their initial locations on one table to target
 locations on the other. We assign a cost to base motion in the
 environment, so the robot is encouraged to use the provided tray, onto
-which bowls can be stacked.  This domain has 5 types of continuous
+which bowls can be stacked. A typical high-level plan in this domain has around 33 steps.
+This domain has 5 types of continuous
 references: base poses, object grasping poses, object putdown poses,
 tray pickup poses, and tray putdown poses.
 
@@ -241,8 +262,9 @@ We run two sets of experiments, using 2 and 4 frying pans. The robot
 must stack the frying pans in order of decreasing radius into a narrow
 shelf. To be successful, it must grasp the frying pans at the handle,
 so that the handle sticks out after the pan is placed in the
-shelf. This domain has 3 types of continuous references: base poses,
-pan grasping poses, and pan putdown poses. 
+shelf. A typical high-level plan in this domain has around 45 steps.
+This domain has 3 types of continuous references: base poses,
+pan grasping poses, and pan putdown poses.
 
 We did not need curriculum learning. We fix $N = 30$, $H = 100$, and
 $\epsilon = 5$. {\sc sfrcra-14} did not have a frying domain, so we
