@@ -6,18 +6,18 @@ space. In discrete representations, planning complexity is exponential
 in the length of the plan. In mobile manipulation, parameters for
 an action often draw from a continuous space, so we must also cope
 with an infinite branching factor.  \emph{Task and motion planning}
-({\sc tamp}) methods integrate a logical search over high-level
+({\sc tamp}) methods integrate logical search over high-level
 actions with geometric reasoning to address this challenge. We present
 an algorithm that searches the space of possible task and motion
-plans, and uses statistical machine learning to guide the search
+plans and uses statistical machine learning to guide the search
 process. Our contributions are as follows: 1) we present a complete
 algorithm for {\sc tamp}; 2) we present a randomized local search
 algorithm for {\sc tamp} that is easily formulated as a Markov
 decision process ({\sc mdp}); 3) we apply reinforcement learning ({\sc
   rl}) to learn a policy for this {\sc mdp}; 4) we learn from expert
-demonstrations to efficiently search the space of task plans, given
+demonstrations to efficiently search the space of high-level task plans, given
 options that address different (potential) infeasibilities; and 5) we
-run experiments to evaluate the performance of our system in a variety
+run experiments to evaluate our system in a variety
 of simulated domains. We show significant improvements in performance
-over prior work. 
+over prior work.
 \end{abstract}
